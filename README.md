@@ -2,7 +2,7 @@
 
 Extrae abstracts, cuenta figuras y detecta links de artículos científicos usando GROBID + Python.
 
-[![Zenodo](https://zenodo.org/badge/DOI.svg)](https://zenodo.org/badge/latestdoi/YOUR_DOI)
+[![Zenodo](https://zenodo.org/badge/10.5281/zenodo.18938512.svg)](https://zenodo.org/badge/latestdoi/10.5281/zenodo.18938512)
 
 ## Instalación y Ejecución
 
