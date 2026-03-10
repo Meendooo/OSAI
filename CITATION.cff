@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "Si usas este software para investigación, por favor cita esta entrada."
+authors:
+  - family-names: "Urraca"
+    given-names: "Mendo"
+title: "Análisis de artículos científicos con GROBID - Open Science UPM 2026"
+version: v1.0.0
+doi: 10.5281/zenodo.18938512
+date-released: 2026-03-10
+license: Apache-2.0
+repository-code: "https://github.com/Meendooo/OSAI"
+keywords:
+  - "GROBID"
+  - "Open Science"
+  - "UPM"
+  - "Research Software Engineering"
