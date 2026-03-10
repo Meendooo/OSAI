@@ -59,6 +59,7 @@ python src/tei_analyzer.py
 
 
 ## Estructura del proyecto
+
 IndividualAssessment1/
 ├── data/               # Dataset de PDFs y resultados
 │   ├── pdfs/           # paper1.pdf ... paper10.pdf
