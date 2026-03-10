@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Smart Prism with Tilt Compensation for CAN bus on Mobile Machinery Using Robotic Total Stations</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+				<date type="published" when="2026-02-27">27 Feb 2026</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Sumesh</forename><surname>Sharma</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Technical University of Munich</orgName>
+								<address>
+									<country key="DE">Germany</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Marcel</forename><surname>Moll</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Technical University of Munich</orgName>
+								<address>
+									<country key="DE">Germany</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Timo</forename><surname>Oksanen</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Technical University of Munich</orgName>
+								<address>
+									<country key="DE">Germany</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<affiliation key="aff1">
+								<orgName type="department">Munich Institute of Robotics and Machine Intelligence (MIRMI)</orgName>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Smart Prism with Tilt Compensation for CAN bus on Mobile Machinery Using Robotic Total Stations</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2026-02-27">27 Feb 2026</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">B71F124B9E13C48CFAD89A255A120391</idno>
+					<idno type="arXiv">arXiv:2603.00320v1[eess.SY]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.7.2" ident="GROBID" when="2026-03-10T12:10+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>
+					<term>Robotic Total Station</term>
+					<term>Sensor Fusion</term>
+					<term>Tilt Compensation</term>
+					<term>Tractors</term>
+					<term>Mobile Machinery</term>
+				</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Accurate reference trajectories are required to validate autonomous agricultural robots and highly automated off-road vehicles under real-world field conditions. In practice, robotic total stations provide millimeter-level prism center coordinates, but the point of interest on the vehicle is typically displaced by a lever arm, ranging from decimeters to multiple meters. Roll and pitch motions, as typically observed in off-road machinery, therefore introduce horizontal point of interest errors far exceeding the measurement accuracy of robotic total stations observations. This paper presents the design, implementation, and validation of a Smart Prism prototype that augments a robotic total station prism with an inertial measurement unit to enable real-time tilt compensation. The prototype integrates an STM32H7 microcontroller and a Murata SCH16T-series IMU and estimates roll and pitch angles using an adaptive complementary filter. The tilt-compensated point of interest coordinates are obtained by transforming a calibrated lever arm from the body frame into the navigation frame and combining it with robotic total station prism positions. To support vehicleside integration, the system can transmit prism and tilt-compensated point of interest coordinates on the Controller Area Network bus, allowing the point of interest to be treated as a virtual position sensor (e.g., co-located with a rear-axle reference point). Experiments with a fixed ground reference point, using a prism to point of interest lever arm of approximately 1.07m and manual roll/pitch excursions of up to 60°, yield three-dimensional root-mean-square errors between 2.9mm and 23.6mm across five test series. The results demonstrate that IMU-based tilt compensation enables reference measurements suitable for validating centimeter-level navigation systems under dynamic field conditions.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.">INTRODUCTION</head><p>Accurate reference trajectories are required to validate autonomous agricultural robots and highly automated off-road vehicles under real-world field conditions. In this context, robotic total stations (RTS) are among the few sensors capable of providing continuous three-dimensional reference data with millimeter-level accuracy.</p><p>Although RTS observations provide highly accurate prism center coordinates, the relevant point of interest (POI) on the vehicle is typically located at a ground-level reference point, such as the origin of the vehicle coordinate system, the center of a tool track, or the tip of a measuring pole. This POI is commonly displaced from the prism center by a lever arm on the decimeter to meter scale. Since RTS measurements provide position information (3D) but not full pose information (6D), roll and pitch motions of the vehicle or mounting structure cannot be accounted for by the total station alone. As a result, even small tilts caused by uneven ground, driving dynamics, or human handling can introduce significant horizontal POI errors relative to the prism's vertically projected position. In practice, such uncompensated tilt effects can grow into the centimeter to decimeter range, despite the intrinsic measurement accuracy of the RTS. Me-chanical countermeasures, such as reduced driving speeds or additional stabilization structures, are only partially effective and often contradict realistic test conditions. The demand for highly accurate reference trajectories is particularly Fig. <ref type="figure">1</ref>. Smart Prism fully assembled with interface connections in operation.</p><p>pronounced in dynamic scenarios such as lane changes, turning maneuvers, and operation on slopes, where conventional RTS prism setups reach their fundamental limits.</p><p>To address this limitation, the approach presented in this work combines prism center positioning with direct orientation acquisition. By integrating a MEMS-IMU into the prism, a Smart Prism system is created that provides the RTS prism position together with real-time roll and pitch angles. Using kinematic models and coordinate transformations, the tiltcorrected position of an arbitrarily definable reference point can be computed from this information, enabling reference measurements suitable for validating centimeter-level navigation systems under dynamic field conditions. In addition, the work is motivated by the practical integration of RTSbased reference measurements into vehicle electronic architectures. In mobile machinery, position sources are typically consumed as cyclic messages on the Controller Area Network (CAN) (e.g., from RTK-GNSS receivers), whereas RTS devices provide surveying-specific interfaces. Bridging this interface gap is therefore essential for integrating RTSderived reference trajectories into vehicle-integrated validation setups.</p><p>The system presented in this whitepaper is based on a master's thesis <ref type="bibr" target="#b0">[1]</ref> that covers the development cycle from requirements analysis through hardware and firmware design to experimental validation. This paper focuses on the key technical contributions and experimental results, providing a practical solution for high-accuracy, tilt-compensated reference measurements in agricultural robotics.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.">HARDWARE ARCHITECTURE</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.1">Computing Unit and Peripherals</head><p>The central processing unit is an STM32H723ZG (ARM Cortex-M7, up to 550 MHz, with 1 MB flash and 564 KB RAM). The MCU provides a double-precision floating-point unit and hardware accelerators (CORDIC, FMAC) that support real-time trigonometric computations and filter operations required for attitude estimation and coordinate transformations.</p><p>The STM32H723ZG's peripherals allow for the direct connection of all relevant sensors and interfaces. The IMU is read via an SPI interface, the total station data is received from the Leica CS20 field controller via an RS-232 connection, and a CAN interface enables connection to the vehicle bus. A virtual COM port for the PC application is provided via USB-CDC.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.2">Inertial Sensors</head><p>A Murata SCH16T-K01 IMU (3-axis gyroscope and 3-axis accelerometer) is used to estimate roll and pitch. The selection was guided by expected bias instability, noise density, and temperature range, as these parameters directly affect drift and short-term noise in attitude estimation. According to the manufacturer specifications, the gyroscope bias instability is approximately 0.   </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.3">Power Supply and Protection Concept</head><p>The system is designed for operation on a 12 V vehicle electrical system that meets the requirements of ISO 16750-2 <ref type="bibr" target="#b1">[2]</ref> and can also be powered via a 5 V USB-C supply.</p><p>ESD protection diodes (USBLC6-4, STMicroelectronics) and transient absorbers protect both the 12 V input and the 5 V USB line from overvoltage pulses.</p><p>An AP74502Q (Diodes Incorporated) protection controller monitors the input voltage, controls two back-to-back Nchannel MOSFETs, and reliably disconnects the load from the vehicle electrical system in case of overvoltage, undervoltage, or reverse polarity. The design of the voltage dividers at the overvoltage and undervoltage inputs ensures that sustained voltages above approximately 16 V and voltages below approximately 4.5 V lead to the safe shutdown of the system.</p><p>The 3.3 V system voltage is generated via a low-dropout regulator (S-1214 series, ABLIC), which can be powered by either the vehicle's electrical system or the USB interface. Performance estimates and validation measurements show that the regulator operates at the upper end of its permissible thermal range under typical loads of approximately 0.9 W to 1.3 W of power dissipation. This necessitates targeted cooling of the regulator at high ambient temperatures or with an additional load.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.4">Interfaces and Mechanical Integration</head><p>For CAN communication, an SN65HVD230 (Texas Instruments) transceiver is used, operating in slope control mode to limit signal edges and reduce electromagnetic emissions. The physical layer conforms to ISO 11898-2 <ref type="bibr" target="#b2">[3]</ref>, while the application layer commonly used in agriculture is defined by the ISO 11783 (ISOBUS) standard family <ref type="bibr" target="#b3">[4]</ref>, which governs standardized data exchange between tractors, implements, and control systems based on CAN.</p><p>Total station connectivity is provided via a MAX3232 (Analog Devices) RS-232 level converter, and a USB-C port estab-lishes the PC connection. All hardware is integrated on a 70 mm × 70 mm printed circuit board (PCB) using a doublesided FR4 design with a thickness of 1.6 mm. The back side of the PCB largely forms a continuous ground plane to improve electromagnetic compatibility and signal integrity.</p><p>The IMU is positioned close to the mechanical center of the housing to minimize kinematic offset effects. Current traces and thermal dissipation paths are dimensioned according to the estimated maximum load of approximately 0.4 A. Critical components such as the voltage regulator are connected to the ground plane via enlarged copper areas and thermal vias to enhance heat dissipation.</p><p>For integration into a vehicle, an M12 8-pin screw connector is provided, which includes the 12 V power supply, connection to the vehicle's CAN bus, and an RS-232 interface as input for RTK correction signals for future GNSS integration. Firmware updates, 5 V operation, and debugging can be performed via a USB-C connection. The RS-232 signal from the CS20 device is connected via a DE9 connector.</p><p>The housing is additively manufactured from a UV-resistant material (PMMA) and comprises a main body to hold the PCB, a lid with an integrated prism mount, and a lower section that serves as the interface to the vehicle or tripod.</p><p>The design allows for a secure mechanical connection of the prism, electronics, and mounting point without obstructing the view of the RTS. The housing is partially transparent, allowing light to shine through to three status LEDs on the PCB (see Figure <ref type="figure">1</ref>). The prism is mounted coaxially above the IMU to minimize lateral offsets and simplify the kinematic model. Figure <ref type="figure" target="#fig_0">2</ref> shows the manufactured PCB.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.">FUSION LOGIC AND TILT COMPENSATION</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">Adaptive Complementary Filter</head><p>The roll φ i and pitch θ i angles are determined via an adaptive complementary filter <ref type="bibr" target="#b4">[5]</ref> through the fusion of gyroscope and accelerometer according to:</p><formula xml:id="formula_0">φ i = α dyn • (φ i−1 + φgyro • ∆t) + (1 − α dyn ) • φ acc<label>(1)</label></formula><formula xml:id="formula_1">θ i = α dyn • (θ i−1 + θgyro • ∆t) + (1 − α dyn ) • θ acc<label>(2)</label></formula><p>Here, φgyro and θgyro denote the measured angular velocity in the respective axis and ∆t the sampling interval. The roll and pitch inclinations from the acceleration measurement are geometrically derived from the acceleration components in the x, y, z directions of the IMU <ref type="bibr" target="#b5">[6]</ref>.</p><formula xml:id="formula_2">a = a x a y a z<label>(3)</label></formula><formula xml:id="formula_3">φ acc = atan2(a y , a z )<label>(4)</label></formula><formula xml:id="formula_4">θ acc = atan2 −a x , a 2 y + a 2 z<label>(5)</label></formula><p>In the adaptive complementary filter, a dynamic confidence value is used instead of a static value for the gyroscope. This value is determined based on the deviation of the norm of the measured acceleration vector from the local acceleration due to gravity, g.</p><formula xml:id="formula_5">∆a = |∥ a ∥ −g|<label>(6)</label></formula><p>The dynamic filter constant α dyn is derived, which varies between a base value α base = 0.9 (steady-state case) and 1.0 (strong dynamics). It is fixed at 1.0 above a threshold of ∆a threshold = 1m/s 2 :</p><formula xml:id="formula_6">α dyn = min 1.0, α base + (1 − α base ) • ∆a ∆a threshold (7)</formula><p>In the prototype, the yaw angle ψ is determined solely by integrating the z-component of the gyroscope and is therefore subject to gradual drift. Automatic support via magnetometer or GNSS compass is not implemented. The yaw angle can be manually corrected via external commands if necessary. Although ψ is logged by the system, it is not used for leverarm rotation in the controlled tilt-compensation experiment; for this validation, ψ is held constant (set to its initial value).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">Kinematics of lever arm transformation</head><p>The geometric basis (shown in Figure <ref type="figure" target="#fig_1">3</ref>) of tilt compensation is the transformation of lever arms between a body-fixed coordinate system, which is tracked by the IMU and prism, and a stationary navigation system <ref type="bibr" target="#b6">[7]</ref>. The orientation of the body relative to the navigation system is described by the Euler angles roll N φ, pitch N θ, and yaw N ψ. In the Z −Y −X convention used here, the rotation matrix from the body-fixed system (B) to the navigation system (N ) is the product of three axis rotations:</p><formula xml:id="formula_7">R B→N = R Z ( N ψ) • R Y ( N θ) • R X ( N φ) (8)</formula><p>The individual rotation matrices together form a complete orthogonal transformation that can convert any vector expressed in the body-fixed system into the navigation system.</p><p>In the Smart Prism system, three geometric points are considered: the center of the IMU, the center of the prism, and the POI. The rigid lever arms B L IM U →P rism and B L IM U →P OI are in the body-fixed frame of reference. From these vectors, the lever arm from the prism center to the reference point in the body-fixed frame of reference is calculated:</p><formula xml:id="formula_8">B L P rism→P OI = B L IM U →P OI − B L IM U →P rism (9)</formula><p>The actual tilt compensation consists of transforming this into the navigation system using the current rotation matrix: <ref type="bibr" target="#b9">(10)</ref> The resulting vector N L P rism→P OI describes the spatial offset between the prism center and the reference point in the fixed coordinate system and is congruent with the current orientation of the system at all times.</p><formula xml:id="formula_9">N L P rism→P OI = R B→N • B L P rism→P OI</formula></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3">Fusion of RTS Data and IMU Orientation</head><p>The fusion of RTS measurements with the IMU angles occurs in two steps: First, the polar measurements from the total station are converted into Cartesian coordinates, and then the oriented lever arm is added.</p><p>The RTS provides the slant distance D, the horizontal angle Hz, and the zenith angle V for each measurement time.</p><p>Cartesian prism coordinates in the total station system are calculated from these polar quantities. The horizontal distance R and the height component z are derived from the slant distance and the zenith angle as follows:</p><formula xml:id="formula_10">R = D • sin(V ) (11) z = D • cos(V ) (12)</formula><p>The horizontal components x and y follow from the horizontal distance and the horizontal angle.</p><formula xml:id="formula_11">x = R • cos(Hz) (13) y = R • sin(Hz) (14)</formula><p>To transfer the calculated prism coordinates into the higherlevel navigation system, the three-dimensional Helmert transformation <ref type="bibr" target="#b7">[8]</ref> is applied. It describes the relationship between the total station system and the navigation system using a scale factor s, a rotation matrix R, and a translation vector t. These parameters are determined in a calibration process from at least three spatially independent pairs of points using a closed adjustment solution. If RT S P P rism is the prism position in the total station system, it is transformed into the navigation system according to:</p><formula xml:id="formula_12">N P P rism = s • R • RT S P P rism + t (15)</formula><p>The tilt-corrected position of the reference point is ultimately obtained by adding the lever arm aligned in the fixed navigation system to the prism position:</p><p>N P P OI = N P P rism + N L P rism→P OI (16) Equation ( <ref type="formula">16</ref>) forms the core of the entire compensation procedure. It links the highly accurate position information from the RTS with the orientation information from the IMU to create a reference coordinate that reflects the actual location of the POI.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.">FIRMWARE ARCHITECTURE AND SIGNAL PROCESSING</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1">Real-time Processing Firmware</head><p>The software architecture of the Smart Prism system is structured in two stages. An event-driven firmware runs on the STM32 microcontroller, reading sensor data, performing preprocessing and filtering, and managing the communication interfaces. A Python application on an external PC complements this with the kinematics of the tilt compensation, coordinate transformation, visualization, and data recording. Gyroscope bias calibration is performed at system startup by averaging (N = 1000) the gyroscope data over a defined idle period. The determined offsets are then subtracted from each measurement.</p><p>In parallel with IMU processing, total station measurements, provided by the Leica CS20 field controller via RS-232 in ASCII format, are read into a ring buffer using UART interrupts, decoded, and made available as structured data sets for fusion. The asynchronous nature of the total station data, with a typical output rate of 5 Hz, is decoupled from the significantly higher IMU rate by the ring buffer concept. For the real-time fusion, the most recent orientation estimate is correlated with the incoming RTS coordinate packet. While this introduces a small phase lag in highly dynamic maneuvers, it remains negligible for the typical motion speeds of agricultural machinery during validation runs.</p><p>The firmware operates a virtual COM port via USB-CDC, allowing both measurement data to be sent to the PC and configuration commands to be received. A CAN driver also enables the output of status information to a vehicle network, meaning that the Smart Prism can, in principle, be integrated into a vehicle architecture without a PC. Moving the fusion logic to the PC is a deliberate prototyping decision that allows for rapid iteration cycles during development. The available computing power and the existing hardware accelerators of the STM32H7 are, in principle, sufficient to perform the lever arm calculation, the rotation matrices, and the Helmert transformation directly on the embedded system. Such a relocation would make the Smart Prism a self-contained sensor that feeds tilt-compensated coordinates directly into the vehicle network via CAN.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.">EXPERIMENTAL VALIDATION</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.1">Electrical and Interface Validation</head><p>The validation of the Smart Prism system pursues two complementary goals: First, it demonstrates that the electrical design of the power supply and communication interfaces operates stably under realistic load conditions. Second, it quantifies the extent to which the tilt compensation reduces the positional errors of the reference point caused by rod or mast tilts.</p><p>Laboratory tests were conducted on the power supply, in which the system was operated via the 12 V input with various loads and input voltages. The results confirmed that the protection controller reliably detects undervoltage, overvoltage, and reverse polarity, and disconnects the load when it falls outside the permissible operating range. Within the normal operating range of approximately 6 V to 16 V, the power supply operates stably, although thermal reserves are limited under high loads.</p><p>The CAN interface was verified by exchanging test frames with PC-based CAN software. The RS-232 connection to the RTS via the CS20 controller was successfully tested as part of the overall integration, and the USB communication allowed for interference-free streaming of measurement data at the specified rates. This demonstrated the basic functionality of all communication paths.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.2">Experimental Setup for Tilt Compensation</head><p>The central validation test investigates the system's ability to accurately reconstruct the reference point position despite large changes in tilt. For this purpose, the Smart Prism is mounted on a rod, the lower end of which forms the reference point (POI).</p><p>The geometric offsets between the IMU, prism center, and POI are determined from CAD data. The distance between the IMU center and the prism center is approximately 75.6mm. The offset from the IMU center to the POI at the rod base is approximately 992.0mm. This yields a prism-to-POI lever arm magnitude of approximately 1067.6mm.</p><p>The reference point is positioned at a fixed point on the ground and remains unchanged throughout the entire measurement series. First, the rod is aligned vertically to determine the reference coordinates in the total station system. Subsequently, the rod is continuously tilted manually in various directions and angles without laterally displacing or raising the base. For this controlled experiment, the RTS system is treated as the navigation system. Therefore, the Helmert transformation is set to identity (s = 1, R = I, t = 0).</p><p>The RTS continuously records the prism center position at an output rate of 5 Hz, while the IMU synchronously provides roll and pitch angles at 100 Hz. The Python application continuously calculates the tilt-compensated reference point position from this data according to the fusion equation ( <ref type="formula">16</ref>) presented in section 3.3.</p><p>In total the experiment is repeated five times for different reference points, with 80 to 154 measurements being acquired per run. This setup replicates the intended application in an idealized form and allows for an isolated evaluation of the compensation performance without superimposed vehicle dynamics. Figure <ref type="figure" target="#fig_2">4</ref> shows the measurement results as an example for one test run.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.3">Results of the Tilt Compensation</head><p>To assess accuracy, the differences between the calculated reference point position and the known reference coordinate are determined in the three spatial directions at all measurement times. The 3D root-mean-square error (RM SE 3D ) is used for the quantitative evaluation of compensation accuracy. It is defined as:</p><formula xml:id="formula_13">RM SE 3D = 1 n n i=1 (∆X 2 i + ∆Y 2 i + ∆Z 2 i )<label>(17)</label></formula><p>Here, ∆X, ∆Y , and ∆Z denote the deviations of the estimated reference point coordinates from the known reference serves as a summary measure of spatial positional accuracy and allows for a direct comparison of different test series.</p><p>Table <ref type="table" target="#tab_2">1</ref> summarizes the five test series. The obtained RM SE 3D ranges from 2.9 mm to 23.6 mm. Mean coordinate errors remain within a few millimeters in all runs, indicating no dominant systematic offset under the given calibration. The standard deviations vary between approximately 1 mm and 20 mm, reflecting differences in excitation and handling during manual tilting.</p><p>These results confirm that the Smart Prism is capable of reconstructing a reference point position with errors in the lower centimeter range, even with considerable changes in tilt. The favorable mean values suggest a clean calibration of the lever arms and the absence of dominant systematic effects, while the variability of the RM SE 3D values between the test series can be attributed to different handling conditions.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.4">Error Analysis and Influencing Factors</head><p>Analysis of the error characteristics shows that the residual deviations correlate strongly with manual test execution. In the test setup, the yaw angle is assumed to be constant, as only roll and pitch angles are stabilized by the complementary filter. In practice, however, small rotations of the rod around the vertical axis inevitably occur during manual handling, leading to systematic projection effects on the horizontal coordinates. These unmodeled yaw angle changes are identified as a significant source of error and, in particular, explain the higher RM SE 3D values in individual test series where the rod was rotated more extensively.</p><p>In contrast, static IMU tests indicate very low noise in roll and pitch estimation: over 300s of steady-state measurement, the roll and pitch standard deviations remain on the order of a few thousandths of a degree. For a lever arm on the order of 1m, this corresponds to sub-millimeter position noise.</p><p>Therefore, the IMU sensor and the complementary filter are highly unlikely to be the dominant contributors to the observed position uncertainty.</p><p>Other potential sources of error include uncertainties in the lever arm length and temporal misalignment between IMU attitude estimates and RTS position packets due to asynchronous sampling and buffering. Such latency effects can lead to residual errors when the pole is tilted rapidly. An uncalibrated, generic prism was used in the experiment, which may introduce unknown centering errors. However, Fig. <ref type="figure">5</ref>. Concept of vehicle integration: The Smart Prism is mounted on the machine roof, co-located with a standard GNSS antenna.</p><p>these are assumed to be negligible compared to the errors caused by manual execution and unobserved yaw dynamics.</p><p>Overall, the error analysis confirms that the quality of the tilt compensation itself is high and that the main areas for improvement lie in the yaw angle determination and the experimental methodology.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.">DISCUSSION</head><p>The achieved RM SE 3D values, ranging from approximately 3 mm to 24 mm, must be evaluated within the context of the application. For the validation of RTK-GNSS systems, which themselves have a specified accuracy of one to two centimeters <ref type="bibr" target="#b8">[9,</ref><ref type="bibr" target="#b9">10]</ref>, the demonstrated compensation accuracy is sufficient in many cases to serve as a reliable reference. For the highest accuracy requirements, such as the sub-centimeter evaluation of precision steering systems, improved yaw angle determination would be necessary to reduce the observed outliers.</p><p>The yaw was treated as constant and was therefore not explicitly handled by the developed compensation pipeline. For deployment in vehicle-grade systems, a stable absolute ISBN:978-3-911430-10-4 heading input is required, typically provided by an additional external reference. Practical options include a 9-DOF IMU with magnetometer, GNSS-based heading using a dualantenna setup <ref type="bibr" target="#b9">[10]</ref>, or short-term heading support derived from vehicle motion information such as steering angle and velocity available via the CAN bus. Figure <ref type="figure">5</ref> illustrates a practical implementation scenario on a tractor, showing the Smart Prism co-located with a GNSS antenna, which facilitates such advanced fusion strategies</p><p>The two-stage architecture with microcontroller-based preprocessing and PC-based fusion logic represents a suitable solution for the prototype stage. The computing power of the STM32H7, with its double-precision FPU and trigonometric hardware accelerators, theoretically allows for a complete migration of the fusion algorithms to the embedded system. Such integration would not only eliminate the dependency on an external PC but also reduce the compensation latency and enable integration into real-time control loops in vehicles.</p><p>Comparison with existing solutions demonstrates the novelty of the approach. While commercial systems like the Leica AP20 AutoPole <ref type="bibr" target="#b10">[11]</ref> implement tilt compensation through internal sensors, they do not provide the open interfaces and integration possibilities required for agricultural research applications. Academic solutions <ref type="bibr" target="#b9">[10,</ref><ref type="bibr" target="#b11">12]</ref> have demonstrated similar accuracy levels, but typically focus on specialized applications or require custom hardware platforms. The Smart Prism system bridges this gap by combining research-grade accuracy with practical vehicle integration through standard interfaces (CAN, ISOBUS) and a modular architecture suitable for agricultural machinery.</p><p>These findings confirm the validity of the overall approach and indicate that the remaining challenges are primarily engineering refinements rather than conceptual limitations.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7.">CONCLUSION</head><p>The Smart Prism system demonstrates that combining a RTS with a precise MEMS-IMU and a suitable fusion architecture provides a powerful foundation for tilt-compensated reference measurements in off-road applications. The developed prototype successfully addresses the fundamental limitation of conventional RTS setups: the positional errors caused by prism tilt that can reach centimeter to decimeter magnitudes depending on lever arm geometry.</p><p>Under idealized conditions with a fixed reference point and manual pole guidance, three-dimensional position errors in the range of approximately 3 mm to 24 mm are achieved, with mean coordinate errors consistently remaining in the low single-digit millimeter range. The achieved RM SE 3D values align well with current studies in agricultural robotics, confirming that the fundamental approach is sound. The remaining deviations are primarily due to the lack of yaw angle support and do not represent a fundamental flaw in the compensation method.</p><p>The system builds upon existing surveying technology and can be implemented as a retrofit solution. The input stage, designed for vehicle electrical systems, the CAN interface for ISOBUS integration, and the modular software architecture enable expansion and adaptation to various application scenarios. The Smart Prism concept thus offers researchers and engineers in agricultural robotics a concrete approach to develop and validate autonomous agricultural and off-road systems.</p><p>The technical contributions of this work include:</p><p>(1) Integrated Hardware Platform: A compact, vehicleready system combining high-performance microcontroller, precision IMU, automotive-grade power supply, and standard interfaces (CAN, RS-232, USB). Several areas for improvement have been identified, including robust yaw determination, migration of fusion algorithms to the microcontroller, GNSS integration, and validation on real vehicles. These areas form concrete starting points for future work.</p><p>Overall, the results support the proposed compensation concept and highlight yaw estimation as the main target for further improvement.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Fig. 2 .</head><label>2</label><figDesc>Fig. 2. Smart Prism PCB, consisting of 90 individual components.</figDesc><graphic coords="2,305.86,72.13,250.85,212.83" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Fig. 3 .</head><label>3</label><figDesc>Fig. 3. Conceptual visualization of the body, navigation and RTS system and POIThe STM32 firmware is implemented as a main loop with time-controlled task scheduling. Cyclically, IMU data is retrieved via SPI at a rate of approximately 100 Hz, checksums and status bits are verified, and the raw data is converted into physical quantities. After data acquisition, the acceleration and gyroscope measurements pass through the adaptive complementary filter described in section 3.1, ensuring that current roll and pitch angles are available at each sampling point.</figDesc><graphic coords="4,305.86,72.12,250.87,250.87" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Fig. 4 .</head><label>4</label><figDesc>Fig. 4. Roll/pitch trajectory calculation and associated positioning errors for a test (ID = 1) with n = 154 measurement points 4.2 Python-based Fusion Logic and UI The actual tilt compensation, including the lever arm transformation and the Helmert transformation described in sections 3.2 and 3.3, is performed in the prototype using a Python application on the PC. This application continuously receives the IMU angles and total station positions processed by the microcontroller via USB, calculates the tiltcorrected reference point coordinates in real time according to equation (16), and displays the results in a graphical user interface. All intermediate values are synchronously logged in a CSV file to enable subsequent analysis in external tools.</figDesc><graphic coords="5,40.82,72.13,250.86,191.10" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>( 2 )</head><label>2</label><figDesc>Real-Time Sensor Fusion: Implementation of adaptive complementary filtering with gyroscope bias compensation and dynamic adjustment based on acceleration magnitude. (3) Kinematic Tilt Compensation: Complete mathematical framework for transforming body-fixed lever arms to navigation-fixed coordinates and fusion with RTS polar measurements. (4) Experimental Validation: Quantitative assessment of tilt compensation accuracy under controlled conditions, demonstrating centimeter-level performance suitable for validating RTK-GNSS systems.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0"><head></head><label></label><figDesc></figDesc><graphic coords="6,305.86,213.90,250.83,250.83" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2"><head>Table 1 .</head><label>1</label><figDesc>Results of the tilt compensation test including reference coordinates. All coordinate and error quantities in this table are given in mm; n denotes the number of samples. coordinates in the three spatial directions. The RM SE 3D</figDesc><table><row><cell>Technical University of Munich</cell></row><row><cell>Professorship of Agrimechatronics</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3"><head></head><label></label><figDesc>Sharma, S., Moll, M. and Oksanen, T. Smart Prism with Tilt Compensation for CAN bus on Mobile Machinery Using Robotic Total Stations 28 February 2026</figDesc><table /></figure>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>ACKNOWLEDGEMENTS</head><p>We would like to thank Michael Maier for his technical support, in particular for introducing the RTS setup and assisting with the manufacturing of the enclosure as well as the procurement of the required components.</p></div>
+			</div>
+
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<monogr>
+		<title level="m" type="main">Development of a smart prism with imubased tilt compensation for accurate positioning on off-road vehicles using robotic total stations</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Sharma</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2025-12">Dec. 2025</date>
+			<pubPlace>Germany</pubPlace>
+		</imprint>
+		<respStmt>
+			<orgName>Technical University of Munich</orgName>
+		</respStmt>
+	</monogr>
+	<note type="report_type">Master&apos;s Thesis</note>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<monogr>
+		<title level="m" type="main">Road vehicles -Environmental conditions and testing for electrical and electronic equipment -Part 2: Electrical loads, International Organization for Standardization Std</title>
+		<idno>ISO 16750-2:2023 (E)</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<title level="m" type="main">Road vehicles -Controller area network (CAN) -Part 2: High-speed physical medium attachment (PMA) sublayer, International Organization for Standardization Std</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<monogr>
+		<title level="m" type="main">Tractors and machinery for agriculture and forestry -Serial control and communications data network -Part 1: General standard for mobile data communication, International Organization for Standardization Std</title>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Nonlinear complementary filters on the special orthogonal group</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Mahony</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Hamel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J.-M</forename><surname>Pflimlin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Automatic Control</title>
+		<imprint>
+			<biblScope unit="volume">53</biblScope>
+			<biblScope unit="issue">5</biblScope>
+			<biblScope unit="page" from="1203" to="1218" />
+			<date type="published" when="2008">2008</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">A practical method for implementing an attitude and heading reference system</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Munguía</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Grau</surname></persName>
+		</author>
+		<idno type="DOI">10.5772/58463</idno>
+		<ptr target="https://doi.org/10.5772/58463" />
+	</analytic>
+	<monogr>
+		<title level="j">International Journal of Advanced Robotic Systems</title>
+		<imprint>
+			<biblScope unit="volume">11</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page">62</biblScope>
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<title level="m" type="main">Aircraft flight dynamics and control</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Durham</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2013">2013</date>
+			<publisher>John Wiley &amp; Sons Inc</publisher>
+			<pubPlace>Chichester West Sussex</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Closed form least-squares solution to 3d symmetric helmert transformation with rotational invariant covariance structure</title>
+		<author>
+			<persName><forename type="first">G</forename><surname>Chang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Acta Geodaetica et Geophysica</title>
+		<imprint>
+			<biblScope unit="volume">51</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="237" to="244" />
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Accurate outdoor ground truth based on total stations</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Vaidis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Giguere</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Pomerleau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Kubelka</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2021 18th Conference on Robots and Vision (CRV)</title>
+				<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="1" to="8" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Positioning and attitude determination for precision agriculture robots based on imu and two rtk gpss sensor fusion</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Vieira</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Orjuela</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Spisser</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Basset</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IFAC-PapersOnLine</title>
+		<imprint>
+			<biblScope unit="volume">55</biblScope>
+			<biblScope unit="issue">32</biblScope>
+			<biblScope unit="page" from="60" to="65" />
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<monogr>
+		<author>
+			<persName><forename type="first">Leica</forename><surname>Geosystems</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">G</forename></persName>
+		</author>
+		<title level="m">Leica AP20 Quick Guide</title>
+				<meeting><address><addrLine>Heerbrugg, Schweiz</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note>Leica Geosystems AG</note>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Sensor fusion of robotic total station and inertial navigation system for 6dof tracking applications</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Thalmann</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Neuner</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Applied Geomatics</title>
+		<imprint>
+			<biblScope unit="volume">16</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="933" to="949" />
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

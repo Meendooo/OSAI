@@ -1,0 +1,1152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Vision-Language Semantic Grounding for Multi-Domain Crop-Weed Segmentation</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+				<date type="published" when="2026-02-27">27 Feb 2026</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Nazia</forename><surname>Hossain</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">Department of Bioresource Engineering</orgName>
+								<orgName type="institution">McGill University</orgName>
+								<address>
+									<settlement>Sainte-Anne-de-Bellevue</settlement>
+									<region>QC</region>
+									<country key="CA">Canada</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Xintong</forename><surname>Jiang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">Department of Bioresource Engineering</orgName>
+								<orgName type="institution">McGill University</orgName>
+								<address>
+									<settlement>Sainte-Anne-de-Bellevue</settlement>
+									<region>QC</region>
+									<country key="CA">Canada</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Yu</forename><surname>Tian</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">Department of Bioresource Engineering</orgName>
+								<orgName type="institution">McGill University</orgName>
+								<address>
+									<settlement>Sainte-Anne-de-Bellevue</settlement>
+									<region>QC</region>
+									<country key="CA">Canada</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Philippe</forename><surname>Seguin</surname></persName>
+							<affiliation key="aff1">
+								<orgName type="department">Department of Plant Science</orgName>
+								<orgName type="institution">McGill University</orgName>
+								<address>
+									<settlement>Sainte-Anne-de-Bellevue</settlement>
+									<region>QC</region>
+									<country key="CA">Canada</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">O</forename><forename type="middle">Grant</forename><surname>Clark</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">Department of Bioresource Engineering</orgName>
+								<orgName type="institution">McGill University</orgName>
+								<address>
+									<settlement>Sainte-Anne-de-Bellevue</settlement>
+									<region>QC</region>
+									<country key="CA">Canada</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Shangpeng</forename><surname>Sun</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">Department of Bioresource Engineering</orgName>
+								<orgName type="institution">McGill University</orgName>
+								<address>
+									<settlement>Sainte-Anne-de-Bellevue</settlement>
+									<region>QC</region>
+									<country key="CA">Canada</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Vision-Language Semantic Grounding for Multi-Domain Crop-Weed Segmentation</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2026-02-27">27 Feb 2026</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">03C98D93F51A871F75F1F44B682518BD</idno>
+					<idno type="arXiv">arXiv:2602.23677v1[cs.CV]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.7.2" ident="GROBID" when="2026-03-10T12:10+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>Vision-language models Weed segmentation Multi-domain learning Semantic segmentation Precision agriculture Feature modulation</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Fine-grained crop-weed segmentation is essential for enabling targeted herbicide application in precision agriculture. However, existing deep learning models struggle to generalize across heterogeneous agricultural environments due to reliance on dataset-specific visual features. We propose Vision-Language Weed Segmentation (VL-WS), a novel framework that addresses this limitation by grounding pixel-level segmentation in semantically aligned, domain-invariant representations. Our architecture employs a dual-encoder design, where frozen Contrastive Language-Image Pretraining (CLIP) embeddings and task-specific spatial features are fused and modulated via Feature-wise Linear Modulation (FiLM) layers conditioned on natural language captions. This design enables image level textual descriptions to guide channel-wise feature refinement while preserving finegrained spatial localization. Unlike prior works restricted to training and evaluation on single-source datasets, VL-WS is trained on a unified corpus that includes close-range ground imagery (robotic platforms) and high-altitude unmanned aerial vehicle (UAV) imagery, covering diverse crop types, weed species, growth stages, and sensing conditions. Experimental results across four benchmark datasets demonstrate the effectiveness of our framework, with VL-WS achieving a mean Dice score of 91.64% and outperforming the strongest Convolutional Neural Network (CNN) baseline by 4.98%. The largest gains occur on the most challenging weed class, where VL-WS attains 80.45% Dice score compared to 65.03% for the best baseline, representing a 15.42% improvement. VL-WS further maintains stable weed segmentation performance under limited target-domain supervision, indicating improved generalization and data efficiency. These findings highlight the potential of vision-language alignment to enable scalable, label-efficient segmentation models deployable across diverse real-world agricultural domains.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.">Introduction</head><p>The objective of precision weed control is to minimize the impact of weed competition on the crop while reducing the amount of herbicide use through site-specific management. Central to this approach is accurate weed detection and localization, which enables targeted herbicide application that reduces chemical usage compared to broadcast spraying. Conventional blanket herbicide treatments not only increase costs but also accelerate environmental degradation, raise herbicide resistance, and deteriorate soil health <ref type="bibr" target="#b14">(Jiang et al., 2020;</ref><ref type="bibr" target="#b28">You et al., 2020)</ref>. Pixel-level crop-weed segmentation offers the spatial accuracy required for localized spraying systems, making weed management economically viable and environmentally sustainable.</p><p>Modern crop-weed segmentation approaches predominantly rely on deep learning (DL) architectures that facilitate hierarchical representation learning and dense prediction in visually complex agricultural scenes. Encoder-decoder architectures such as U-Net and DeepLab variants have been widely applied to row-crop segmentation, demonstrating strong performance under complex field conditions with diverse weed species. Attention enhanced U-Net models have been used for sugar beet and sunflower fields, improving boundary delineation in cluttered scenes with overlapping shangpeng.sun@mcgill.ca (S. Sun) ORCID(s): 0000-0001-7095-8626 (S. Sun) vegetation <ref type="bibr" target="#b16">(Li et al., 2025)</ref>. For maize, DeepLabV3+ has enabled real-time weed segmentation, demonstrating effectiveness under high inter-row variability and dense weed populations <ref type="bibr" target="#b12">(Guo et al., 2025b)</ref>. With increasing use of unmanned aerial vehicle (UAV) imagery, convolutional neural network (CNN) and hybrid CNN-transformer architectures have been implemented for rice and soybean fields, where large-scale spatial context and variable lighting conditions pose challenges <ref type="bibr" target="#b11">(Guo et al., 2025a;</ref><ref type="bibr" target="#b26">Xu et al., 2023)</ref>. Transformerbased models and ConvNeXt-based backbones have shown improved robustness under changing weather, illumination, and weed density, while CycleGAN-based domain adaptation has been used to address seasonal and environmental shifts <ref type="bibr" target="#b27">(Xu et al., 2025)</ref>. To reduce annotation costs, semisupervised approaches have been applied to UAV imagery, achieving competitive performance using limited labeled data <ref type="bibr" target="#b12">(Guo et al., 2025b)</ref>. Cross-domain transfer learning between ground-based and aerial platforms has further improved generalization across sensing modalities in the context of weed detection <ref type="bibr" target="#b10">(Gao et al., 2024)</ref>.</p><p>Despite recent advances, a critical limitation restricts the real-world deployment of existing crop-weed segmentation models. Most models are trained and evaluated on a single dataset collected under specific field conditions, crop types, and sensing platforms. When applied to new agricultural environments where crop species, weed composition, growth stages, soil appearance, and imaging modalities vary substantially, these models often fail to generalize <ref type="bibr" target="#b1">(Asad et al., 2024)</ref>. This limited generalization stems from a reliance on dataset-specific low-level visual cues related to plant morphology, such as texture, shape, and appearance patterns, rather than on higher-level semantic concepts of crops and weeds and, therefore, fails to transfer across agricultural domains. Creating a single dataset that captures the full diversity of real-world agricultural conditions is not practical. Comprehensive data collection would need to span entire growing seasons to capture phenological variation over time, while pixel-level annotation would become prohibitively expensive due to overlapping vegetation, microscale morphology, and ambiguous crop-weed boundaries. A more realistic solution is to leverage existing public datasets alongside limited domain-specific data, exposing the model to a broader range of crops, weed species, growth stages, and sensing conditions. Such multi-dataset training should enable the development of a single model that generalizes across diverse agricultural settings. However, naive aggregation of datasets often degrades performance due to semantic inconsistencies <ref type="bibr" target="#b15">(Lambert et al., 2020)</ref>. Shared labels such as "weed" group a broad range of morphologically distinct species under the same class, creating conflicting supervision signals that confuse models.</p><p>Recent advances in vision-language models show that integrating natural language with visual representations improves model robustness and generalization in complex visual tasks. In agricultural settings, vision-based models often struggle to generalize due to spatiotemporal variability, phenological changes, and environmental heterogeneity, which cause large appearance shifts across datasets <ref type="bibr" target="#b25">(Wu et al., 2025)</ref>. Language provides semantic priors that capture high-level concepts, such as spatial organization, growth stages, and contextual relationships that remain more consistent across environments than low-level visual cues. Prior work in agricultural vision-language studies show that language-guided models can effectively adapt to specialized tasks, such as plant stress phenotyping, disease diagnosis, and weed identification, even under limited supervision by facilitating the transfer of semantic knowledge across diverse agricultural conditions <ref type="bibr" target="#b0">(Arshad et al., 2025)</ref>. Similarly, image-text paired agricultural datasets have shown that structured, domain-aware textual descriptions improve finegrained classification by helping models distinguish between visually similar classes <ref type="bibr" target="#b29">(Yu et al., 2025)</ref>. These findings motivate the exploration of semantic grounding in visionlanguage models to mitigate generalization challenges in crop-weed segmentation.</p><p>In this work, we explore vision-language semantic grounding to enable robust crop-weed segmentation across multiple datasets. We demonstrate that pretrained vision-language representations, organized around natural-language-aligned semantic concepts, provide a stable feature space that maintains semantic consistency across visually heterogeneous agricultural datasets. By grounding visual features in such language-aligned representations, the proposed approach reduces reliance on dataset-specific appearance patterns and mitigates negative transfer caused by semantic label heterogeneity. At the same time, a trainable segmentationspecific visual encoder and spatial decoder capture finegrained spatial structure, enabling accurate delineation of crop-weed boundaries. In summary, we make the following contributions.</p><p>1. We identify the limitations of standard CNN-based models in multi-dataset crop-weed segmentation and empirically show how inconsistent semantic labels degrade performance. 2. We propose Vision-Language Weed Segmentation (VL-WS), a novel framework that integrates frozen Contrastive Language-Image Pretraining (CLIP) representations with a trainable spatial encoder, where Featurewise Linear Modulation (FiLM)-based caption conditioning modulates fused features to achieve semantic stability across heterogeneous datasets varying in crop and weed species as well as ground sampling distance (GSD), while preserving precise boundary delineation. 3. We validate the proposed approach on four diverse agricultural datasets, demonstrating improved performance in both cross-dataset generalization and data efficiency.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.">Related work</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.1.">Challenges of Multi-Dataset Training with Shared Labels</head><p>Recent research has explored multi-dataset training as a means of building more general and robust visual perception systems. <ref type="bibr" target="#b32">Zhou et al. (2022)</ref> demonstrates that labels with identical linguistic names may correspond to visually distinct concepts across datasets, and that naive dataset merging often leads to suboptimal performance. Their analysis further shows that effective multi-dataset learning requires dataset-aware training strategies to mitigate semantic conflicts and avoid performance degradation. Consistent with these findings, we observe a similar phenomenon in our crop-weed semantic segmentation experiments. Training standard CNNs jointly on multiple datasets degrades performance compared to dataset-specific training. This degradation persists despite the increased volume of training data, indicating that multi-dataset supervision introduces conflicting signals rather than providing complementary information. This behavior can be attributed to label-level semantic heterogeneity and negative transfer. As formalized by <ref type="bibr" target="#b22">Wang et al. (2019)</ref>, negative transfer arises when the divergence between source and target joint distributions is substantial and when learning algorithms fail to suppress incompatible source information. In our setting, the shared weed label aggregates approximately 12-14 distinct weed species across datasets, each exhibiting different morphology, texture, and growth characteristics. As shown by <ref type="bibr" target="#b32">Zhou et al. (2022)</ref> merging visually distinct concepts under a single semantic label causes label collisions that increase intra-class variability and destabilize feature learning. This semantic mismatch induces a conditional distribution shift between image features and labels, weakening discriminative representations Image-text cosine similarity scores produced by a frozen CLIP model for soybean field images with different levels of weed presence. For crop-dominant scenes, image embeddings show higher similarity to the soybean prompt, while weed-dense scenes exhibit higher similarity to the weed prompt. This shift in similarity demonstrates that CLIP implicitly captures agronomic scene semantics without task-specific fine-tuning.</p><p>and leading to consistent performance degradation in multidataset training.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.2.">CLIP for Semantic Robustness in Multi-Dataset Learning</head><p>To address semantic conflicts and negative transfer in multi-dataset training, recent work has increasingly explored frozen pretrained encoder backbones <ref type="bibr" target="#b5">(Bhattacharjee et al., 2023)</ref>. In particular, Contrastive Language-Image Pretraining (CLIP) has emerged as a prominent foundation model learning semantically structured visual representations through large-scale alignment of images and natural language descriptions <ref type="bibr" target="#b19">(Radford et al., 2021)</ref>. Empirical studies show that language supervision enables CLIP to preserve meaningful intra-class feature variability, avoiding excessive feature collapse and improving robustness under heterogeneous data distributions <ref type="bibr" target="#b23">(Wen et al., 2024)</ref>. By grounding visual representations in language rather than dataset-specific labels, CLIP induces a semantically structured feature space in which high-level concepts remain stable across domains and acquisition conditions <ref type="bibr" target="#b4">(Bhalla et al., 2024)</ref>. This property is particularly advantageous in multi-dataset settings, where visually dissimilar instances may share a common label but differ substantially in appearance. As illustrated in Fig. <ref type="figure" target="#fig_0">1</ref>, pretrained CLIP image embeddings assign higher similarity to soybean prompts in crop-dominant scenes and to weed prompts in weeddense images, demonstrating zero-shot semantic sensitivity to agricultural content. Unlike conventional CNN encoders trained under closed-vocabulary supervision, CLIP representations are open-vocabulary and less tied to datasetspecific visual statistics, reducing sensitivity to label noise and domain-specific shortcuts <ref type="bibr" target="#b6">(Bourigault and Bourigault, 2025)</ref>. Language supervision further encourages CLIP to organize features around semantic identity rather than lowlevel visual similarity, preserving meaningful intra-class variation under heterogeneous data distributions. As a result, frozen CLIP encoders mitigate negative transfer in multidataset training by enforcing domain-invariant, semantically grounded representations without requiring parameter adaptation. This semantic grounding is reflected in strong empirical performance, with frozen CLIP embeddings achieving 85-95% of state-of-the-art accuracy on discriminative tasks without fine-tuning <ref type="bibr" target="#b6">(Bourigault and Bourigault, 2025)</ref>. However, CLIP embeddings remain inherently coarse and lack precise spatial localization, limiting their suitability for dense prediction tasks such as weed segmentation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.">Materials and Methods</head><p>To address the aforementioned limitations, we adopt a dual-encoder architecture (Fig. <ref type="figure" target="#fig_1">2</ref>) that combines frozen CLIP embeddings with a task-specific spatial encoder, which captures fine-grained texture, shape, and boundary information required for dense pixel-level segmentation across heterogeneous agricultural datasets. The high-level spatial features produced by the spatial encoder are fused with global CLIP image embeddings to form a multimodal representation. This fused feature map is then modulated by the caption embedding through FiLM <ref type="bibr" target="#b18">(Perez et al., 2018)</ref>, allowing semantic cues to selectively emphasize or suppress feature channels. The resulting FiLM-modulated features are fused with low-level spatial representations to recover fine boundaries and generate the final segmentation output. We validate our method using four heterogeneous agricultural datasets.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1.">Datasets and Annotations</head><p>The study utilizes both a novel UAV soybean dataset and multiple publicly available agricultural benchmarks. This heterogeneous multi-dataset setting provides substantial variability in crop types and weed species, enabling robust performance analysis. In the following section, we provide detailed descriptions of data acquisition, annotation procedures, and characteristics for all datasets used in this study. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1.1.">UAV Soybean Dataset</head><p>We collected data from an actively managed soybean field at the Emile A. Lods Agronomy Research Centre of McGill University (Sainte-Anne-de-Bellevue, QC, Canada). We selected soybean as the target crop as it is a major field crop in Canada and soybean fields can often exhibit a high weed prevalence, presenting a representative scenario for crop-weed segmentation. An overview of the study area and the UAV-acquired orthomosaic of the experimental field are shown in Fig. <ref type="figure" target="#fig_2">3</ref>. We acquired UAV RGB imagery using a DJI Mavic 3 Multispectral (M3M) drone at an altitude of 5 m, covering an approximate area of 88 m × 18 m with a GSD of 1.4 mm/pixel. The acquired images were processed to generate a georeferenced orthomosaic with uniform spatial resolution. We then partitioned the high-resolution orthomosaic into 7606 tiles of 512 × 512 pixel with 25% overlap to preserve the spatial continuity of crop and weed boundaries. Tiles containing more than 50% non-informative pixels were discarded, and 293 images from the resulting set were manually annotated using LabelMe for semantic segmentation with three classes: background (soil), crop (soybean), and weed. For semantic segmentation, soybean plants were labeled as the crop class, while all other vegetation was labeled as weed. The resulting UAV Soybean-VL dataset builds upon the UAV Soybean dataset originally introduced in our prior work <ref type="bibr" target="#b13">(Hossain et al., 2025)</ref>. For this study, we apply a slightly revised data split by merging the original test set into the training set and reconstructing the validation set to emphasize more challenging weed density cases, while keeping the overall dataset composition unchanged. Under this protocol, the dataset comprises 262 training images and 30 validation images.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1.2.">Phenobench Dataset</head><p>PhenoBench is a large, publicly available dataset and benchmark suite for plant perception under real agricultural field conditions <ref type="bibr" target="#b24">(Weyler et al., 2024)</ref>. The dataset comprises 2872 high-resolution RGB image tiles (1024 × 1024 pixels) acquired using a UAV at a flight height of 21 m over sugar beet fields, resulting in a GSD of approximately 1 mm/pixel. Images were collected across multiple acquisition dates during a growing season, capturing substantial variability in plant growth stages and illumination conditions. Of the total dataset, 1407 images are designated for training and 772 images for validation and are publicly available, while the remaining data form a hidden test set used for standardized benchmarking. PhenoBench provides dense pixelwise annotations for semantic segmentation, including soil, crop, weed, and partial-visibility classes, as well as instance segmentation of plants and leaves. Crop instances are temporally linked across acquisition dates, enabling longitudinal analysis of individual plant development. In addition to the labeled data, approximately 129000 unlabeled images are released to support research on self-supervised learning and domain adaptation in agricultural vision systems.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1.3.">GrowingSoy Dataset</head><p>GrowingSoy is an instance-segmentation dataset for soybean and weed detection, consisting of 1000 manually annotated RGB images resized to 640 × 640 pixels <ref type="bibr" target="#b21">(Steinmetz et al., 2024)</ref>. The images are extracted from 4K videos acquired in a dedicated soybean research field and span the full crop growth cycle, from early emergence to harvest. Data were collected at an experimental soybean plantation of the Universidade Federal de Santa Maria (Santa Maria, Brazil) using a 4K camera mounted on an all-terrain fourwheeled vehicle. The dataset includes soybean plants and common weed species, such as caruru and grassy weeds.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1.4.">ROSE Dataset</head><p>The ROSE (RObotics and Sensors at the Service of Ecophyto) dataset is a multi-robot agricultural benchmark designed for weed segmentation, with a particular emphasis on robustness to environmental variability and domain shift <ref type="bibr" target="#b2">(Avrin et al., 2020)</ref>. It comprises images of maize (Zea mays) and bean fields (Phaseolus vulgaris) acquired by four different agricultural robots, introducing substantial variation in sensing modalities, camera configurations, and acquisition conditions. The dataset provides pixel-wise segmentation masks for crop and weed classes, with annotations covering multiple weed species that are merged into a single weed class for evaluation. ROSE is widely used to assess the generalization capability of segmentation models, including few-shot and domain-robust approaches, by training on data from multiple robots and evaluating on previously unseen robotic platforms. In our experiments, we used a subset of the dataset consisting of 250 images of bean crops and weeds. Representative image tiles and annotations from the UAV Soybean, PhenoBench, GrowingSoy, and ROSE datasets are shown in Fig. <ref type="figure" target="#fig_3">4</ref>, highlighting the diversity in crop species, weed species, and acquisition conditions across datasets.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2.">Image Captions for Vision-Language Segmentation</head><p>To enable vision-language learning, we pair each image tile from all datasets with an image-level, agronomyaware caption. Captions are generated using a large language model (LLM) (GPT-4o-mini (OpenAI, 2024)) with a fixed prompt template that enforces a consistent structure across samples. Each caption describes the presence of crops and weeds, their coarse spatial arrangement, and salient visual characteristics observable in the image. This caption design is inspired by AgroGPT, which demonstrated that structured, domain-aware image descriptions with dataset specific attributes synthesized by LLMs for agricultural datasets can effectively inject expert knowledge into vision-language learning pipelines <ref type="bibr" target="#b3">(Awais et al., 2025)</ref>. Representative examples of the generated captions are shown in Fig. <ref type="figure" target="#fig_4">5</ref>. These image-caption pairs serve as multi-modal training inputs for the proposed VL-WS framework, ensuring semantic alignment between textual descriptions and visual content.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3.">Proposed Network Architecture</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3.1.">Overview</head><p>The proposed framework, VL-WS, addresses the fundamental challenges of multi-dataset weed segmentation, including high intra-class variance due to morphologically diverse species and visual ambiguity between crops and weeds. Unlike conventional segmentation models that rely solely on visual features, VL-WS leverages frozen CLIP embeddings to ground pixel-level predictions in semantically meaningful concepts. As illustrated in Fig. <ref type="figure" target="#fig_5">6</ref>, the architecture consists of two complementary visual encoding streams. A spatial backbone with atrous convolutions extracts multi-scale features while preserving fine-grained boundary details, whereas a frozen CLIP image encoder provides global semantic representations that remain stable across diverse agricultural domains. These visual features are subsequently fused and conditioned using agronomyaware captions through FiLM. Text embeddings modulate feature channels to emphasize semantically relevant patterns and reduce sensitivity to domain-specific variation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3.2.">Visual Encoder Backbone</head><p>The spatial encoder in the VL-WS model is built on the DeepLabv3+ architecture. We adopt a ResNet-101 backbone with atrous convolutions configured for an output stride of 8 for preserving fine spatial detail while capturing rich semantic context. This higher-resolution representation is important for distinguishing morphologically similar crop and weed structures in agricultural images. In its standard form, ResNet-101 reduces spatial resolution by a factor of 32 through successive pooling and strided convolutions. Such aggressive downsampling eliminates fine details essential for boundary delineation in dense prediction tasks. To mitigate this limitation, DeepLabv3+ replaces strided convolutions in the last two residual blocks with atrous (dilated) convolutions, resulting in effective dilation rates of 2 and 4 in the final encoder stages. This design maintains a large receptive field while preserving feature maps at oneeighth of the input resolution.</p><p>The encoder outputs a hierarchical set of feature maps at different scales. A low-level feature map 𝐹 𝐿 ∈ ℝ 256× 𝐻 4 × 𝑊 4 , extracted from early convolutional layers, retains fine spatial detail essential for boundary refinement. In contrast, the deepest feature map 𝐹 𝐷 ∈ ℝ 2048× 𝐻 8 × 𝑊 8 , produced after stage 4, captures high-level semantic context. This highlevel representation is then passed through the Atrous Spatial Pyramid Pooling (ASPP) module, which aggregates multiscale context through parallel atrous convolutions with dilation rates of 12, 24, and 36. The ASPP module also includes a 1 × 1 convolution branch and an image-level pooling branch that performs global average pooling followed by a 1 × 1 convolution and bilinear upsampling. The outputs from all ASPP branches are concatenated and projected through a</p><formula xml:id="formula_0">final 1 × 1 convolution, yielding 𝐹 ASPP ∈ ℝ 256× 𝐻 8 × 𝑊 8 .</formula></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3.3.">Language and Image Embeddings via CLIP</head><p>CLIP is a large-scale vision-language model trained on paired image-text data to learn a shared embedding space that aligns visual content with linguistic semantics. This joint training provides CLIP with strong semantic priors that are transferable across domains and robust to appearance variation. We leverage these properties to inject high-level semantic context into pixel-level segmentation using CLIPderived global features and text embeddings.</p><p>Global Image Encoding. The input image is resized to 224 × 224 and passed through the CLIP image encoder to obtain a 512-dimensional global embedding. This embedding is linearly projected to 256 dimensions, yielding 𝐸 vis ∈ ℝ 256 , which captures scene-level semantics that are less sensitive to local texture variation or sensor noise. To preserve the pretrained vision-language alignment, the CLIP image encoder is kept fully frozen during training, with only the projection layer being optimized.</p><p>Text Encoding. In parallel with global image encoding, the corresponding natural language caption (e.g., "Soybean center with scattered weeds") is tokenized and processed by the CLIP text encoder to produce a 512-dimensional embedding. This embedding is then projected to 256 dimensions, producing 𝐸 txt ∈ ℝ 256 . To adapt the representation to domain-specific agricultural terminology while retaining general language understanding, the final two transformer layers of the text encoder are fine-tuned during training.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3.4.">Multimodal Fusion and FiLM Modulation</head><p>This module fuses dense spatial features with global visual embeddings and applies caption-conditioned modulation to guide segmentation. The ASPP feature map 𝐹 ASPP ∈  (1)</p><formula xml:id="formula_1">ℝ 256× 𝐻 8 × 𝑊</formula><p>This caption-conditioned modulation selectively emphasizes feature channels aligned with the semantic content of the caption and guides the decoder toward semantically consistent segmentation across heterogeneous datasets.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3.5.">Decoder</head><p>The modulated features are refined using a DeepLabv3+ style decoder to recover precise object boundaries. First, F is bilinearly upsampled by a factor of 2 and concatenated with low-level features from the backbone, which are compressed to 48 channels via a 1×1 convolution. This fusion produces a 304-channel representation that is processed by two successive 3 × 3 convolutions, reducing the channel dimensionality to 256. A final 1×1 convolution generates logits for the three semantic classes: background, crop, and weed.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.4.">Loss Function</head><p>VL-WS is trained using a composite loss that combines a weighted segmentation loss with a vision-language contrastive loss, enabling accurate pixel-level predictions while enforcing alignment between spatial features and textual semantics.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.4.1.">Segmentation Loss</head><p>To supervise per-pixel classification, we adopt a hybrid Dice + Cross-Entropy loss to balance region-level overlap and pixel-wise correctness. The total segmentation loss is defined as:</p><formula xml:id="formula_2"> seg = 𝜆 Dice ⋅  Dice + 𝜆 CE ⋅  CE , (<label>2</label></formula><formula xml:id="formula_3">)</formula><p>where we set 𝜆 Dice = 0.6 and 𝜆 CE = 0.4. Both loss components operate over class probabilities obtained via softmax.</p><p>Dice Loss. Dice Loss encourages region-level agreement, especially useful in imbalanced datasets (e.g., weed vs. background):</p><formula xml:id="formula_4"> Dice = 1 − 1 𝐶 𝐶 ∑ 𝑐=1 2 ∑ 𝑁 𝑖=1 𝑝 𝑖𝑐 𝑦 𝑖𝑐 ∑ 𝑁 𝑖=1 𝑝 𝑖𝑐 + ∑ 𝑁 𝑖=1 𝑦 𝑖𝑐 + 𝜀 . (<label>3</label></formula><formula xml:id="formula_5">)</formula><p>Here, 𝐶 denotes the number of semantic classes, and 𝑁 is the total number of pixels. For each pixel 𝑖 and class 𝑐, 𝑝 𝑖𝑐 represents the predicted softmax probability, while 𝑦 𝑖𝑐 ∈ {0, 1} is the corresponding one-hot ground-truth label. A small constant 𝜀 is added for numerical stability.</p><p>Cross-Entropy Loss. Cross-Entropy Loss penalizes pixelwise misclassifications by comparing the predicted class masks against the one-hot encoded ground-truth labels. For a multi-class segmentation task with 𝐶 classes and 𝑁 pixels, the weighted categorical cross-entropy loss is defined as:</p><formula xml:id="formula_6"> CE (𝑦, 𝑝) = − 1 𝑁 𝑁 ∑ 𝑖=1 𝐶 ∑ 𝑐=1 𝑤 𝑐 𝑦 𝑖,𝑐 log(𝑝 𝑖,𝑐 ),<label>(4)</label></formula><p>where 𝑦 𝑖,𝑐 denotes the one-hot ground-truth label for pixel 𝑖 and class 𝑐, and 𝑝 𝑖,𝑐 is the predicted probability for that class obtained from the softmax output. The class-specific weight 𝑤 𝑐 is used to mitigate class imbalance by assigning a larger penalty to minority classes.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.4.2.">Vision-Language Contrastive Loss</head><p>To reinforce semantic alignment between textual labels and global image features, we incorporate a symmetric In-foNCE loss following <ref type="bibr" target="#b19">Radford et al. (2021)</ref> and <ref type="bibr" target="#b30">Zhang et al. (2022)</ref>. Given a batch of 𝑁 paired image-text embeddings {(𝑣 𝑖 , 𝑡 𝑖 )} 𝑁 𝑖=1 , where 𝑣 𝑖 and 𝑡 𝑖 denote the visual and textual representations, we first normalize both embeddings:</p><formula xml:id="formula_7">v𝑖 = normalize ( mean(𝑓 img 𝑖 ) ) , (visual embedding) (5) t𝑖 = normalize(𝑓 text 𝑖 ), (text embedding)<label>(6)</label></formula><p>The image-to-text and text-to-image contrastive objectives are defined as:</p><formula xml:id="formula_8">𝓁 (𝑣→𝑡) 𝑖 = − log exp(⟨ v𝑖 , t𝑖 ⟩∕𝜏) ∑ 𝑁 𝑘=1 exp(⟨ v𝑖 , t𝑘 ⟩∕𝜏) , (<label>7</label></formula><formula xml:id="formula_9">)</formula><formula xml:id="formula_10">𝓁 (𝑡→𝑣) 𝑖 = − log exp(⟨ t𝑖 , v𝑖 ⟩∕𝜏) ∑ 𝑁 𝑘=1 exp(⟨ t𝑖 , v𝑘 ⟩∕𝜏) , (<label>8</label></formula><formula xml:id="formula_11">)</formula><p>where ⟨ v, t⟩ = v⊤ t denotes cosine similarity and 𝜏 is a temperature hyper-parameter set to 0.07. The final symmetric contrastive loss is averaged across both modalities:</p><formula xml:id="formula_12"> VL = 1 2𝑁 𝑁 ∑ 𝑖=1 ( 𝓁 (𝑣→𝑡) 𝑖 + 𝓁 (𝑡→𝑣) 𝑖 ) . (<label>9</label></formula><formula xml:id="formula_13">)</formula><p>This bidirectional InfoNCE objective encourages each image embedding to be most similar to its corresponding textual description while remaining dissimilar to other texts within the batch, promoting semantically aligned feature representations.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.4.3.">Total Loss</head><p>The final loss function combines segmentation and visionlanguage components:</p><formula xml:id="formula_14"> total =  seg + 𝜆 VL ⋅  VL , 𝜆 VL = 0.02<label>(10)</label></formula><p>The contrastive term acts as an auxiliary supervision signal that enhances the semantic expressiveness of the visual encoder and improves model generalization across heterogeneous domains.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.5.">Implementation Details</head><p>Evaluation Metric. Segmentation performance is primarily evaluated using the Dice coefficient, which measures the spatial overlap between predicted and ground-truth regions. For a given class 𝑐, the Dice score is defined as where 𝑃 𝑐 and 𝐺 𝑐 denote the sets of pixels predicted as and labeled as class 𝑐, respectively. Dice is computed globally per class across the validation set and then averaged over classes. This metric is particularly well suited for crop-weed segmentation due to its robustness to class imbalance and its emphasis on accurate region-level overlap.</p><formula xml:id="formula_15">Dice 𝑐 = 2|𝑃 𝑐 ∩ 𝐺 𝑐 | |𝑃 𝑐 | + |𝐺 𝑐 | , (<label>11</label></formula><formula xml:id="formula_16">)</formula><p>Training details. All experiments were conducted on a workstation equipped with an NVIDIA RTX 3080 GPU (10 GB). Input images are resized to 512 × 512 pixels, and the model is implemented in PyTorch using PyTorch Lightning.</p><p>We employ the AdamW optimizer with an initial learning rate of 3×10 −5 for the visual encoder and 3×10 −6 for the text encoder. Training is performed for 200 epochs using a cosine annealing learning rate schedule with a minimum learning rate of 1 × 10 −7 , a batch size of 8 and early stopping with a patience of 30 epochs.</p><p>Baselines. We evaluate our approach against three widely used semantic segmentation baselines including DeepLabv3+ <ref type="bibr" target="#b9">(Chen et al., 2018)</ref>, U-Net <ref type="bibr" target="#b20">(Ronneberger et al., 2015)</ref>, and PSPNet <ref type="bibr" target="#b31">(Zhao et al., 2017)</ref>. DeepLabv3+ is selected as the primary baseline due to its strong ability to capture multiscale context, while U-Net and PSPNet provide representative encoder-decoder and pyramid pooling architectures. These baselines are chosen to represent strong unimodal CNN-based methods commonly used in agricultural semantic segmentation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.">Results and Discussion</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1.">Comparative Analysis with Standard Baselines</head><p>All models were trained and evaluated in a multi-dataset setting comprising UAV Soybean, PhenoBench, Growing-Soy, and ROSE. This experimental setup reflects a realistic deployment scenario characterized by substantial domain variability in crop types, weed species, imaging conditions, and sensing platforms.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1.1.">Aggregated Performance Analysis</head><p>The aggregated quantitative results across the multidomain test set are reported in Table <ref type="table" target="#tab_0">1</ref>. VL-WS achieves competitive performance relative to state-of-the-art segmentation models under multi-dataset training conditions, attaining a mean Dice score of 91.64% across the weed, crop, and background classes. VL-WS outperforms the strongest CNN-based segmentation models, such as DeepLabv3+ and PSPNet, incorporate architectural mechanisms for contextual reasoning, ASPP and pyramid pooling modules, respectively. However, these purely visual mechanisms prove to be insufficient for robust cross-domain generalization. Models that rely exclusively on spatial features and lowlevel visual patterns struggle to distinguish fine-grained similarities between morphologically diverse weed species and young crop plants. This limitation is most evident in the performance of the weed class.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1.2.">Class-Wise Performance Analysis</head><p>A class-wise analysis provides deeper insight into the sources of performance improvement, revealing that the gains of VL-WS are concentrated in the most challenging semantic category.</p><p>Weed Class Performance. The weed class exhibits the largest performance disparity between VL-SM and baseline methods, reflecting the inherent difficulty of weed segmentation in precision agriculture. VL-WS achieves an average of weed Dice score of 80.45%, substantially outperforming DeepLabv3+ (65.03%), PSPNet (63.47%), and U-Net (61.45%) across the four datasets (Table <ref type="table" target="#tab_0">1</ref>). This corresponds to a 15.42% improvement over DeepLabv3+. The difficulty of weed segmentation stems from multiple compounding factors. During early growth stages, crops and weeds exhibit highly similar spectral and morphological characteristics, limiting discriminative visual cues and increasing pixel-level ambiguity. Moreover, the weed class exhibits substantially higher intra-class variance than crop. Although the crop class typically corresponds to a single species per dataset (e.g. soybean in UAV Soybean or common bean in ROSE), the weed class aggregates multiple distinct species even within a single dataset. Across the combined dataset benchmark, weed class encompasses approximately 12-14 morphologically and spectrally distinct weed types. This high intra-class heterogeneity exacerbates the generalization challenge. The pronounced performance gap between the VL-WS and standard CNN baselines suggests that conventional architectures suffer from negative transfer when trained jointly on heterogeneous multi-domain datasets. These models overfit superficial domain-specific cues (e.g. texture or sensor noise) instead of learning semantically grounded, generalizable plant representations.</p><p>Crop Class Performance. All models achieve strong and comparable performance in the crop class. U-Net achieves a Dice score of 95.73%, DeepLabv3+ achieves 95.48%, VL-WS achieves 95.23%, and PSPNet achieves 93.04%. The marginal performance differences among the top-performing models indicate that crop segmentation has largely saturated under current evaluation settings, offering minimal scope for further improvement.</p><p>Background Class Performance. All models achieve near-ceiling performance on the background class, with Dice scores of 99.56% (U-Net), 99.47% (DeepLabv3+), 99.24% (VL-SM), and 99.08% (PSPNet). This suggests that background-vegetation discrimination has saturated under current segmentation architectures. Consequently, the substantial performance gains of the proposed VL-WS over baseline methods arise primarily from improved weed segmentation, rather than marginal improvements in crop or background classification.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1.3.">Dataset-Wise Weed Segmentation Performance</head><p>Across all four benchmark datasets (UAV Soybean, Phe-noBench, GrowingSoy, and ROSE), the VL-WS model consistently outperforms all baseline methods on weed segmentation, as summarized in Table <ref type="table" target="#tab_1">2</ref>. On UAV Soybean, VL-WS achieves a weed Dice score of 80.40%, exceeding DeepLabv3+, PSPNet, and U-Net by margins of 5.92%, 11.06% and 1.38%, respectively. The performance gap is more pronounced on PhenoBench, where VL-WS attains a weed Dice score of 77.57%, substantially outperforming all comparison models. VL-WS achieves its highest weed Dice score on GrowingSoy (86.09%), surpassing DeepLabv3+ by 10.79%. On the ROSE dataset, VL-WS maintains robust performance with a weed Dice score of 75.66%, outperforming all baselines. Moreover, VL-WS exhibits the smallest variance in weed segmentation performance across datasets (75.66%-86.09%) compared to DeepLabv3+, U-Net, and PSPNet, demonstrating superior cross-domain consistency. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.">Domain Adaptation Sample Efficiency</head><p>To assess the data efficiency of the VL-WS model, we evaluate its performance under varying levels of targetdomain supervision. For each target dataset, the model is trained using the full training sets of the three remaining datasets together with different fractions of labeled data from the target domain (10%, 20%, 50%, and 100%). The validation split of the target dataset is kept fixed throughout. This evaluation protocol reflects realistic deployment scenarios in which models pre-trained on auxiliary domains must adapt to new environments under limited annotation budgets. Table <ref type="table" target="#tab_2">3</ref> reports class-wise Dice scores across all four target datasets under different data availability regimes. VL-WS maintains strong performance even under minimal supervision. In particular, weed segmentation accuracy remains close to the full-data setting when trained with 50% of the target-domain annotations and then degrades gradually as the amount of target-domain data is further reduced. Background and crop classes show minimal sensitivity to data availability, with Dice scores consistently exceeding 90% across most settings. Overall, these results demonstrate the data efficiency and cross-domain generalization capability of the proposed framework, highlighting its practical applicability in agricultural scenarios where labeled data are limited.  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.3.">Ablation Study on Vision-Language Loss</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.4.">Visual Analysis of Results</head><p>Fig. <ref type="figure" target="#fig_7">7</ref> presents qualitative comparisons with two representative sample images from each dataset, showing ground truth annotations alongside predictions from baseline methods and our model. Our model produces predictions that closely align with ground truth in spatial extent and boundary delineation. In densely interwoven crop-weed regions, baselines generate fragmented predictions with blurred boundaries and class leakage, while our approach produces sharper, more coherent segmentation. While baselines struggle with visually similar early-stage crops and weeds, our model effectively distinguishes between classes and maintains consistent performance across diverse crop types, weed species, and imaging conditions. Additional results in Fig. <ref type="figure" target="#fig_8">8</ref> illustrate robustness to data heterogeneity through prediction overlays. Examples span varied lighting conditions, background types, growth stages, and platforms (UAV and ground-based), with stable performance despite significant variation in GSD. Fig. <ref type="figure" target="#fig_9">9</ref> shows field-scale weed maps generated by stitching predictions from individual image tiles. These maps reveal spatial weed distribution patterns across the entire field, identifying heavily infested regions and clean areas. Such spatially continuous representations enable targeted weed management for precision agriculture applications.</p><p>Error Analysis. Fig. <ref type="figure" target="#fig_10">10</ref> presents a qualitative error analysis across four challenging cases. For each example, the input image, ground-truth annotation, and VL-WS model prediction are shown, with yellow boxes highlighting regions of discrepancy between prediction and ground truth. Examples (a) and (d) reveal annotation inconsistencies in the groundtruth labels. In (a), one of the highlighted regions is labeled as crop in the ground truth but predicted as background by the model. Visual inspection of the input image indicates that this region corresponds to bare soil visible between leaf gaps, suggesting that the model prediction is more consistent with the actual image. Similarly, in (d), the model predicts weed pixels in a region labeled as background in the ground truth, while the input image shows clear weed presence, indicating a potential labeling error. These cases highlight a common challenge in crop-weed datasets. Fine-scale plant morphology, overlapping vegetation, and complex leaf structures make precise pixel-level annotation difficult and </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.5.">Discussion</head><p>Experimental results demonstrate that, in the multi-dataset setting, the proposed VL-WS model consistently outperforms standard CNN-based architectures for weed segmentation, highlighting the effectiveness of vision-language semantic grounding over purely visual feature learning in  agricultural segmentation tasks. Several factors contribute to this advantage, most notably the use of a frozen CLIP encoder, which stabilizes optimization by preventing the representation space from drifting as heterogeneous gradients are applied. This design decouples semantic understanding from spatial localization, allowing the model to rely on pretrained vision-language semantics for identifying crop and weed concepts while learning precise boundaries through task-specific layers. As a result, the model reduces its dependence on costly pixel-level annotations and improves data efficiency. Additionally, FiLM-based modulation enables context-aware adaptation by selectively enhancing semantically relevant features while preserving the shared semantic knowledge from vision-language pretraining, allowing the model to accommodate dataset-specific variation without compromising cross-domain transferability.</p><p>Beyond comparisons with standard CNN baselines in the multi-dataset setting, the proposed framework further demonstrates competitive performance when compared to prior state-of-the-art methods evaluated on single-dataset agricultural benchmarks. In the PhenoBench dataset, which provides standardized benchmarks for semantic segmentation alongside other plant perception tasks <ref type="bibr" target="#b24">(Weyler et al., 2024)</ref>, existing results are reported for DeepLabV3+ and ERFNet. DeepLabV3+ achieves IoU scores of 64.59% (weed), 94.07% (crop), and 99.25% (soil), while a Bayesian DeepLabV3 variant with Monte Carlo dropout reports IoU values of 63.37% (weed), 94.60% (crop), and 99.33% (background) on the validation set <ref type="bibr" target="#b8">(Celikkan et al., 2023)</ref>. In comparison, VL-WS achieves Dice scores of 77.57% (weed), 95.84% (crop), and 99.49% (background). After conversion from Dice to IoU, these correspond to 63.35% (weed), 92.01% (crop), and 98.98% (background), demonstrating performance comparable to established state-of-the-art methods. Importantly, this performance is achieved under a multidataset training setting, whereas the reported benchmarks are obtained under single-dataset training.</p><p>A comparable trend is observed on the ROSE dataset, which is commonly used to evaluate robustness under environmental variability and domain shift. Prior work by <ref type="bibr" target="#b7">Catalano et al. (2024)</ref> reports a weed IoU of 60.39% in bean fields when trained on the full ROSE dataset. In our experiments, VL-WS is evaluated on a bean subset containing four weed species, split into training, validation, and test sets. On the validation set, VL-WS achieves a weed Dice score of 75.66%, corresponding to an IoU of 60.84%, which is closely aligned with the reported benchmark. For the Grow-ingSoy dataset, most prior studies focus on instance segmentation using YOLOv5 and YOLOv8 variants <ref type="bibr" target="#b21">(Steinmetz et al., 2024)</ref>, limiting direct comparison with semantic segmentation approaches. Nevertheless, the strong performance of VL-WS on GrowingSoy further supports its robustness across datasets with differing acquisition conditions. Collectively, these comparisons show that the proposed languageguided approach maintains competitive performance across both single and multi-domain benchmarks, matching singledataset performance even under joint training on heterogeneous datasets, unlike purely visual models that suffer from negative transfer.</p><p>As shown in Fig. <ref type="figure" target="#fig_11">11</ref>, CLIP features exhibit strong similarity both within and across datasets, indicating a semantically consistent representation space. In contrast, features from an ImageNet-pretrained ResNet show strong within-dataset similarity but substantially lower cross-dataset similarity, reflecting sensitivity to dataset-specific visual characteristics. This contrast suggests that CLIP representations encode higher-level semantics that generalize across crops, weed species, and imaging conditions, whereas purely visual features remain more tightly coupled to domain-specific appearance. This behavior is consistent with prior studies showing that image-only encoders tend to rely on low-level cues such as texture and color, while language supervision encourages representations organized around semantic concepts that are more robust to appearance variation.</p><p>Overall, these results, together with quantitative comparisons to prior work and the embedding space analysis, demonstrate that incorporating linguistic priors encourages a more semantically structured organization of the representation space, reducing reliance on low-level visual cues. By shifting toward semantically grounded representations, the VL-WS framework supports more domain-agnostic segmentation behavior and mitigates sensitivity to dataset-specific appearance variations. This design reduces dependence on exhaustive, site-specific pixel-level annotations and facilitates more effective learning under heterogeneous agricultural conditions.</p><p>Overall, these quantitative and qualitative analyzes demonstrate that linguistic priors induce a more structured representation space, reducing the reliance on low-level visual cues. By integrating semantically grounded features, VL-WS achieves domain-agnostic segmentation and reduced sensitivity to dataset-specific appearance shifts. Consequently, this design minimizes reliance on exhaustive, sitespecific annotations and enables robust learning across heterogeneous agricultural environments.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.">Conclusion</head><p>We demonstrate that vision-language semantic grounding effectively addresses negative transfer and label heterogeneity in multi-dataset agricultural segmentation. By combining frozen CLIP representations with a learnable spatial encoder and caption-conditioned feature modulation, VL-WS decouples semantic understanding from spatial localization and substantially outperforms standard CNN baselines in weed segmentation, while maintaining strong performance under limited supervision. These results highlight vision-language alignment as a promising foundation for robust and generalizable segmentation across diverse agricultural environments. While the proposed architecture reduces performance degradation arising from intra-class variation across heterogeneous datasets, it does not fully eliminate negative transfer, as the trainable spatial encoder and decoder remain susceptible to conflicting visual patterns from morphologically diverse weed species and varying imaging conditions during joint training. In addition, reliance on global image-level vision-language embeddings may limit the capture of fine-grained, spatially localized semantic distinctions in densely interwoven crop-weed regions. Building on the proposed framework, future work could further mitigate residual negative transfer by introducing stronger semantic regularization within the spatial encoder, as well as spatially adaptive vision-language conditioning to better align semantic cues with visual features. The framework could also be extended to temporal learning settings, where multi-stage growth supervision captures morphological divergence between crops and weeds. Incorporating temporal cues together with multispectral or multi-modal inputs may further improve robustness under phenological variation and challenging field conditions.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 1 :</head><label>1</label><figDesc>Figure1: Image-text cosine similarity scores produced by a frozen CLIP model for soybean field images with different levels of weed presence. For crop-dominant scenes, image embeddings show higher similarity to the soybean prompt, while weed-dense scenes exhibit higher similarity to the weed prompt. This shift in similarity demonstrates that CLIP implicitly captures agronomic scene semantics without task-specific fine-tuning.</figDesc><graphic coords="3,51.31,55.28,237.35,78.61" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 2 :</head><label>2</label><figDesc>Figure 2: Overview of the proposed Vision-Language Weed Segmentation (VL-WS) framework. Dense spatial features extracted by a task-specific visual backbone are concatenated with global image embeddings from a pretrained CLIP encoder. The fused features are modulated by natural-language captions through Feature-wise Linear Modulation (FiLM), enabling text-conditioned channel adaptation for pixel-level crop-weed segmentation.</figDesc><graphic coords="3,306.60,55.27,237.36,101.72" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Figure 3 :</head><label>3</label><figDesc>Figure 3: Study area and UAV orthomosaic of the experimental field. The figure illustrates the geographic context of the study site. The top-left panel shows the location of Sainte-Anne-de-Bellevue within the Province of Quebec, Canada, where the study area is located. The top-right panel presents an aerial view of the surrounding agricultural landscape, highlighting the specific experimental plot (outlined in red; 88 m × 18 m). The bottom panel displays the high-resolution UAV orthomosaic acquired using a DJI Mavic 3 Multispectral (M3M) at 5 m altitude, with a spatial scale bar provided for reference.</figDesc><graphic coords="4,149.84,55.28,295.60,204.65" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Figure 4 :</head><label>4</label><figDesc>Figure 4: Representative RGB image tiles and corresponding ground-truth segmentation masks from the four weed segmentation datasets used in this study: UAV Soybean, PhenoBench, GrowingSoy, and ROSE. For each dataset, paired image-mask examples are shown, with RGB images on the left and manually annotated masks on the right. Mask colors denote background (black), crop (green), and weed (red). The datasets span diverse crop types, weed densities, and imaging conditions" including aerial and ground-based imagery.</figDesc><graphic coords="5,100.57,55.27,394.14,231.01" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Figure 5 :</head><label>5</label><figDesc>Figure5: Example RGB image tiles paired with agronomyaware natural language captions generated for each dataset (UAV Soybean, PhenoBench, GrowingSoy, and ROSE). Captions are produced using a standardized template and describe crop and weed presence, coarse spatial layout, and salient visual attributes. These image-caption pairs serve as multimodal inputs for training and evaluating the proposed vision-language segmentation framework.</figDesc><graphic coords="6,51.31,55.27,237.37,212.77" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>8Figure 6 :</head><label>6</label><figDesc>Figure 6: Detailed architecture of the proposed vision-language weed segmentation framework.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head>ℝ</head><label></label><figDesc>256 , obtained by linearly projecting the CLIP text encoder output, is used to generate element-wise scaling 𝛾(𝐸 txt ) and shifting 𝛽(𝐸 txt ) parameters for the FiLM operation, which modulate the fused features as F = 𝛾(𝐸 txt ) ⊙ 𝐹 fused + 𝛽(𝐸 txt ).</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_7"><head>Figure 7 :</head><label>7</label><figDesc>Figure 7: Qualitative comparison of segmentation results across datasets for the proposed model and baseline methods. Segmentation masks show crop in green, weed in red, and background in black.</figDesc><graphic coords="11,100.57,55.28,394.13,492.30" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_8"><head>Figure 8 :</head><label>8</label><figDesc>Figure 8: Qualitative segmentation results of the proposed VL-WS model across four agricultural datasets, demonstrating robust weed detection under varying lighting conditions, background textures, crop growth stages, and sensing platforms, including UAV and ground-based imagery. Predictions are overlaid on input images with green indicating crop, red indicating weed, and semi-transparent regions showing background.</figDesc><graphic coords="12,100.57,55.27,394.14,534.24" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_9"><head>Figure 9 :</head><label>9</label><figDesc>Figure 9: Field-scale weed segmentation results and zoomed predictions. (a) RGB orthomosaic of the soybean field. (b) Predicted weed distribution map with green indicating crop, red indicating weed, and black indicating background. (c)-(f) Zoomed predictions from four field regions (top row) with corresponding RGB imagery (bottom row).</figDesc><graphic coords="13,100.57,55.28,394.11,305.93" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_10"><head>Figure 10 :</head><label>10</label><figDesc>Figure 10: Qualitative error analysis of crop-weed segmentation predictions. Predicted segmentation masks are shown, with yellow boxes highlighting regions of inconsistency between model predictions and the ground truth, illustrating common failure cases under challenging field conditions.</figDesc><graphic coords="13,51.31,424.94,237.36,105.33" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_11"><head>Figure 11 :</head><label>11</label><figDesc>Figure 11: Cross-dataset cosine similarity of deep feature embeddings from pretrained CLIP and ResNet encoders. Heatmaps showing pairwise cosine similarity between feature embeddings of image tiles drawn from four weed segmentation datasets: UAV Soybean, Phenobench, GrowingSoy, and ROSE. (Left) CLIP encoder features exhibit high within-dataset and substantial cross-dataset similarity, reflecting semantically rich and more dataset-invariant representations. (Right) Features extracted from a ResNet encoder (pretrained on ImageNet) display strong clustering within datasets but markedly lower similarity across datasets, indicating limited generalizability. The cross-dataset feature alignment achieved by the CLIP encoder supports improved robustness in multi-domain weed segmentation tasks.</figDesc><graphic coords="14,306.60,55.27,237.37,105.30" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head>Table 1</head><label>1</label><figDesc>Aggregated segmentation performance (Dice %) across all datasets.</figDesc><table><row><cell>Method</cell><cell>Weed Crop Bg</cell><cell>Avg</cell></row><row><cell>UNet</cell><cell cols="2">61.45 95.73 99.56 85.58</cell></row><row><cell>PSPNet</cell><cell cols="2">63.47 93.04 99.08 85.19</cell></row><row><cell cols="3">DeepLabv3+ 65.03 95.48 99.47 86.66</cell></row><row><cell>VL-WS</cell><cell cols="2">80.45 95.23 99.24 91.64</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head>Table 2</head><label>2</label><figDesc>Dataset-wise segmentation performance (Dice %) of the proposed model and baseline methods across four agricultural datasets.</figDesc><table><row><cell>Method</cell><cell cols="2">UAV Soybean</cell><cell cols="2">PhenoBench</cell><cell>GrowingSoy</cell><cell>ROSE</cell></row><row><cell></cell><cell>Weed Crop</cell><cell cols="2">Bg Weed Crop</cell><cell cols="2">Bg Weed Crop</cell><cell>Bg Weed Crop</cell><cell>Bg</cell></row><row><cell>UNet</cell><cell cols="5">79.02 98.12 96.73 58.27 96.57 99.70 75.84 92.62 98.80 43.97 88.25 97.11</cell></row><row><cell>PSPNet</cell><cell cols="5">69.34 97.28 93.98 59.07 93.29 99.22 76.42 91.22 98.35 62.53 90.69 96.75</cell></row><row><cell cols="6">Deeplabv3+ 74.48 98.12 95.53 60.33 96.10 99.62 75.30 92.51 98.65 65.19 90.92 96.85</cell></row><row><cell>VL-WS</cell><cell cols="5">80.40 98.21 96.47 77.57 95.84 99.49 86.09 92.98 98.66 75.66 92.49 97.30</cell></row><row><cell cols="4">unimodal baseline, DeepLabv3+, which achieves an average</cell><cell></cell></row><row><cell cols="4">Dice score of 86.66%, yielding an absolute improvement of</cell><cell></cell></row><row><cell cols="4">4.98%. Other CNN-based architectures exhibit notably lower</cell><cell></cell></row><row><cell cols="4">performance, with U-Net achieving 85.58% and PSPNet</cell><cell></cell></row><row><cell cols="4">achieving 85.19% mean Dice scores. These results highlight</cell><cell></cell></row><row><cell cols="4">the limitations of purely visual encoders in multi-domain</cell><cell></cell></row><row><cell cols="4">agricultural settings, where domain shift and high intra-class</cell><cell></cell></row><row><cell cols="2">variability present significant challenges.</cell><cell></cell><cell></cell><cell></cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2"><head>Table 3</head><label>3</label><figDesc>Domain adaptation performance under limited target-domain supervision. Class-wise Dice (%) scores obtained by training on three full source datasets and varying fractions of labeled target-domain data.</figDesc><table><row><cell>Target Dataset</cell><cell>Source Datasets</cell><cell>Class</cell><cell>10%</cell><cell cols="2">Target-Domain Training Data 20% 50%</cell><cell>100%</cell></row><row><cell></cell><cell></cell><cell>Weed</cell><cell>68.63</cell><cell>74.63</cell><cell>79.95</cell><cell>80.40</cell></row><row><cell>UAV Soybean</cell><cell>PhenoBench + GrowingSoy + ROSE</cell><cell>Crop Background</cell><cell>96.92 94.80</cell><cell>97.31 95.95</cell><cell>98.06 96.37</cell><cell>98.21 96.47</cell></row><row><cell></cell><cell></cell><cell>Mean</cell><cell>86.78</cell><cell>89.29</cell><cell>91.46</cell><cell>91.69</cell></row><row><cell></cell><cell></cell><cell>Weed</cell><cell>69.94</cell><cell>73.66</cell><cell>75.71</cell><cell>77.57</cell></row><row><cell>PhenoBench</cell><cell>UAV Soybean + GrowingSoy + ROSE</cell><cell>Crop Background</cell><cell>94.18 99.30</cell><cell>95.26 99.43</cell><cell>95.59 99.46</cell><cell>95.84 99.49</cell></row><row><cell></cell><cell></cell><cell>Mean</cell><cell>87.80</cell><cell>89.45</cell><cell>90.25</cell><cell>90.96</cell></row><row><cell></cell><cell></cell><cell>Weed</cell><cell>78.21</cell><cell>81.20</cell><cell>84.37</cell><cell>86.09</cell></row><row><cell>GrowingSoy</cell><cell>UAV Soybean + PhenoBench + ROSE</cell><cell>Crop Background</cell><cell>90.99 98.40</cell><cell>91.74 98.49</cell><cell>92.14 98.53</cell><cell>92.98 98.66</cell></row><row><cell></cell><cell></cell><cell>Mean</cell><cell>89.20</cell><cell>90.47</cell><cell>91.68</cell><cell>92.57</cell></row><row><cell></cell><cell></cell><cell>Weed</cell><cell>61.89</cell><cell>70.78</cell><cell>72.42</cell><cell>75.66</cell></row><row><cell>ROSE</cell><cell>UAV Soybean + PhenoBench + GrowingSoy</cell><cell>Crop Background</cell><cell>87.15 95.99</cell><cell>91.54 97.09</cell><cell>92.14 97.27</cell><cell>92.49 97.30</cell></row><row><cell></cell><cell></cell><cell>Mean</cell><cell>81.67</cell><cell>86.47</cell><cell>87.27</cell><cell>88.48</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3"><head></head><label></label><figDesc>Table 4 reports segmentation performance under different values of the vision-language contrastive loss weight 𝜆 VL . Weed Dice improves as 𝜆 VL increases from 0.01 to 0.02, reaching its peak at 𝜆 VL = 0.02, after which performance plateaus or slightly declines. Crop segmentation exhibits marginal but consistent improvements with increasing 𝜆 VL , while background Dice remains stable across all settings.</figDesc><table /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_4"><head>Table 4</head><label>4</label><figDesc>Ablation study on the vision-language contrastive loss weight (𝜆 VL ). Class-wise and mean Dice (%) scores are reported across the multi-dataset benchmark.</figDesc><table><row><cell>𝜆 VL Weed Crop Bg Average</cell></row><row><cell>0.01 79.93 95.11 99.22 91.42</cell></row><row><cell>0.02 80.45 95.23 99.24 91.64</cell></row><row><cell>0.03 80.00 95.23 99.25 91.49</cell></row><row><cell>0.05 80.41 95.33 99.25 91.66</cell></row><row><cell>0.10 80.16 95.26 99.25 91.55</cell></row></table></figure>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Acknowledgments</head><p>This research is supported by funding from the FRQNT &amp; MAPAQ Partnership Research Program-Sustainable Agriculture (Grant No. 259806), the McGill Collaborative for AI and Society Interdisciplinary Research Program (Grant No. 173165), and the RQRAD Emerging Project (Grant No. 265224). We thank Dr.Huong Nguyen for critically proofreading the manuscript.</p></div>
+			</div>
+
+
+			<div type="availability">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Data availability</head><p>Data will be made available on request.</p></div>
+			</div>
+
+			<div type="annex">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>CRediT authorship contribution statement</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Declaration of competing interest</head><p>The authors declare that they have no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper.</p></div>			</div>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<monogr>
+		<title level="m" type="main">Leveraging vision language models for specialized agricultural tasks</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">A</forename><surname>Arshad</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">Z</forename><surname>Jubery</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Roy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Nassiri</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">K</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Hegde</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Ganapathysubramanian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Balu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Krishnamurthy</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+			<publisher>IEEE</publisher>
+			<biblScope unit="page" from="6320" to="6329" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Improved crop and weed detection with diverse data ensemble learning</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">H</forename><surname>Asad</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Anwar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Bais</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition</title>
+				<meeting>the IEEE/CVF Conference on Computer Vision and Pattern Recognition</meeting>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="5336" to="5345" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<title level="m" type="main">Design and validation of testing facilities for weeding robots as part of rose challenge</title>
+		<author>
+			<persName><forename type="first">G</forename><surname>Avrin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Boffety</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Lardy-Fontan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Régnier</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Rescoussié</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Barbosa</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+			<publisher>EPAI</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Agrogpt: Efficient agricultural vision-language model with expert tuning</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Awais</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">H S A</forename><surname>Alharthi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Kumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Cholakkal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">M</forename><surname>Anwer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2025 IEEE/CVF Winter Conference on Applications of Computer Vision</title>
+				<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2025">2025</date>
+			<biblScope unit="page" from="5687" to="5696" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Interpreting clip with sparse linear concept embeddings (splice)</title>
+		<author>
+			<persName><forename type="first">U</forename><surname>Bhalla</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Oesterling</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Srinivas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Calmon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Lakkaraju</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Advances in Neural Information Processing Systems</title>
+				<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="volume">37</biblScope>
+			<biblScope unit="page" from="84298" to="84328" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Vision transformer adapters for generalizable multitask learning</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Bhattacharjee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Süsstrunk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Salzmann</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF International Conference on Computer Vision</title>
+				<meeting>the IEEE/CVF International Conference on Computer Vision</meeting>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="19015" to="19026" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Frevl: Leveraging frozen pretrained embeddings for efficient vision-language understanding</title>
+		<author>
+			<persName><forename type="first">E</forename><surname>Bourigault</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Bourigault</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF International Conference on Computer Vision</title>
+				<meeting>the IEEE/CVF International Conference on Computer Vision</meeting>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+			<biblScope unit="page" from="2327" to="2336" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Tackling environmental variability: Few shot segmentation for domain-adaptive weed segmentation in agricultural robotics</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Catalano</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Leone</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Matteucci</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2024 IEEE 20th International Conference on Automation Science and Engineering</title>
+				<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="583" to="588" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Semantic segmentation of crops and weeds with probabilistic modeling and uncertainty quantification</title>
+		<author>
+			<persName><forename type="first">E</forename><surname>Celikkan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Saberioon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Herold</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Klein</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF International Conference on Computer Vision</title>
+				<meeting>the IEEE/CVF International Conference on Computer Vision</meeting>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="582" to="592" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Encoderdecoder with atrous separable convolution for semantic image segmentation</title>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">C</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Papandreou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Schroff</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Adam</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the European conference on computer vision (ECCV)</title>
+				<meeting>the European conference on computer vision (ECCV)</meeting>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="page" from="801" to="818" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Cross-domain transfer learning for weed segmentation and mapping in precision farming using ground and uav images</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Liao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Nuyttens</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Lootens</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Xue</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Alexandersson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Pieters</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Expert Systems with applications</title>
+		<imprint>
+			<biblScope unit="volume">246</biblScope>
+			<date type="published" when="2024">2024. 122980</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Research on unmanned aerial vehicle (uav) rice field weed sensing image segmentation method based on cnn-transformer</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Cai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Jin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Yu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computers and Electronics in Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">229</biblScope>
+			<biblScope unit="page">109719</biblScope>
+			<date type="published" when="2025">2025a</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Efficient weed segmentation in maize fields: A semi-supervised approach for precision weed management with reduced annotation overhead</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Xue</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Geng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Sun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Lou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Shi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computers and Electronics in Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">229</biblScope>
+			<biblScope unit="page">109707</biblScope>
+			<date type="published" when="2025">2025b</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">An end-to-end deep learning framework for multi-scale cross-domain weed segmentation</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Hossain</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">T</forename><surname>Rahman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Sun</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2025 ASABE Annual International Meeting, American Society of Agricultural and Biological Engineers</title>
+				<imprint>
+			<date type="published" when="2025">2025</date>
+			<biblScope unit="page">1</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<monogr>
+		<title level="m" type="main">Cnn feature based graph convolutional network for weed and crop recognition in smart farming</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Qiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Song</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2020">2020. 105450</date>
+			<biblScope unit="volume">174</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Mseg: A composite dataset for multi-domain semantic segmentation</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lambert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Sener</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Hays</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Koltun</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF conference on computer vision and pattern recognition</title>
+				<meeting>the IEEE/CVF conference on computer vision and pattern recognition</meeting>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page" from="2879" to="2888" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">An improved u-net and attention mechanism-based model for sugar beet and weed segmentation</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Ji</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Han</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Han</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Ruan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Frontiers in Plant Science</title>
+		<imprint>
+			<biblScope unit="volume">15</biblScope>
+			<date type="published" when="2025">2025. 1449514</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<monogr>
+		<author>
+			<persName><surname>Openai</surname></persName>
+		</author>
+		<ptr target="https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/" />
+		<title level="m">Gpt-4o-mini: advancing cost-efficient intelligence</title>
+				<imprint>
+			<date type="published" when="2024-02-09">2024. February 9, 2026</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Film: Visual reasoning with a general conditioning layer</title>
+		<author>
+			<persName><forename type="first">E</forename><surname>Perez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Strub</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>De Vries</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Dumoulin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Courville</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the AAAI conference on artificial intelligence</title>
+				<meeting>the AAAI conference on artificial intelligence</meeting>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<monogr>
+		<title level="m" type="main">Learning transferable visual models from natural language supervision</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Radford</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">W</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Hallacy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Ramesh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Goh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Agarwal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Sastry</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Askell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Mishkin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Clark</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="8748" to="8763" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">U-net: Convolutional networks for biomedical image segmentation</title>
+		<author>
+			<persName><forename type="first">O</forename><surname>Ronneberger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Fischer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Brox</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Medical image computing and computer-assisted intervention</title>
+				<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2015">2015</date>
+			<biblScope unit="page" from="234" to="241" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">From seedling to harvest: The growingsoy dataset for weed detection in soy crops via instance segmentation</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Steinmetz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><forename type="middle">A</forename><surname>Kich</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Krever</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">D R</forename><surname>Mazzarolo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">B</forename><surname>Grando</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Marini</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Trois</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Nieuwenhuizen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2024 IEEE International Conference on Cybernetics and Intelligent Systems (CIS) and IEEE International Conference on Robotics, Automation and Mechatronics</title>
+				<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="502" to="507" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Characterizing and avoiding negative transfer</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Dai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Póczos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Carbonell</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF conference on computer vision and pattern recognition</title>
+				<meeting>the IEEE/CVF conference on computer vision and pattern recognition</meeting>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="11293" to="11302" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">What makes clip more robust to long-tailed pre-training data? a controlled study for transferable insights</title>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Pang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Qi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Advances in Neural Information Processing Systems</title>
+		<imprint>
+			<biblScope unit="volume">37</biblScope>
+			<biblScope unit="page" from="36567" to="36601" />
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">Phenobench: A large dataset and benchmarks for semantic image interpretation in the agricultural domain</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Weyler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Magistri</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Marks</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><forename type="middle">L</forename><surname>Chong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Sodano</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Roggiolani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Chebrolu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Stachniss</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Behley</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/TPAMI.2024.3419548</idno>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Pattern Analysis and Machine Intelligence</title>
+		<imprint>
+			<biblScope unit="volume">46</biblScope>
+			<biblScope unit="page" from="9583" to="9594" />
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Fsvlm: A visionlanguage model for remote sensing farmland segmentation</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Du</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Zhong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Tao</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Geoscience and Remote Sensing</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">Instance segmentation method for weed detection using uav imagery in soybean fields</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Fan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Chao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Arsenijevic</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Werle</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Zhang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computers and Electronics in Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">211</biblScope>
+			<date type="published" when="2023">2023. 107994</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">Enhancing weed detection using uav imagery and deep learning with weather-driven domain adaptation</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Werle</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Chudzik</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Zhang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computers and Electronics in Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">237</biblScope>
+			<date type="published" when="2025">2025. 110673</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">A dnn-based semantic segmentation for detecting weed and crop</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>You</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lee</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computers and Electronics in Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">178</biblScope>
+			<date type="published" when="2020">2020. 105750</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<monogr>
+		<title level="m" type="main">Vl-paw: A vision-language dataset for pear</title>
+		<author>
+			<persName><forename type="first">G</forename><forename type="middle">H</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">H</forename><surname>Anh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">T</forename><surname>Vu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><forename type="middle">U</forename><surname>Rahman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><forename type="middle">Z</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">A</forename><surname>Jo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">Y</forename><surname>Kim</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2025">2025. 2087</date>
+			<biblScope unit="volume">14</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">Contrastive learning of medical visual representations from paired images and text</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Miura</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">D</forename><surname>Manning</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">P</forename><surname>Langlotz</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Machine learning for healthcare conference</title>
+		<imprint>
+			<biblScope unit="page" from="2" to="25" />
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note>PMLR</note>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main">Pyramid scene parsing network</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Shi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Qi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Jia</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE conference on computer vision and pattern recognition</title>
+				<meeting>the IEEE conference on computer vision and pattern recognition</meeting>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+			<biblScope unit="page" from="2881" to="2890" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<analytic>
+		<title level="a" type="main">Simple multi-dataset detection</title>
+		<author>
+			<persName><forename type="first">X</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Koltun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Krähenbühl</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF conference on computer vision and pattern recognition</title>
+				<meeting>the IEEE/CVF conference on computer vision and pattern recognition</meeting>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="7571" to="7580" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

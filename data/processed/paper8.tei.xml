@@ -1,0 +1,573 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Vehicle Routing Problem with Resource-Constrained Pickup and Delivery</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+				<date type="published" when="2026-02-27">27 Feb 2026</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Harishjitu</forename><surname>Saseendran</surname></persName>
+							<email>hsaseendran@uri.edu</email>
+						</author>
+						<author>
+							<persName><forename type="first">Romesh</forename><surname>Prasad</surname></persName>
+							<email>romeshsatish.prasad@uri.edu</email>
+						</author>
+						<author>
+							<affiliation key="aff0">
+								<orgName type="department" key="dep1">Department of Electrical, Computer and Biomedical Engineering Manbir Sodhi Department of Mechanical</orgName>
+								<orgName type="department" key="dep2">Industrial and Systems Engineering</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<affiliation key="aff1">
+								<orgName type="department" key="dep1">Department of Mechanical</orgName>
+								<orgName type="department" key="dep2">Industrial and Systems Engineering</orgName>
+								<orgName type="institution">University of Rhode Island</orgName>
+								<address>
+									<settlement>Kingston</settlement>
+									<region>RI</region>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Vehicle Routing Problem with Resource-Constrained Pickup and Delivery</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2026-02-27">27 Feb 2026</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">36590411E75340C02690DDDBBB1AEC26</idno>
+					<idno type="arXiv">arXiv:2602.23685v1[math.OC]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.7.2" ident="GROBID" when="2026-03-10T12:10+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>We introduce the Vehicle Routing Problem with Resource-Constrained Pickup and Delivery (VRP-RPD), where vehicles transport finite identical resources to customer locations for autonomous processing before retrieval and redeployment. Unlike classical pickup-and-delivery problems where the same vehicle must perform both operations for each customer, VRP-RPD permits different vehicles to handle dropoff and pickup at the same location, creating inter-route dependencies absent from standard formulations. This decoupling reflects practical scenarios in autonomous robotics deployment, portable medical equipment distribution, disaster relief operations, construction tool rental, and agricultural sensor networks, where transport vehicles are the scarce resource and need not wait during processing. The objective is to minimize makespan, defined as the time when the last vehicle returns after all resources are deployed, processed, and retrieved. Although makespan objectives are typical in scheduling problems, the significant transportation times relative to processing durations and the resource capacity constraints fundamentally alter optimization considerations. We demonstrate that exact methods are computationally intractable for instances beyond 16 customers. We develop a sequential two-stage metaheuristic pipeline: a GPUaccelerated Adaptive Large Neighborhood Search (ALNS) is run first to obtain a high-quality incumbent, which is then encoded as a warm-start seed for a Biased Random-Key Genetic Algorithm (BRKGA) that refines the solution through evolutionary search. Evaluated on TSPlib-derived benchmarks (17-1000 nodes) across multiple processing time variants (base, 2×, 5×, 1R10, 1R20), the pipeline consistently achieves the best solutions across all instance sizes, reducing makespan by up to 74% over baseline heuristics.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>Autonomous mobile robots are increasingly deployed for warehouse inventory scanning, infrastructure inspection, agricultural monitoring, and last-mile delivery. A common operational pattern is that robots are transported by vehicles to dispersed service locations, operate independently to complete their tasks, and must subsequently be retrieved. The key insight driving efficiency is that transport vehicles, the scarcer demand each vehicle can serve <ref type="bibr" target="#b19">[20]</ref>. While VRP-RPD shares capacity constraints with CVRP, the semantics differ fundamentally: CVRP capacity represents maximum simultaneous load of goods being transported, while VRP-RPD capacity represents resources carried that are deployed at customer locations, decreasing with dropoffs and increasing with pickups. This creates a dynamic capacity profile throughout each route that depends on the interleaving of dropoff and pickup operations.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.2">Pickup and Delivery Problems</head><p>Berbeglia et al. <ref type="bibr" target="#b1">[2]</ref> classify pickup and delivery problems by request structure: one-to-many-to-one (goods flow between depot and customers), many-to-many (goods flow between arbitrary origin-destination pairs), and one-to-one (each request has a specific origin and destination). A fundamental constraint across all these classes is that pickup and delivery of each request must be performed by the same vehicle <ref type="bibr" target="#b12">[13]</ref>.</p><p>VRP with Simultaneous Pickup and Delivery (VRPSPD) requires vehicles to handle both operations during a single customer visit <ref type="bibr" target="#b4">[5,</ref><ref type="bibr" target="#b9">10]</ref>. Unlike VRP-RPD, delivery and pickup in VRPSPD occur simultaneously with the vehicle present; there is no autonomous processing period.</p><p>Pickup and Delivery Problem with Time Windows (PDPTW) transports goods from pickup to delivery locations with time window constraints <ref type="bibr" target="#b5">[6,</ref><ref type="bibr" target="#b16">17]</ref>; it features spatially separated pickup and delivery locations, requires the same vehicle for both operations, and enforces precedence constraints within a single route. In contrast, VRP-RPD features co-located operations (dropoff and pickup occur at the same customer location), permits cross-vehicle coordination (different vehicles may handle dropoff and pickup), and creates precedence dependencies that span multiple routes.</p><p>Dial-a-Ride Problem (DARP) routes vehicles for passenger transportation, where passengers board at origins and alight at destinations <ref type="bibr" target="#b2">[3,</ref><ref type="bibr" target="#b13">14]</ref>. DARP requires continuous vehicle presence during transport; passengers cannot be "deployed" to operate independently. VRP-RPD resources, by contrast, function autonomously after deployment.</p><p>PDP with Transfers (PDPT) allows goods to change vehicles at designated transshipment locations <ref type="bibr" target="#b11">[12]</ref>. This introduces cross-vehicle coordination but requires explicit transfer points where vehicles must rendezvous. VRP-RPD dropoff and pickup occur at the same customer location without requiring intermediate transfer points or vehicle synchronization.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.3">Scheduling and Technician Routing</head><p>Technician Routing and Scheduling Problem (TRSP) routes service personnel accounting for skills, tools, and service durations <ref type="bibr" target="#b10">[11,</ref><ref type="bibr" target="#b14">15]</ref>. Unlike VRP-RPD, technicians in TRSP remain on-site throughout service duration; they cannot deploy a resource and depart while service continues autonomously.</p><p>Traveling Salesman Problem with Jobs (TSPJ) involves a single traveler visiting nodes to initiate jobs that continue autonomously, to minimize makespan <ref type="bibr" target="#b17">[18]</ref>. TSPJ shares key characteristics with VRP-RPD: co-located initiation and completion, autonomous processing during the traveler's absence, and makespanbased objectives. However, TSPJ involves only a single traveler, does not model resource retrieval (jobs simply complete without requiring collection), and imposes no capacity constraints on how many jobs can be active simultaneously. VRP-RPD extends the TSPJ concept to multiple vehicles with limited capacity, requiring both dropoff and pickup operations while enabling cross-vehicle coordination.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.4">Positioning VRP-RPD</head><p>Table <ref type="table" target="#tab_0">1</ref> compares VRP-RPD with related problem classes across three dimensions: whether dropoff and pickup occur at the same or different locations, whether the same or different agents can perform paired operations, and how capacity is interpreted. VRP-RPD occupies a unique position combining same-location dropoffpickup pairs, cross-vehicle coordination capability, and resource capacity constraints reflecting simultaneous deployment, a configuration that is not addressed by existing formulations. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Problem Formulation</head><p>In the Vehicle Routing Problem with Resource-Constrained Pickup and Delivery (VRP-RPD), a fleet of m vehicles operates from a central depot, each carrying at most k identical resources. A set of n customers requires service, where each customer requires three phases: <ref type="bibr" target="#b0">(1)</ref> dropoff, where a vehicle arrives and deploys one resource; (2) processing, where the resource operates autonomously for p c time units; and (3) pickup, where a vehicle arrives and retrieves the resource.</p><p>In the mixed interleaving variant, the constraint that dropoff and pickup must be performed by the same vehicle is relaxed. Vehicle a may drop off a resource at customer c, while vehicle b ̸ = a picks up the resource after processing completes. This flexibility enables greater routing efficiency but introduces cross-vehicle coordination requirements. The pickup vehicle must not arrive before processing completes, regardless of which vehicle performed the dropoff.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">MILP Formulation</head><p>We present a mixed-integer linear programming formulation for VRP-RPD. Let C = {1, . . . , n} denote customers, V = {1, . . . , m} denote vehicles, and N = {0} ∪ C denote all locations including the depot (index 0). Parameters include vehicle capacity k, travel time d i,j from i to j, processing time p c at customer c, and a sufficiently large constant M .</p><p>Decision Variables. Binary routing variables x i,j,v ∈ {0, 1} indicate whether vehicle v travels directly from location i to j. Binary visit variables y c,v ∈ {0, 1} indicate whether vehicle v visits customer c. Binary operation variables δ c,v and π c,v indicate whether vehicle v performs the dropoff and the pickup at customer c, respectively. Continuous timing variables include: t i,v , the arrival time of vehicle v at location i ∈ N ; t dep i,v , the departure time of vehicle v from location i ∈ N ; T drop [c] and T pickup [c], the actual dropoff and pickup times at customer c; and t return,v , the time vehicle v returns to the depot. The capacity variable q i,v denotes the number of resources on vehicle v immediately after completing service at location i ∈ N . The integer variable u c,v denotes the position of customer c in vehicle v's route for subtour elimination. The makespan T is the objective variable to be minimized.</p><p>Service Constraints. Each customer receives exactly one dropoff and one pickup, possibly by different vehicles:</p><formula xml:id="formula_0">v∈V δ c,v = 1, v∈V π c,v = 1, ∀c ∈ C<label>(1)</label></formula><p>Depot Constraints. Each vehicle departs from and returns to the depot exactly once:</p><formula xml:id="formula_1">j∈C x 0,j,v = 1, i∈C x i,0,v = 1, ∀v ∈ V<label>(2)</label></formula><p>Time is anchored at the depot:</p><formula xml:id="formula_2">t 0,v = 0, t dep 0,v = 0, ∀v ∈ V<label>(3)</label></formula><p>Flow Conservation and Visit Linking. For each customer and vehicle, flow balance defines whether the customer is visited:</p><formula xml:id="formula_3">i∈N x i,c,v = y c,v , j∈N x c,j,v = y c,v , ∀c ∈ C, v ∈ V<label>(4)</label></formula><p>Self-loops are prohibited:</p><formula xml:id="formula_4">x i,i,v = 0, ∀i ∈ N, v ∈ V<label>(5)</label></formula><p>A vehicle must visit a customer to perform an operation:</p><formula xml:id="formula_5">δ c,v ≤ y c,v , π c,v ≤ y c,v , ∀c ∈ C, v ∈ V<label>(6)</label></formula><p>Operation Timing. If vehicle v performs dropoff at c, dropoff occurs at arrival:</p><formula xml:id="formula_6">t c,v − M (1 − δ c,v ) ≤ T drop [c] ≤ t c,v + M (1 − δ c,v ), ∀c ∈ C, v ∈ V<label>(7)</label></formula><p>If vehicle v performs pickup at c, pickup occurs at departure:</p><formula xml:id="formula_7">t dep c,v − M (1 − π c,v ) ≤ T pickup [c] ≤ t dep c,v + M (1 − π c,v ), ∀c ∈ C, v ∈ V<label>(8)</label></formula><p>Processing must complete before pickup, enforced globally independent of vehicle identity:</p><formula xml:id="formula_8">T pickup [c] ≥ T drop [c] + p c , ∀c ∈ C<label>(9)</label></formula><p>This cross-vehicle precedence constraint creates the inter-route dependencies that distinguish VRP-RPD from classical pickup-and-delivery formulations. Departure Time. Departure is at least arrival:</p><formula xml:id="formula_9">t dep c,v ≥ t c,v , ∀c ∈ C, v ∈ V<label>(10)</label></formula><p>If the same vehicle performs both dropoff and pickup at c, it must wait for processing:</p><formula xml:id="formula_10">t dep c,v ≥ t c,v + p c (δ c,v + π c,v − 1), ∀c ∈ C, v ∈ V<label>(11)</label></formula><p>Time Propagation. Travel time consistency along routes:</p><formula xml:id="formula_11">t j,v ≥ t dep i,v + d i,j − M (1 − x i,j,v ), ∀i, j ∈ N, v ∈ V<label>(12)</label></formula><p>Capacity Constraints. Vehicles depart the depot with full capacity:</p><formula xml:id="formula_12">q 0,v = k, ∀v ∈ V<label>(13)</label></formula><p>Capacity bounds:</p><formula xml:id="formula_13">0 ≤ q i,v ≤ k, ∀i ∈ N, v ∈ V<label>(14)</label></formula><p>Capacity propagates along arcs and updates at customers:</p><formula xml:id="formula_14">q j,v ≥ q i,v − δ j,v + π j,v − M (1 − x i,j,v ), ∀i ∈ N, j ∈ C, v ∈ V (15) q j,v ≤ q i,v − δ j,v + π j,v + M (1 − x i,j,v ), ∀i ∈ N, j ∈ C, v ∈ V<label>(16)</label></formula><p>Dropoff requires carrying at least one resource:</p><formula xml:id="formula_15">q i,v ≥ δ j,v − M (1 − x i,j,v ), ∀i ∈ N, j ∈ C, v ∈ V<label>(17)</label></formula><p>Pickup cannot exceed capacity:</p><formula xml:id="formula_16">q i,v + π j,v ≤ k + M (1 − x i,j,v ), ∀i ∈ N, j ∈ C, v ∈ V<label>(18)</label></formula><p>Subtour Elimination. While time propagation with strictly positive travel times implicitly prevents subtours, we include explicit Miller-Tucker-Zemlin (MTZ) constraints to strengthen the LP relaxation:</p><formula xml:id="formula_17">1 ≤ u c,v ≤ |C|, ∀c ∈ C, v ∈ V (19) u i,v − u j,v + |C| x i,j,v ≤ |C| − 1, ∀i, j ∈ C, i ̸ = j, v ∈ V<label>(20)</label></formula><p>Makespan Objective. Return time is determined by the last arc into the depot:</p><formula xml:id="formula_18">t return,v ≥ t dep c,v + d c,0 − M (1 − x c,0,v ), ∀c ∈ C, v ∈ V (<label>21</label></formula><formula xml:id="formula_19">)</formula><p>The makespan is the maximum return time:</p><formula xml:id="formula_20">T ≥ t return,v , ∀v ∈ V (22)</formula><p>Minimize T (23)</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">Computational Complexity and Bound Quality</head><p>Theorem 1. VRP-RPD is NP-hard.</p><p>Proof. By reduction from the min-max Vehicle Routing Problem (min-max VRP). Consider a VRP-RPD instance where processing times p c = 0 for all customers c ∈ C, and vehicle capacity k ≥ n. Since processing time is zero, pickup can occur immediately after dropoff at each customer. Since capacity is non-binding, each customer requires exactly one visit where both operations are performed instantaneously by the same vehicle. The problem reduces to partitioning customers among m vehicles and sequencing visits to minimize the maximum return time, precisely the min-max VRP. Since min-max VRP is NP-hard <ref type="bibr" target="#b20">[21]</ref>, VRP-RPD is NP-hard.</p><p>We validated the MILP formulation on small test instances with 5 customers, where Gurobi 10.0 [9] produced optimal solutions within seconds. However, the formulation exhibits severe scalability limitations due to the extensive use of big-M constraints in time propagation and precedence linking, which yield weak linear programming relaxations. For instances such as gr17 (17 customers) and gr24 (24 customers), Gurobi obtained feasible solutions but with optimality gaps of approximately 70% after two hours of computation on a workstation with 32 CPU cores and 128 GB RAM, indicating the solver found valid solutions but could not substantially tighten the lower bound. For larger instances (50+ customers), the number of binary variables grows as O(n 2 m) and continuous variables as O(nm), exceeding practical memory limits before meaningful bound improvement occurred. Consequently, we do not report optimality gaps for metaheuristic solutions, as the LP relaxation bounds are too weak to provide meaningful quality certificates. This intractability motivates our metaheuristic approach, which produces high-quality solutions for instances with hundreds of customers within minutes. Developing tighter formulations or valid inequalities for VRP-RPD remains an open direction for future research.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Solution Methodology</head><p>The computational intractability demonstrated in Section 3 motivates a sequential metaheuristic pipeline combining a GPU-accelerated Adaptive Large Neighborhood Search (ALNS) <ref type="bibr" target="#b16">[17]</ref> and a Biased Random-Key Genetic Algorithm (BRKGA) <ref type="bibr" target="#b7">[8]</ref>. The two stages operate as follows: ALNS is run first to obtain a high-quality solution through GPU-accelerated neighborhood search, which is then encoded as a warm-start seed for BRKGA's initial population. BRKGA subsequently exploits VRP-RPD's structure through specialized encoding and decoding mechanisms: (1) the random-key representation naturally handles coupled assignment and sequencing decisions without requiring complex repair operators, and (2) genetic operators preserve chromosome validity while enabling effective exploration of the solution space beyond the ALNS starting point. This pipeline design ensures BRKGA invests its evolutionary budget in refining and diversifying from a strong incumbent rather than recovering from random initialization.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1">Problem-Specific Challenges</head><p>VRP-RPD presents three design challenges for metaheuristic solution methods:</p><p>Decoupled operations. Unlike classical pickup-and-delivery where the same vehicle performs both operations, VRP-RPD permits different vehicles to handle dropoff and pickup at the same customer. The solution representation must encode this flexibility while maintaining feasibility.</p><p>Temporal dependencies. Pickup at customer c cannot occur before dropoff completion plus processing time p c . These precedence constraints span multiple vehicle routes and cannot be enforced through simple route sequencing.</p><p>Dynamic capacity. Vehicle capacity changes throughout each route as resources are deployed and retrieved. The capacity trajectory depends on the interleaving of dropoff and pickup operations across all vehicles, creating complex feasibility constraints.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2">Adaptive Large Neighborhood Search (ALNS)</head><p>The first stage of the pipeline is an Adaptive Large Neighborhood Search (ALNS) <ref type="bibr" target="#b16">[17]</ref> with GPU-accelerated parallel neighborhood evaluation. ALNS rapidly produces a high-quality incumbent solution through iterative neighborhood destruction and reconstruction; this solution is then passed to BRKGA (Section 4.4) as a warm-start seed.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.1">Algorithm Overview and GPU Acceleration</head><p>ALNS iteratively improves a solution by partially destroying it (removing a subset of customers) and repairing it (reinserting removed customers). At each iteration, a destroy operator removes q customers from the current solution, and a repair operator reinserts them. The resulting solution is accepted or rejected according to a simulated annealing criterion. Operator weights are updated periodically based on historical performance, making the operator selection adaptive. This biases selection toward operators that have produced improving solutions. Algorithm 1 presents the core ALNS framework executed by each parallel instance.</p><p>GPU-Accelerated Parallel Architecture. A key distinguishing feature of our implementation is massively parallel execution using CUDA. The computational bottleneck in ALNS is the repair phase, where evaluating all feasible insertion positions for each removed customer requires O(q • m • L) cost computations per iteration, with L the average route length. We exploit GPU parallelism at three levels:</p><p>1. Multi-instance parallelism: Each GPU executes 32 independent ALNS instances simultaneously mapped to persistent thread blocks. Each instance maintains its own solution, temperature, and operator weights, exploring different regions of the solution space. A global best solution is maintained in unified memory with atomic lock-based updates. Every 1000 iterations, each instance checks whether a sibling instance on the same GPU has found a superior solution and imports it if so, enabling intra-GPU knowledge sharing without requiring host-side synchronization.</p><p>2. Intra-instance parallelism: Within each ALNS instance, 256 threads cooperate on repair operator evaluation. Threads evaluate insertion costs for different (agent, position) combinations in parallel, with warp-level reductions identifying optimal insertions. Shared memory buffers pickup-ready times for cross-agent timing evaluation.</p><p>3. Multi-GPU scaling: For systems with multiple GPUs, independent CUDA streams execute ALNS batches on each device in segments of 100 iterations. After each segment, the host synchronizes results across GPUs, reads the best solution found on each device and writes the global incumbent back to all devices. This 100-iteration host synchronization interval is distinct from the 1000-iteration intra-GPU best check: the former coordinates across devices via the CPU, while the latter is a lightweight deviceside poll within a single GPU's shared memory. Together they provide two-level knowledge sharing at different granularities.</p><formula xml:id="formula_21">Algorithm 1 ALNS Framework (per GPU instance) Require: Instance (C, m, k, d, p), parameters (α, T 0 , τ, r) Ensure: Best solution S * , makespan z * 1: S 0 ← ConstructInitialSolution(C, m, k, d, p) 2: S ← S 0 , S * ← S 0 , z * ← makespan(S 0 ) 3: T ← T 0 • z * ▷ Initial temperature 4: Initialize weights w − i = w + j = 1</formula><p>for all destroy/repair operators 5: Initialize scores s i = 0 and attempt counts a i = 0 6: stagnation ← 0 7: for iter = 1, . . . , max_iter do</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>8:</head><p>Select destroy operator i with probability</p><formula xml:id="formula_22">p i = w − i / j w − j 9:</formula><p>Select repair operator j with probability p j = w + j / k w + k 10:</p><formula xml:id="formula_23">a i ← a i + 1, a j ← a j + 1 ▷ Increment attempt counts 11:</formula><p>S ′ ← repair j (destroy i (S, q)) ▷ Destroy then repair 12:</p><formula xml:id="formula_24">z ′ ← makespan(S ′ ) 13: if z ′ &lt; z then ▷ Improving solution 14: S ← S ′ , z ← z ′</formula><p>15:</p><formula xml:id="formula_25">s i ← s i + σ 2 , s j ← s j + σ 2 16: if z ′ &lt; z * then ▷ New global best 17: S * ← S ′ , z * ← z ′</formula><p>18:</p><formula xml:id="formula_26">s i ← s i + (σ 1 − σ 2 ), s j ← s j + (σ 1 − σ 2 ) 19: stagnation ← 0 20: end if 21: else if rand() &lt; exp(−(z ′ − z)/T ) then ▷ Simulated annealing acceptance 22: S ← S ′ , z ← z ′ 23: s i ← s i + σ 3 , s j ← s j + σ 3 24:</formula><p>end if if iter mod τ = 0 then ▷ Adaptive weight update 32:</p><p>for each operator ℓ do 33:</p><formula xml:id="formula_27">w ℓ ← max(0.1, (1 − r) • w ℓ + r • s ℓ /a ℓ ) 34:</formula><p>end for</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>35:</head><p>Reset scores s ℓ ← 0 and attempt counts a ℓ ← 0 36:</p><p>end if 37: end for 38: return S * , z * Roulette Wheel Selection. Operator selection (lines 8-9) uses probability-proportional-to-weight sampling. Operator i is selected with probability p i = w i / j w j . This biases selection toward historically successful operators while maintaining non-zero probability for all operators.</p><p>Adaptive Scoring. Operators accumulate scores based on iteration outcomes: σ 1 = 33 for finding a new global best, σ 2 = 9 for an improving solution, and σ 3 = 13 for an accepted non-improving solution. Every τ iterations, weights are updated using a reaction factor r that balances historical performance with recent success, with a minimum weight of 0.1 preventing complete exclusion.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.2">Destroy Operators</head><p>We implement six destroy operators that target different solution characteristics. At each iteration, the number of customers removed is sampled uniformly from q ∈ [q min , q max ], where q max = max 4, ⌊0.05n⌋ , q min = max 4, ⌊q max /2⌋ .</p><p>For small instances (n ≲ 80), ⌊0.05n⌋ &lt; 4, so both bounds collapse to 4 and exactly four customers are removed each iteration. For larger instances the range grows with n: at n = 202 the range is <ref type="bibr" target="#b4">[5,</ref><ref type="bibr" target="#b9">10]</ref>, and at n = 431 it is <ref type="bibr" target="#b9">[10,</ref><ref type="bibr" target="#b20">21]</ref>. This ensures destruction scales with instance size while maintaining a practical minimum disruption level of four customers. Random Removal. Selects q customers uniformly at random via Fisher-Yates shuffle. This operator provides unbiased diversification, preventing the search from becoming trapped in local optima defined by specific structural patterns.</p><p>Worst Removal. Evaluates the removal gain ∆ c for each customer c, defined as the reduction in makespan achieved by removing c from its current position. Customers are ranked by removal gain, and selection is randomized using a power parameter p = 6. The customer at rank r is selected with probability proportional to r −p , favoring poorly-placed customers while maintaining stochastic diversity <ref type="bibr" target="#b16">[17]</ref>.</p><p>Shaw Removal. Removes clusters of related customers based on a composite relatedness measure <ref type="bibr" target="#b18">[19]</ref>:</p><formula xml:id="formula_28">R(c i , c j ) = ϕ•d ci,cj +χ•|T drop [c i ]−T drop [c j ]|+ ω 2 •⊮[δ-agent(c i ) ̸ = δ-agent(c j )]+ ω 2 •⊮[π-agent(c i ) ̸ = π-agent(c j )]</formula><p>with weights ϕ = 9, χ = 3, ω = 5, where δ-agent(c) and π-agent(c) denote the vehicle performing the dropoff and pickup of customer c, respectively. Lower R indicates greater relatedness. Here d ci,cj denotes the edge-weight travel time between customers c i and c j as defined in Section 3; no explicit spatial coordinates are required. The agent-mismatch term contributes ω/2 per operation type (dropoff or pickup) that differs between the two customers, ranging from 0 (both operations on the same vehicles) to ω (dropoff vehicles differ and pickup vehicles differ). This decomposition reflects VRP-RPD's cross-vehicle structure, where dropoff and pickup assignments are independent. Starting from a randomly selected seed customer, the operator iteratively adds the most related (lowest-R) unremoved customer until q customers are selected. The agent-mismatch terms encourage removing customers whose operations are currently concentrated on the same vehicles, creating opportunities for cross-vehicle reassignment during repair.</p><p>Cluster Removal. Selects a random customer as the center and removes its q nearest neighbors by travel time (edge weight). Unlike Shaw removal, this operator considers only pairwise travel time, creating compact removal regions that enable localized route restructuring.</p><p>Route Removal. Selects a random non-empty vehicle route and removes all customers assigned to it (both dropoff and pickup operations). If the selected route contains fewer than q min customers, additional customers are removed from other routes using nearest-neighbor proximity. This operator enables large-scale restructuring of vehicle assignments and is particularly effective when entire routes are suboptimal.</p><p>Critical Path Removal. Identifies the bottleneck vehicle (the one determining the makespan) and preferentially removes customers from its route. If the bottleneck route contains fewer than q min customers, additional customers are removed from other routes based on their contribution to overall makespan. This operator directly targets the makespan objective by reducing the critical vehicle's workload.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.3">Repair Operators</head><p>Four repair operators reinsert removed customers, each adapted for VRP-RPD's cross-vehicle coordination structure. All operators evaluate insertions using a two-pass timing evaluation. Pass 1 schedules all dropoff operations and computes pickup-ready times (T drop [c] + p c ) and pass 2 schedules pickup operations using the correct ready times, which may depend on dropoff times computed on different vehicles. This two-pass structure ensures that cross-vehicle assignments are evaluated with accurate timing. Capacity constraints are enforced during insertion. Dropoff requires available resources (q v &gt; 0), and pickup requires available capacity (q v &lt; k).</p><p>Greedy Insertion. Sequentially inserts the customer with lowest insertion cost. For each uninserted customer c, all feasible (vehicle, position) combinations for both dropoff and pickup are evaluated in parallel across GPU threads, including cross-vehicle assignments where different vehicles handle dropoff and pickup. The insertion cost is the makespan delta ∆T resulting from the insertion. After each insertion, route timings are recomputed for accurate subsequent evaluations.</p><p>Regret-2 Insertion. For each uninserted customer, computes the two best insertion options and their cost difference (regret value c 2 − c 1 ). The customer with highest regret (most "damaged" by not receiving its best insertion) is inserted first. This anticipatory strategy avoids greedy commitments that preclude globally superior assignments.</p><p>Regret-3 Insertion. Extends Regret-2 by considering the three best insertion options, with regret defined as (c 2 − c 1 ) + (c 3 − c 1 ). This provides stronger lookahead for instances with many feasible insertion positions.</p><p>Regret-m Insertion. Considers all m vehicles as candidates, computing regret across the full vehicle fleet. This operator captures the broadest view of insertion alternatives and is particularly valuable when cross-vehicle coordination creates diverse assignment opportunities.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.4">Acceptance Criterion and Temperature Control</head><p>We employ simulated annealing as the acceptance criterion. A candidate solution with makespan z ′ replacing the current solution with makespan z is accepted with probability:</p><formula xml:id="formula_29">P (accept) = 1 if z ′ &lt; z exp −(z ′ − z)/T otherwise</formula><p>The initial temperature coefficient is T 0 = 0.30, so the initial temperature is T = 0.30 • z init , calibrated so that initially approximately 30% of worsening moves are accepted. Temperature decreases geometrically at rate α = 0.9998 per iteration. To escape stagnation, we implement a reheating mechanism: if no improvement is found for 2000 consecutive iterations and the current temperature has cooled to below 1% of its initial value T init , the temperature is reset to 0.50 • T 0 • z * . The temperature gate prevents premature reheating when the search is still actively exploring near its starting temperature, reserving the reheat for situations where the search has genuinely stagnated in a cold, confined region of the solution space.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.5">Initial Solution Construction</head><p>The initial solution is constructed through a three-phase procedure. First, sweep-based clustering orders customers by pseudo-angle relative to the depot (computed from the distance matrix without requiring explicit coordinates) and partitions them into m sectors. Second, load balancing redistributes customers between sectors based on estimated workload w c = 2d 0,c + p c (round-trip depot travel time plus processing time), iteratively transferring customers from overloaded to underloaded vehicles until workload imbalance falls below 10%. Third, nearest-neighbor route construction builds each vehicle's route by greedily selecting the closest feasible operation (dropoff or pickup) at each step, dynamically choosing between operations based on current inventory and processing readiness. The initial solution is refined through customer relocation between vehicles and cross-vehicle pickup reassignment, applied iteratively until no improvement is found.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.6">Periodic Local Search</head><p>Two targeted local search procedures are applied periodically within the main ALNS loop to complement destroy-repair exploration with fine-grained intensification. Both are parallelized across the 256 GPU threads of each instance. Pickup Repositioning (every 200 iterations). For each pickup operation currently assigned to a bottleneck or near-bottleneck vehicle, the procedure evaluates relocating that pickup to every feasible position on every vehicle, including cross-vehicle reassignment. Because pickup timing is bounded below by the corresponding dropoff time plus processing time (T pick ≥ T drop [c] + p c ), moving a pickup does not alter dropoff assignments and preserves precedence feasibility by construction. The move yielding the greatest makespan reduction is applied, and the procedure repeats for up to three passes per invocation.</p><p>Cross-Agent Customer Relocation (every 500 iterations). The bottleneck vehicle is identified, and the procedure attempts to relocate entire customer assignments-both dropoff and pickup operations-from The relocation yielding the greatest makespan reduction is applied; the procedure iterates for up to three passes, re-identifying the current bottleneck each time.</p><p>Together, Pickup Repositioning and Cross-Agent Relocation provide two levels of intensification: finegrained pickup rebalancing that leaves dropoff structure intact, and coarser whole-customer migration targeted at the current bottleneck. Both operators are applied deterministically (no acceptance criterion) and act on the current solution rather than on destroyed-and-repaired candidates, ensuring that improvements accumulate across iterations independently of the simulated annealing schedule.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.7">Algorithmic Configuration</head><p>Table <ref type="table" target="#tab_1">2</ref> summarizes ALNS hyperparameters. The cooling rate and stagnation threshold balance intensification with diversification. The 32 concurrent instances per GPU provide robust exploration, while the two-level synchronization design (100-iteration host sync; 1000-iteration intra-GPU best check) limits coordination overhead.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.3">Baseline Heuristics for Comparison</head><p>To evaluate the pipeline's performance, we implement a portfolio of five specialized construction heuristics as baseline methods. These heuristics represent standard approaches adapted from classical VRP variants and provide a performance benchmark for both metaheuristic stages. Unlike the construction heuristics used internally in Section 4.4.4 to seed BRKGA's initial population, these baseline methods produce complete standalone solutions for direct comparison.</p><p>1. Nearest Neighbor (NN): Greedy route construction that iteratively selects the closest unserved customer. Prioritizes travel distance minimization, often producing geographically compact routes. Routes are constructed sequentially, with each vehicle serving customers until capacity is exhausted.</p><p>2. Max Regret Insertion: Insertion-based heuristic that computes the "regret" for each unassigned customer, defined as the difference between its best and second-best insertion position across all routes. Prioritizes customers with high regret (difficult to place), avoiding premature commitments that may block superior global solutions.  3. Clarke-Wright Savings: Classic VRP heuristic that merges routes based on distance savings</p><formula xml:id="formula_30">s ij = d 0i + d 0j − d ij .</formula><p>Adapted for VRP-RPD by considering savings from consolidating customer assignments across vehicles while respecting capacity and precedence constraints.</p><p>4. Greedy Defer: Prioritizes dropoff operations over pickups through a configurable penalty. A deferral multiplier λ ∈ <ref type="bibr" target="#b4">[5,</ref><ref type="bibr" target="#b14">15]</ref> increases the perceived cost of pickup operations during route construction, encouraging vehicles to complete dropoffs before retrieving processed resources. This reduces vehicle idle time waiting for processing completion.</p><p>5. 2-Opt Improved: Applies local search (2-opt, relocate, swap operators) to solutions generated by the base heuristics. Provides refined starting solutions through neighborhood exploration. We apply 2-opt to each baseline heuristic solution as a post-processing step.</p><p>Each baseline heuristic produces a complete solution represented as vehicle tours: tour v = [(c 1 , op 1 ), (c 2 , op 2 ), . . .] where c i is a customer and op i ∈ {D, P} is the operation type (dropoff or pickup). The tours implicitly define vehicle assignments and operation sequences, which are evaluated for makespan using the same simulation logic as the BRKGA decoder.</p><p>The best solution among all baseline heuristics is reported as "Heuristics" in our experimental results (Section 6), representing the strongest non-metaheuristic approach for comparison.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.4">Biased Random-Key Genetic Algorithm</head><p>The Biased Random-Key Genetic Algorithm represents solutions as vectors of random keys (real numbers in the interval [0, 1)) <ref type="bibr" target="#b0">[1]</ref>. A deterministic decoder transforms each chromosome into a feasible solution and computes its fitness. The genetic operators work exclusively on the random-key representation, ensuring that all offspring are valid chromosomes.</p><p>The BRKGA evolves a population through generations using three mechanisms: (1) elite preservation, where the best individuals are copied unchanged to the next generation; (2) mutation, where randomly generated individuals are introduced; and (3) biased crossover, where offspring inherit genes from an elite parent with higher probability than from a non-elite parent.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.4.1">Chromosome Encoding</head><p>Each solution is encoded as a chromosome (π, α) of length 4n, where n = |C| is the number of customers. Let O = {D 1 , P 1 , D 2 , P 2 , . . . , D n , P n } denote the set of 2n operations (dropoffs D c and pickups P c for each customer c).</p><p>Priority This two-component encoding separates concerns where π controls when operations occur, while α suggests which vehicle performs them. Genetic operators can independently modify sequencing and assignment, providing greater evolutionary flexibility than a single-component encoding.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.4.2">Decoder: Multi-Pass Schedule Construction</head><p>The decoder transforms chromosome (π, α) into a feasible schedule through multi-pass simulation as shown in Fig 1 <ref type="figure">.</ref> The key challenge is handling precedence constraints-processing operations strictly in priority order may produce infeasible schedules where pickup P c appears before its dropoff D c has been scheduled. The decoder addresses this by iteratively deferring infeasible operations until their dependencies are satisfied.</p><p>Algorithm 2 presents our multi-pass decoder. Operations are sorted by priority (line 1) and processed iteratively. Dropoff D c is feasible whenever some vehicle has available capacity (line 9). Pickup P c is feasible only when dropoff D c has been scheduled, sufficient time has elapsed for processing (t ≥ T drop [c] + p c ), and some vehicle has capacity to retrieve the resource (line 11). Infeasible operations are deferred to subsequent passes.</p><p>Vehicle Selection Strategy. The SelectVehicle procedure (line 14) chooses among feasible vehicles by minimizing operation completion time. For operation o at customer c, we evaluate each feasible vehicle v by its arrival time t</p><formula xml:id="formula_31">[v] + d ℓ[v],c , representing current time plus travel from current location ℓ[v] to customer c. We select v * = arg min v {t[v] + d ℓ[v]</formula><p>,c }, using the assignment hint α o as a tiebreaker when multiple vehicles achieve the minimum. This greedy criterion balances exploitation of chromosomal guidance with immediate schedule quality.</p><p>Complexity. Sorting operations requires O(n log n) time. Each pass considers O(n) operations, evaluates O(m) vehicles per feasible operation, and performs O(1) state updates per assignment, yielding O(nm) work per pass. With at most 2n passes (one per operation in worst case), total decoder complexity is O(n 2 m). In practice, most operations schedule in the first few passes once their dependencies resolve.</p><p>Infeasibility Handling. If not all operations are scheduled after 2n passes, indicating an infeasible chromosome, we penalize the fitness as f = z + λ • (2n − |{scheduled}|) where λ = 10 6 is a large penalty coefficient. This occurs rarely in practice after the first few generations.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.4.3">Genetic Operators</head><p>BRKGA evolves a population P t of size N p over T generations using three operators: </p><formula xml:id="formula_32">Algorithm 2 Multi-Pass Decoder Require: Chromosome (π, α), instance (C, m, k, d, p) Ensure: Schedule S, makespan z 1: O ← argsort(π) 2: scheduled[o] ← false for all o ∈ O 3: t[v] ← 0, q[v] ← k, ℓ[v] ← 0 for all v ∈ V 4: for p = 1, . . . ,</formula><formula xml:id="formula_33">if o = D c for some c ∈ C then 10: feasible ← ∃v ∈ V s.t. q[v] &gt; 0 11: else 12: feasible ← scheduled[D c ] ∧ ∃v ∈ V s.t. (t[v] ≥ T drop [c] + p c ∧ q[v] &lt; k) 13:</formula><p>end if</p><formula xml:id="formula_34">14:</formula><p>if feasible then 15:</p><p>v * ← SelectVehicle(o, α, t, q, ℓ) </p><formula xml:id="formula_35">z ← max v∈V {t[v] + d ℓ[v],0 } 25: return S, z</formula><p>Elite preservation. The top N e chromosomes by fitness are copied unchanged to P t+1 . We set N e = 0.15N p .</p><p>Mutation. We generate N m random chromosomes with genes drawn independently from U(0, 1). We set N m = 0.15N p to maintain diversity.</p><p>Biased crossover. The remaining N p − N e − N m offspring are generated through parameterized uniform crossover. For each offspring, we select one elite parent uniformly from the top N e and one non-elite parent uniformly from P t \ {elite}. Each gene is inherited from the elite parent with probability ρ e = 0.7 and from the non-elite parent with probability 1 − ρ e . This bias toward elite genes accelerates convergence while preserving diversity through non-elite contributions <ref type="bibr" target="#b7">[8]</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.4.4">Warm-Start Initialization</head><p>Random initialization produces low-quality initial populations that converge slowly. We employ a two-source warm-start strategy that seeds 15% of the initial population P 0 with chromosomes derived from: (1) the ALNS incumbent solution encoded into the BRKGA representation, and (2) three construction heuristics providing additional starting points. ALNS (described in Section 4.2) is run first and its best solution provides the primary warm-start seed; across all benchmark instances and variants, the ALNS-encoded chromosome consistently yielded the best initial fitness among all warm-start sources, with the construction heuristics always producing inferior initial solutions. The construction heuristic seeds are nevertheless included to inject structural diversity into the warm-started population region, preventing premature convergence around the single ALNS solution archetype.</p><p>ALNS Seed Encoding. The ALNS best solution is encoded into a chromosome (π, α) as follows. For each operation o assigned to vehicle v at route position r out of L v total operations, the priority gene is set to π o = (r − 1)/L v , so that operations appearing earlier in the route receive proportionally lower priority values Construction Heuristic Seeds. Three construction heuristics provide additional warm-start chromosomes that explore different regions of the solution space:</p><p>• Nearest Neighbor (NN): Greedily assigns each operation to the nearest available vehicle, producing compact routes biased toward distance minimization.</p><p>• Load-Balanced: Distributes operations across vehicles to equalize workload, reducing the likelihood that any single vehicle determines the makespan.</p><p>• Shortest Processing Time (SPT): Prioritizes dropoff operations by ascending processing time, ensuring resources with shorter jobs complete early and free vehicles for subsequent pickups.</p><p>Each construction heuristic solution is encoded into a chromosome using the same priority/assignment gene mapping as the ALNS seed.</p><p>Seed Diversity. Each source chromosome is perturbed by adding ϵ ∼ U(−0.03, 0.03) to each gene (clamped to [0, 1)) to produce multiple diverse warm-start variants. Together, 20 warm-start seeds (drawn primarily from the ALNS encoding with additional variants from the three construction heuristics) are injected into 15% of the initial population P 0 . The remaining 85% is filled with randomly generated chromosomes to maintain population diversity for evolutionary exploration. Since the ALNS warm-start chromosome always achieved the best initial fitness, the construction heuristic seeds serve a structural role: they ensure the warm-started elite region is not entirely composed of minor perturbations of the same ALNS solution, providing BRKGA with diverse recombination material from its very first generation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.4.5">Algorithmic Configuration</head><p>Table <ref type="table" target="#tab_7">3</ref> summarizes BRKGA hyperparameters. Population size and generation limits balance solution quality with computational budget. We run for a fixed budget of T = 20,000 generations.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Experimental Setup</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.1">Benchmark Instances and Problem Variants</head><p>We evaluate VRP-RPD on 14 benchmark instances derived from TSPlib <ref type="bibr" target="#b15">[16]</ref>, using edge weights as travel times. Instance sizes range from 17 to 1000 customers, providing diverse problem scales and geographical structures. For each instance, customer processing times are generated according to five systematic variants designed to test the hypothesis that cross-vehicle coordination opportunities increase with processing duration.</p><p>Processing-Time Variants. Let d min and d max denote the minimum and maximum edge weights in each instance. We define five processing-time configurations:</p><p>• base: Processing times sampled uniformly from [d min , d max ]. This establishes a baseline where processing durations are commensurate with typical travel times.</p><p>• 2×: Each base processing time is multiplied by 2.</p><p>• 5×: Each base processing time is multiplied by 5.</p><p>• 1R10: Each base processing time is multiplied by a random integer in <ref type="bibr" target="#b0">[1,</ref><ref type="bibr" target="#b9">10]</ref>, introducing heterogeneity in processing durations while maintaining the overall scale.</p><p>• 1R20: Each base processing time is multiplied by a random integer in <ref type="bibr" target="#b0">[1,</ref><ref type="bibr" target="#b19">20]</ref>, creating high variability in processing requirements.</p><p>We generate one instance per dataset for the base, 2×, and 5× variants (deterministic multipliers), and 10 instances per dataset for the 1R10 and 1R20 variants (stochastic multipliers), yielding 322 total problem instances: 14 datasets × (3 + 2 × 10) = 322 instances.</p><p>Fleet Configuration. For instances with fewer than 24 customers, we use m = 3 vehicles with capacity k = 5 resources each. For instances with 24 or more customers, we use m = 6 vehicles with capacity k = 4 resources each. These configurations ensure sufficient capacity to serve all customers while maintaining non-trivial routing constraints.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.2">Hypothesis: Processing Time and Cross-Vehicle Coordination</head><p>The processing-time variants are designed to test a fundamental hypothesis about VRP-RPD's operational dynamics. Longer processing times create greater opportunities for cross-vehicle coordination, enabling vehicles to serve additional customers while resources operate autonomously elsewhere.</p><p>Operational Rationale. Consider two extreme scenarios:</p><p>1. Short processing times (p c ≪ d ij ): When processing completes quickly relative to travel times, a vehicle that performs dropoff at customer c can profitably wait to perform the pickup itself. The time penalty for waiting is minimal. Cross-vehicle coordination offers little benefit because the drop-off vehicle has a limited opportunity to serve other customers before the resource becomes available for pickup.</p><p>2. Long processing times (p c ≫ d ij ): When processing requires a significant duration, the dropoff vehicle can travel to multiple distant customers, deploy additional resources, and potentially return to the depot before the first resource completes processing. A different vehicle can then retrieve the processed resource, maximizing fleet utilization. The longer the processing time, the more customers the dropoff vehicle can serve during the autonomous processing window.</p><p>This operational logic suggests that as processing times increase from base → 2× → 5×, the proportion of customers served via cross-vehicle coordination (different vehicles handling dropoff and pickup) should increase systematically.</p><p>Key Metrics. We measure two coordination patterns in solutions:</p><p>• Cross-Agent %: The percentage of customers where dropoff and pickup are performed by different vehicles. This directly quantifies cross-vehicle coordination opportunities exploited by the solution.</p><p>• Interleaved %: The percentage of customers where a vehicle performs other operations between that customer's dropoff and pickup. Interleaving can occur with same-vehicle or cross-vehicle patterns.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.3">Statistical Validation of Processing-Time Hypothesis</head><p>We validate the hypothesis using solutions generated by BRKGA on all benchmark datasets across all five processing-time variants. For each instance, we extract Cross-Agent % and Interleaved % from the best solution found. Paired Comparisons. Table <ref type="table" target="#tab_8">4</ref> presents paired Wilcoxon signed-rank tests comparing each variant against the base configuration. Since each dataset produces matched observations across variants (same customers, same travel times, only processing times differ), we use paired tests with n = 14 pairs. The one-sided alternative hypothesis is that the variant produces higher values than base.</p><p>Key Findings from Paired Tests:</p><p>• Cross-Agent %: All processing-time increases produce highly significant gains (p &lt; 0.01, Cohen's d &gt; 1.1). Mean increases range from +16.0 percentage points (base → 2×) to +21.3 pp (base → 5×), with large effect sizes indicating substantial practical significance.</p><p>• Interleaved %: No variant shows significant change relative to base (p &gt; 0.05). Mean differences are negligible (|∆| &lt; 2 pp), confirming that interleaving is orthogonal to processing duration.</p><p>These results strongly support the hypothesis that longer processing times systematically increase crossvehicle coordination without fundamentally changing route interleaving patterns. Interpretation. The statistical evidence overwhelmingly supports the processing-time hypothesis:</p><p>1. Cross-vehicle coordination increases monotonically with processing duration, with large effect sizes (Cohen's d &gt; 1.1) indicating practical importance.</p><p>2. The trend is robust across deterministic (2×, 5×) and stochastic (1R10, 1R20) processing-time distributions, demonstrating that the effect depends on average duration rather than variability.</p><p>3. Interleaving patterns remain stable, indicating that cross-vehicle coordination exploits temporal separation (processing duration) rather than spatial structure (route geometry).</p><p>These findings validate VRP-RPD's core operational premise that when resources operate autonomously for extended periods, decoupling dropoff and pickup vehicles becomes increasingly valuable. The problem variants successfully isolate this effect, enabling rigorous evaluation of solution approaches under different operational regimes.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.4">Computational Environment</head><p>All experiments were conducted on a computing cluster with Intel Xeon Platinum 8160 processors (2.1 GHz) and 192 GB RAM per node and 8 NVIDIA L40 GPUs. Both BRKGA and ALNS were implemented in CUDA C++ (compiled with NVCC, C++17) targeting compute capabilities 8.0/8.9/9.0, with host-side coordination in C++. Solution encoding and result processing utilities were implemented in Python 3.9. Baseline heuristics were implemented in Python 3.9 using NumPy 1.21. A first structural observation concerns how ALNS's improvement over baseline heuristics scales with processing duration. Across all instances, the reduction achieved by ALNS relative to heuristics (row "1 Impr. %") increases systematically as processing times grow from base through 2× and 5×, with this trend most pronounced on larger instances. For example, on kroA100, ALNS reduces makespan by 49.15% at base but 58.49% at 1R20; on gr666, the corresponding figures are 66.59% and 71.04%. This pattern has a direct mechanistic explanation. Baseline heuristics commit to coordination structures early during construction and lack the ability to revise cross-vehicle assignments. As processing times lengthen, the temporal slack between dropoff completion and pickup availability widens, creating coordination opportunities that heuristic construction cannot exploit but ALNS's destroy-repair cycle can. Operators such as Shaw Removal and Critical Path Removal iteratively dissolve and rebuild cross-vehicle assignments, allowing ALNS to exploit the increased temporal flexibility that longer processing windows afford. Heuristics, by contrast, incur a compounding penalty as processing durations grow, because their early coordination commitments become increasingly suboptimal relative to the expanded feasible assignment space.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6">Results</head><p>A second observation concerns the marginal contribution of BRKGA on top of the ALNS incumbent (row "2 vs 1 Impr. %"). On small-to-medium instances (up to approximately 100 customers), BRKGA achieves substantial additional reductions, often in the range of 10-22%, reflecting its ability to discover coordination patterns beyond the local optima that ALNS's neighborhood search converges to. On larger instances (n ≥ 431), BRKGA's marginal gains diminish markedly, typically falling below 5%. This is consistent with the exponential growth of the coordination assignment space with instance size: as n increases, the population of elite chromosomes becomes increasingly sparse relative to the solution landscape, reducing the probability that biased crossover recombines complementary coordination patterns into superior offspring. Nevertheless, BRKGA still achieves consistent marginal improvements on most large instances, and the cases where "2 vs 1 Impr. %" equals zero are concentrated at higher processing-time variants on small instances, suggesting that ALNS already saturates the accessible improvement in those configurations.</p><p>A third and more nuanced observation emerges when examining BRKGA's marginal gains on large instances (n ≥ 202) across processing-time variants. While gains at the base processing-time configuration are minimal (typically 1-3%), they increase modestly but consistently at 2× and 5× variants. On gr431, for instance, BRKGA improves upon ALNS by 0.00% at base but 2.17% and 1.44% at 2× and 5× respectively; on dsj1000, the corresponding figures are 1.98%, 2.36%, and 2.22%. This pattern suggests a structural property of the VRP-RPD solution landscape under longer processing regimes. At base processing times on large instances, the tight coupling between dropoff and pickup timing constrains the feasible coordination space, and most near-optimal solutions exploit similar coordination patterns. The landscape near the ALNS incumbent is narrow, and BRKGA's crossover operators find little diverse recombination material. As processing times increase, the widened temporal windows support a richer set of viable cross-vehicle coordination structures, enabling qualitatively different but comparably strong solutions to coexist in the BRKGA population. Crossover between elite chromosomes exploiting distinct coordination archetypes can then produce offspring that inherit complementary assignment patterns, giving population-based evolutionary search a foothold that single-trajectory neighborhood search cannot exploit. While we infer these landscape properties indirectly from aggregate performance, the consistency of the effect across multiple large instances and across both deterministic and stochastic processing-time variants strengthens the interpretation.</p><p>Together, these observations support a coherent picture of the pipeline's behavior: ALNS provides the dominant improvement by exploiting coordination flexibility through iterative neighborhood restructuring, while BRKGA contributes meaningfully where the solution landscape supports diverse elite archetypes-primarily on small-to-medium instances and on larger instances under extended processing regimes. The pipeline's aggregate performance, reducing makespan by 16-74% over baseline heuristics across all configurations, establishes robust benchmarks for VRP-RPD and demonstrates that a staged metaheuristic approach explicitly modeling cross-vehicle coordination flexibility outperforms both standalone construction heuristics and single-stage search.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7">Conclusion</head><p>We introduce the Vehicle Routing Problem with Resource-Constrained Pickup and Delivery (VRP-RPD), a novel optimization problem that addresses operational scenarios where transport vehicles deploy autonomous resources to customer locations, and different vehicles may perform dropoff and pickup operations at the same location. This decoupling of paired operations, absent from classical pickup-and-delivery formulations, creates inter-route precedence dependencies that fundamentally distinguish VRP-RPD from existing problem classes. The problem captures practical applications in autonomous robotics deployment, disaster response logistics, construction equipment rental, healthcare diagnostics distribution, and agricultural sensor networks, where transport capacity is scarce and vehicles need not remain idle during autonomous processing.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7.1">Problem Formulation and Computational Complexity</head><p>We provide a complete mixed-integer linear programming (MILP) formulation for VRP-RPD with makespan minimization objectives. The formulation incorporates: (1) cross-vehicle coordination constraints that permit different vehicles to handle dropoff and pickup at the same customer, (2) temporal precedence constraints ensuring pickup cannot occur before processing completion regardless of vehicle assignment, and (3) dynamic capacity constraints tracking resource deployment and retrieval throughout vehicle routes. We prove VRP-RPD is NP-hard through reduction from the min-max Vehicle Routing Problem.</p><p>Computational experiments with exact methods using Gurobi demonstrate severe scalability limitations. For instances with 17-24 customers, the solver produces feasible solutions but fails to close optimality gaps beyond approximately 70% after two hours on high-performance hardware (32 cores, 128GB RAM). The extensive use of big-M constraints in time propagation and cross-vehicle precedence linking yields weak LP relaxations that cannot provide meaningful quality certificates for metaheuristic solutions. For instances with 50+ customers, memory requirements exceed practical limits before substantive bound improvement occurs. This intractability confirms that VRP-RPD's cross-vehicle coordination structure creates fundamental computational barriers beyond standard vehicle routing complexity, motivating metaheuristic approaches for practical problem scales.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7.2">Benchmark Datasets and Processing-Time Variants</head><p>To facilitate future research, we establish a comprehensive benchmark suite derived from 14 TSPlib instances (17-1000 customers) with five systematic processing-time variants. The variants (base, 2imes, 5imes, 1R10, and 1R20) are designed to isolate the effect of processing duration on cross-vehicle coordination opportunities. Statistical validation across instances confirms the operational hypothesis that longer processing times systematically increase cross-vehicle coordination (16-21 percentage point gains, p &lt; 0.001, large effect sizes) while leaving route interleaving patterns unchanged. This demonstrates that VRP-RPD's coordination benefits stem from temporal separation between operations rather than spatial route structure. The 322 benchmark instances span diverse problem scales and coordination regimes, providing a rigorous testbed for algorithm development. Datasets are publicly available at https://github.com/Harishjitu/vrp-rpd.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7.3">Solution Approaches and Benchmark Establishment</head><p>We develop a sequential ALNS→BRKGA pipeline tailored to VRP-RPD's decoupled structure. ALNS is executed first to obtain a refined incumbent solution, which is then encoded as a warm-start seed for the Biased Random-Key Genetic Algorithm (BRKGA). BRKGA employs: (1) a two-component chromosome encoding that separately represents operation priorities and vehicle assignments, (2) a multi-pass decoder that iteratively resolves temporal dependencies by deferring infeasible operations, and (3) a two-source warm start that seeds the initial population from both the ALNS incumbent chromosome and construction heuristic solutions.</p><p>The GPU-accelerated Adaptive Large Neighborhood Search (ALNS) provides complementary strengths through intensive parallel neighborhood exploration. ALNS features six specialized destroy operators (including critical path removal that targets the makespan bottleneck and Shaw removal that exploits VRP-RPD's relatedness structure) and four repair operators with two-pass timing evaluation for accurate cross-vehicle precedence handling. The implementation runs 32 concurrent ALNS instances per GPU with multi-GPU scaling, enabling massively parallel evaluation of insertion neighborhoods on large instances.</p><p>Computational experiments demonstrate that BRKGA achieves the best or joint-best result on every instance-variant pair, consistently outperforming both standalone ALNS and baseline heuristics. BRKGA improvements over baseline heuristics range from 16% to 74% across all 322 instances, with ALNS providing a strong warm-start incumbent that BRKGA refines through evolutionary search. Together, these solutions establish robust benchmarks for the 322 problem instances.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7.4">Future Research Directions</head><p>The VRP-RPD formulation opens several research avenues:</p><p>Exact methods. Developing tighter formulations through valid inequalities, alternative variable definitions, or branch-and-price decompositions could extend exact solvability beyond current limits. The weak LP bounds from big-M constraints suggest that reformulations exploiting problem structure may yield substantial computational gains.</p><p>Hybrid metaheuristics. The sequential ALNS→BRKGA pipeline could be extended in several directions: running multiple ALNS restarts to provide a diverse portfolio of warm-start seeds, embedding ALNS local search as a post-processing step within BRKGA's elite-preservation phase, or using the BRKGA elite population to periodically reinitialize ALNS instances. Learning-based operator selection and neural networkguided destroy-repair strategies could further exploit temporal coordination patterns identified across the benchmark suite.</p><p>Problem extensions. Practical variants include heterogeneous processing times with uncertain durations, time windows on customer service, heterogeneous vehicle capacities and speeds, stochastic travel times, and dynamic problem versions where customer requests arrive online. Each extension introduces additional coordination complexity requiring specialized algorithmic treatment.</p><p>Real-world validation. Empirical studies in autonomous robotics deployment, disaster response operations, or equipment rental logistics could validate the operational benefits of cross-vehicle coordination and refine problem assumptions based on field constraints.</p><p>VRP-RPD addresses a gap in vehicle routing literature by formalizing scenarios where paired operations occur at the same location but may be performed by different agents across time. The problem's distinctive coordination structure, proven computational difficulty, and practical relevance establish it as a meaningful addition to the pickup-and-delivery problem taxonomy. The benchmark suite, MILP formulation, and sequential ALNSoBRKGA pipeline, with BRKGA consistently achieving the best solutions across all instance sizes by refining the ALNS incumbent through evolutionary search, provide a foundation for ongoing research in this domain.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 1 :</head><label>1</label><figDesc>Figure1: Flowchart of the multi-pass decoder. Operations are processed in priority order; infeasible operations (e.g., pickups with unsatisfied precedence) are deferred to subsequent passes until all dependencies are resolved.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head>Table 1 :</head><label>1</label><figDesc>Comparison of VRP-RPD with related problem classes</figDesc><table><row><cell>Problem</cell><cell>Location</cell><cell>Agent</cell><cell>Capacity</cell></row><row><cell>VRP</cell><cell>Single visit</cell><cell>N/A</cell><cell>Transported goods</cell></row><row><cell>VRPSPD</cell><cell>Simultaneous</cell><cell>Same</cell><cell>Net load change</cell></row><row><cell>PDPTW</cell><cell>Different</cell><cell>Same</cell><cell>Transported goods</cell></row><row><cell>DARP</cell><cell>Different</cell><cell>Same</cell><cell>Passengers</cell></row><row><cell>TRSP</cell><cell>On-site</cell><cell>Same</cell><cell>Tools/skills</cell></row><row><cell>TSPJ</cell><cell>Same</cell><cell>Single</cell><cell>Unlimited</cell></row><row><cell>VRP-RPD</cell><cell>Same</cell><cell cols="2">Different Deployed resources</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head>Table 2 :</head><label>2</label><figDesc></figDesc><table><row><cell cols="2">ALNS hyperparameters</cell></row><row><cell>Parameter</cell><cell>Value</cell></row><row><cell>Initial temperature coefficient (T 0 )</cell><cell>0.30</cell></row><row><cell>Cooling rate (α)</cell><cell>0.9998</cell></row><row><cell>Reheat factor</cell><cell>0.50</cell></row><row><cell>Stagnation threshold</cell><cell>2000 iterations</cell></row><row><cell>Weight update interval (τ )</cell><cell>100 iterations</cell></row><row><cell>Reaction factor (r)</cell><cell>0.1</cell></row><row><cell>Removal size (q max )</cell><cell>max(4, ⌊0.05n⌋)</cell></row><row><cell>Removal size (q min )</cell><cell>max(4, ⌊q max /2⌋)</cell></row><row><cell>Scores (σ 1 , σ 2 , σ 3 )</cell><cell>(33, 9, 13)</cell></row><row><cell>Minimum operator weight</cell><cell>0.1</cell></row><row><cell>Instances per GPU</cell><cell>32</cell></row><row><cell>Threads per instance</cell><cell>256</cell></row><row><cell cols="2">Iterations per host sync (multi-GPU) 100</cell></row><row><cell cols="2">Intra-GPU global best check interval 1000 iterations</cell></row><row><cell>Pickup repositioning interval</cell><cell>200 iterations</cell></row><row><cell>Cross-agent relocation interval</cell><cell>500 iterations</cell></row></table><note>the bottleneck to lighter vehicles. For each candidate customer with at least one operation on the bottleneck route, all feasible (v, p D , p P ) triples (target vehicle v and insertion positions p D , p P for the dropoff and pickup) are evaluated in parallel by GPU threads.</note></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2"><head>Multi-Pass Decoder for VRP-RPD Start Chromosome (π, α) Sort Operations by Priority Initialize Agent States Multi-Pass Loop</head><label></label><figDesc></figDesc><table><row><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell>Begin Pass</cell><cell></cell></row><row><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell>All Operations Completed?</cell><cell>Yes</cell></row><row><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell>No</cell><cell></cell></row><row><cell></cell><cell></cell><cell></cell><cell></cell><cell cols="2">Select Next Operation</cell><cell></cell></row><row><cell></cell><cell>Check Inventory Availability</cell><cell>Drop-off</cell><cell>Operation Type?</cell><cell>No</cell><cell>Already Processed?</cell><cell>Yes</cell><cell>Skip</cell></row><row><cell></cell><cell></cell><cell></cell><cell>Pick-up</cell><cell></cell><cell></cell><cell></cell></row><row><cell></cell><cell></cell><cell></cell><cell>Check Precedence</cell><cell></cell><cell></cell><cell></cell></row><row><cell></cell><cell></cell><cell></cell><cell>and Capacity</cell><cell></cell><cell></cell><cell></cell></row><row><cell>Defer to Next Pass</cell><cell>No</cell><cell>Feasible?</cell><cell>Yes</cell><cell>Select Best Agent</cell><cell></cell><cell cols="2">Execute Operation Update Agent State</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3"><head>Next Operation Next Pass Compute Makespan Add Penalty for Unscheduled Operations Schedule, Fitness End Legend Input / Output Decision Loop / Agent Drop-off Path Pick-up Path Defer / Infeasible Execute / Success Fitness Calculation Initialization</head><label></label><figDesc></figDesc><table /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_4"><head></head><label></label><figDesc>genes π = (π D1 , π P1 , . . . , π Dn , π Pn ) where each π o ∈ [0, 1) represents the relative priority of operation o ∈ O. Operations with lower priority values are scheduled earlier. This encoding allows the evolutionary algorithm to explore different operation orderings without explicitly representing sequences. Assignment hint genes α = (α D1 , α P1 , . . . , α Dn , α Pn ) where each α o ∈ [0, 1) provides a preference for which vehicle should execute operation o. The decoder maps α o to vehicle index ⌊m • α o ⌋, but may override this hint to maintain feasibility.</figDesc><table /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_7"><head>Table 3 :</head><label>3</label><figDesc>., are scheduled first by the decoder). The assignment hint gene is set to α o = v/m, directly encoding the ALNS vehicle assignment. This mapping ensures the BRKGA decoder faithfully reconstructs a schedule close to the ALNS solution.</figDesc><table><row><cell cols="2">BRKGA hyperparameters</cell></row><row><cell>Parameter</cell><cell>Value</cell></row><row><cell>Population size (N p )</cell><cell>30000</cell></row><row><cell>Elite proportion (N e /N p )</cell><cell>0.15</cell></row><row><cell cols="2">Mutant proportion (N m /N p ) 0.15</cell></row><row><cell>Elite bias in crossover (ρ e )</cell><cell>0.7</cell></row><row><cell>Maximum generations (T )</cell><cell>20000</cell></row><row><cell>Warm-start proportion</cell><cell>0.15</cell></row><row><cell>(i.e</cell><cell></cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_8"><head>Table 4 :</head><label>4</label><figDesc>Paired Wilcoxon signed-rank tests (base vs. variant, paired by instance, n = 14 pairs). ∆ = mean difference in percentage points (variant − base). Cohen's d is computed on the paired differences. One-sided alternative: variant &gt; base.</figDesc><table><row><cell>Metric</cell><cell cols="3">Comparison Mean ∆ (pp) Cohen's d</cell><cell cols="2">W p-value Sig.</cell></row><row><cell></cell><cell>base → 2×</cell><cell>+16.0</cell><cell cols="2">1.28 105.0</cell><cell>0.0001 ***</cell></row><row><cell>Cross-Agent %</cell><cell>base → 5× base → 1R10</cell><cell>+21.3 +16.3</cell><cell cols="2">1.21 105.0 1.14 99.0</cell><cell>0.0001 *** 0.0009 ***</cell></row><row><cell></cell><cell>base → 1R20</cell><cell>+16.8</cell><cell>1.12</cell><cell>98.0</cell><cell>0.0012 **</cell></row><row><cell></cell><cell>base → 2×</cell><cell>+0.1</cell><cell>0.05</cell><cell>28.0</cell><cell>0.4797</cell></row><row><cell>Interleaved %</cell><cell>base → 5× base → 1R10</cell><cell>−0.4 +1.1</cell><cell>−0.08 0.46</cell><cell>15.0 76.0</cell><cell>0.8131 0.0765</cell></row><row><cell></cell><cell>base → 1R20</cell><cell>+1.6</cell><cell>0.46</cell><cell>72.0</cell><cell>0.1206</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_9"><head>Table 5 :</head><label>5</label><figDesc>VRP-RPD makespan comparison across problem variants and approaches.</figDesc><table><row><cell cols="2">Instance Approach</cell><cell>base</cell><cell>2x</cell><cell>5x</cell><cell>1R10</cell><cell>1R20</cell></row><row><cell>gr17</cell><cell>(0) Heuristics</cell><cell>2,738</cell><cell>3,680</cell><cell>5,816</cell><cell>6,733</cell><cell>11,616</cell></row><row><cell></cell><cell>(1) ALNS</cell><cell>1,449</cell><cell>1,807</cell><cell>3,795</cell><cell>5,369</cell><cell>9,739</cell></row><row><cell></cell><cell>(2) ALNS+BRKGA</cell><cell>1,405</cell><cell>1,800</cell><cell>3,795</cell><cell>5,369</cell><cell>9,739</cell></row><row><cell></cell><cell>1 Impr. %</cell><cell>47.08</cell><cell>50.90</cell><cell>34.75</cell><cell>20.26</cell><cell>16.16</cell></row><row><cell></cell><cell>2 vs 1 Impr. %</cell><cell>3.04</cell><cell>0.39</cell><cell>0.00</cell><cell>0.00</cell><cell>0.00</cell></row><row><cell>gr21</cell><cell>Heuristics</cell><cell>2,792</cell><cell>4,028</cell><cell>7,736</cell><cell>10,138</cell><cell>17,817</cell></row><row><cell></cell><cell>(1) ALNS</cell><cell>2,162</cell><cell>2,606</cell><cell>4,345</cell><cell>6,233</cell><cell>11,653</cell></row><row><cell></cell><cell>(2) ALNS+BRKGA</cell><cell>2,125</cell><cell>2,578</cell><cell>4,322</cell><cell>6,233</cell><cell>11,653</cell></row><row><cell></cell><cell>1 Impr. %</cell><cell>22.56</cell><cell>35.30</cell><cell>43.83</cell><cell>38.51</cell><cell>34.60</cell></row><row><cell></cell><cell>2 vs 1 Impr. %</cell><cell>1.71</cell><cell>1.07</cell><cell>0.53</cell><cell>0.00</cell><cell>0.00</cell></row><row><cell>gr24</cell><cell>Heuristics</cell><cell>2,283</cell><cell>2,823</cell><cell>5,709</cell><cell>6,866</cell><cell>11,933</cell></row><row><cell></cell><cell>(1) ALNS</cell><cell>967</cell><cell>1,336</cell><cell>2,487</cell><cell>3,624</cell><cell>6,730</cell></row><row><cell></cell><cell>(2) ALNS+BRKGA</cell><cell>960</cell><cell>1,336</cell><cell>2,479</cell><cell>3,620</cell><cell>6,730</cell></row><row><cell></cell><cell>1 Impr. %</cell><cell>57.64</cell><cell>52.67</cell><cell>56.44</cell><cell>47.22</cell><cell>43.60</cell></row><row><cell></cell><cell>2 vs 1 Impr. %</cell><cell>0.72</cell><cell>0.00</cell><cell>0.32</cell><cell>0.11</cell><cell>0.00</cell></row><row><cell>bays29</cell><cell>Heuristics</cell><cell>1,704</cell><cell>2,438</cell><cell>4,625</cell><cell>5,908</cell><cell>9,957</cell></row><row><cell></cell><cell>(1) ALNS</cell><cell>1,242</cell><cell>1,561</cell><cell>2,886</cell><cell>4,310</cell><cell>8,178</cell></row><row><cell></cell><cell>(2) ALNS+BRKGA</cell><cell>1,084</cell><cell>1,484</cell><cell>2,886</cell><cell>4,310</cell><cell>8,178</cell></row><row><cell></cell><cell>1 Impr. %</cell><cell>27.11</cell><cell>35.97</cell><cell>37.60</cell><cell>27.05</cell><cell>17.87</cell></row><row><cell></cell><cell>2 vs 1 Impr. %</cell><cell>12.72</cell><cell>4.93</cell><cell>0.00</cell><cell>0.00</cell><cell>0.00</cell></row><row><cell>gr48</cell><cell>Heuristics</cell><cell>5,741</cell><cell>8,984</cell><cell>15,747</cell><cell>20,160</cell><cell>34,979</cell></row><row><cell></cell><cell>(1) ALNS</cell><cell>3,743</cell><cell>4,796</cell><cell>8,641</cell><cell>10,158</cell><cell>19,467</cell></row><row><cell></cell><cell>(2) ALNS+BRKGA</cell><cell>3,145</cell><cell>3,991</cell><cell>6,974</cell><cell>10,046</cell><cell>19,449</cell></row><row><cell></cell><cell>1 Impr. %</cell><cell>34.80</cell><cell>46.62</cell><cell>45.13</cell><cell>49.61</cell><cell>44.35</cell></row><row><cell></cell><cell>2 vs 1 Impr. %</cell><cell>15.98</cell><cell>16.78</cell><cell>19.29</cell><cell>1.10</cell><cell>0.09</cell></row><row><cell>eil51</cell><cell>Heuristics</cell><cell>420</cell><cell>727</cell><cell>1,226</cell><cell>1,617</cell><cell>2,890</cell></row><row><cell></cell><cell>(1) ALNS</cell><cell>319</cell><cell>382</cell><cell>702</cell><cell>823</cell><cell>1,505</cell></row><row><cell></cell><cell>(2) ALNS+BRKGA</cell><cell>248</cell><cell>333</cell><cell>620</cell><cell>795</cell><cell>1,466</cell></row><row><cell></cell><cell>1 Impr. %</cell><cell>24.05</cell><cell>47.46</cell><cell>42.74</cell><cell>49.11</cell><cell>47.93</cell></row><row><cell></cell><cell>2 vs 1 Impr. %</cell><cell>22.26</cell><cell>12.83</cell><cell>11.68</cell><cell>3.40</cell><cell>2.59</cell></row><row><cell>berlin52</cell><cell>Heuristics</cell><cell>9,076</cell><cell>15,283</cell><cell>26,789</cell><cell>36,606</cell><cell>64,700</cell></row><row><cell></cell><cell>(1) ALNS</cell><cell>6,168</cell><cell>7,823</cell><cell>14,401</cell><cell>17,514</cell><cell>31,250</cell></row><row><cell></cell><cell>(2) ALNS+BRKGA</cell><cell>4,947</cell><cell>6,729</cell><cell>12,361</cell><cell>16,935</cell><cell>30,450</cell></row><row><cell></cell><cell>1 Impr. %</cell><cell>32.04</cell><cell>48.81</cell><cell>46.24</cell><cell>52.16</cell><cell>51.70</cell></row><row><cell></cell><cell>2 vs 1 Impr. %</cell><cell>19.80</cell><cell>13.99</cell><cell>14.16</cell><cell>3.31</cell><cell>2.56</cell></row><row><cell>kroA100</cell><cell>Heuristics</cell><cell>39,484</cell><cell>66,803</cell><cell>140,206</cell><cell>160,957</cell><cell>296,876</cell></row><row><cell></cell><cell>(1) ALNS</cell><cell>20,079</cell><cell>29,811</cell><cell>61,202</cell><cell>69,526</cell><cell>123,227</cell></row><row><cell></cell><cell>(2) ALNS+BRKGA</cell><cell>18,218</cell><cell>26,900</cell><cell>52,200</cell><cell>57,257</cell><cell>99,910</cell></row><row><cell></cell><cell>1 Impr. %</cell><cell>49.15</cell><cell>55.37</cell><cell>56.35</cell><cell>56.80</cell><cell>58.49</cell></row><row><cell></cell><cell>2 vs 1 Impr. %</cell><cell>9.27</cell><cell>9.76</cell><cell>14.71</cell><cell>17.64</cell><cell>18.93</cell></row><row><cell>eil101</cell><cell>Heuristics</cell><cell>918</cell><cell>1,587</cell><cell>3,449</cell><cell>3,990</cell><cell>7,570</cell></row><row><cell></cell><cell>(1) ALNS</cell><cell>511</cell><cell>698</cell><cell>1,360</cell><cell>1,543</cell><cell>2,821</cell></row><row><cell></cell><cell>(2) ALNS+BRKGA</cell><cell>417</cell><cell>609</cell><cell>1,248</cell><cell>1,375</cell><cell>2,414</cell></row><row><cell></cell><cell>1 Impr. %</cell><cell>44.34</cell><cell>56.02</cell><cell>60.57</cell><cell>61.32</cell><cell>62.73</cell></row><row><cell></cell><cell>2 vs 1 Impr. %</cell><cell>18.40</cell><cell>12.75</cell><cell>8.24</cell><cell>10.89</cell><cell>14.43</cell></row><row><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell cols="2">Continued on next page</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_10"><head>Table 5</head><label>5</label><figDesc>presents makespan results for BRKGA, ALNS, and baseline heuristics across 14 benchmark instances and five processing-time variants. Both metaheuristics consistently outperform the best heuristic solution across all configurations, with the ALNS→BRKGA pipeline achieving the best or joint-best result on every instance-variant pair. Bold entries indicate the best result for each pair.</figDesc><table /></figure>
+		</body>
+		<back>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Genetic algorithms and random keys for sequencing and optimization</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">C</forename><surname>Bean</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">ORSA Journal on Computing</title>
+		<imprint>
+			<biblScope unit="volume">6</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="154" to="160" />
+			<date type="published" when="1994">1994</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Static pickup and delivery problems: A classification scheme and survey</title>
+		<author>
+			<persName><forename type="first">G</forename><surname>Berbeglia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">F</forename><surname>Cordeau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Gribkovskaia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Laporte</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">TOP</title>
+		<imprint>
+			<biblScope unit="volume">15</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="1" to="31" />
+			<date type="published" when="2007">2007</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">The dial-a-ride problem: Models and algorithms</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">F</forename><surname>Cordeau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Laporte</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Annals of Operations Research</title>
+		<imprint>
+			<biblScope unit="volume">153</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="29" to="46" />
+			<date type="published" when="2007">2007</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">The truck dispatching problem</title>
+		<author>
+			<persName><forename type="first">G</forename><forename type="middle">B</forename><surname>Dantzig</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">H</forename><surname>Ramser</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Management Science</title>
+		<imprint>
+			<biblScope unit="volume">6</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="80" to="91" />
+			<date type="published" when="1959">1959</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Vehicle routing and reverse logistics: The vehicle routing problem with simultaneous delivery and pick-up</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Dethloff</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">OR-Spektrum</title>
+		<imprint>
+			<biblScope unit="volume">23</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="79" to="96" />
+			<date type="published" when="2001">2001</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">The pickup and delivery problem with time windows</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Dumas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Desrosiers</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Soumis</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">European Journal of Operational Research</title>
+		<imprint>
+			<biblScope unit="volume">54</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="7" to="22" />
+			<date type="published" when="1991">1991</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Real-coded genetic algorithms and interval-schemata</title>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">J</forename><surname>Eshelman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">D</forename><surname>Schaffer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Foundations of Genetic Algorithms</title>
+				<imprint>
+			<publisher>Morgan Kaufmann</publisher>
+			<date type="published" when="1993">1993</date>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="page" from="187" to="202" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Biased random-key genetic algorithms for combinatorial optimization</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">F</forename><surname>Gonçalves</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">G C</forename><surname>Resende</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Heuristics</title>
+		<imprint>
+			<biblScope unit="volume">17</biblScope>
+			<biblScope unit="issue">5</biblScope>
+			<biblScope unit="page" from="487" to="525" />
+			<date type="published" when="2011">2011</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<monogr>
+		<title level="m" type="main">Gurobi Optimizer Reference Manual</title>
+		<author>
+			<persName><forename type="first">Llc</forename><surname>Gurobi Optimization</surname></persName>
+		</author>
+		<ptr target="https://www.gurobi.com" />
+		<imprint/>
+	</monogr>
+	<note>Version 10.0, 2023</note>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">A review of vehicle routing with simultaneous pickup and delivery</title>
+		<author>
+			<persName><forename type="first">Ç</forename><surname>Koç</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Laporte</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Türkay</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computers &amp; Operations Research</title>
+		<imprint>
+			<biblScope unit="volume">122</biblScope>
+			<biblScope unit="page">104987</biblScope>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Adaptive large neighborhood search for service technician routing and scheduling problems</title>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">A</forename><surname>Kovacs</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">N</forename><surname>Parragh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">F</forename><surname>Doerner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">F</forename><surname>Hartl</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Scheduling</title>
+		<imprint>
+			<biblScope unit="volume">15</biblScope>
+			<biblScope unit="issue">5</biblScope>
+			<biblScope unit="page" from="579" to="600" />
+			<date type="published" when="2012">2012</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">An adaptive large neighborhood search for the pickup and delivery problem with transfers</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Masson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Lehuedé</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Péton</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Transportation Science</title>
+		<imprint>
+			<biblScope unit="volume">47</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="344" to="355" />
+			<date type="published" when="2013">2013</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">A survey on pickup and delivery problems. Part II: Transportation between pickup and delivery locations</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">N</forename><surname>Parragh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">F</forename><surname>Doerner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">F</forename><surname>Hartl</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal für Betriebswirtschaft</title>
+		<imprint>
+			<biblScope unit="volume">58</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="81" to="117" />
+			<date type="published" when="2008">2008</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Variable neighborhood search for the dial-a-ride problem</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">N</forename><surname>Parragh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">F</forename><surname>Doerner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">F</forename><surname>Hartl</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computers &amp; Operations Research</title>
+		<imprint>
+			<biblScope unit="volume">37</biblScope>
+			<biblScope unit="issue">6</biblScope>
+			<biblScope unit="page" from="1129" to="1138" />
+			<date type="published" when="2010">2010</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">A parallel matheuristic for the technician routing and scheduling problem</title>
+		<author>
+			<persName><forename type="first">V</forename><surname>Pillac</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Guéret</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">L</forename><surname>Medaglia</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Optimization Letters</title>
+		<imprint>
+			<biblScope unit="volume">7</biblScope>
+			<biblScope unit="issue">7</biblScope>
+			<biblScope unit="page" from="1525" to="1535" />
+			<date type="published" when="2013">2013</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">TSPLIB: A traveling salesman problem library</title>
+		<author>
+			<persName><forename type="first">G</forename><surname>Reinelt</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">ORSA Journal on Computing</title>
+		<imprint>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="376" to="384" />
+			<date type="published" when="1991">1991</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">An adaptive large neighborhood search heuristic for the pickup and delivery problem with time windows</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Ropke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Pisinger</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Transportation Science</title>
+		<imprint>
+			<biblScope unit="volume">40</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="455" to="472" />
+			<date type="published" when="2006">2006</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">The traveling salesman problem with job-times (TSPJ)</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Mosayebi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Sodhi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">A</forename><surname>Wettergren</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computers &amp; Operations Research</title>
+		<imprint>
+			<biblScope unit="volume">129</biblScope>
+			<biblScope unit="page">105226</biblScope>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Using constraint programming and local search methods to solve vehicle routing problems</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Shaw</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 4th International Conference on Principles and Practice of Constraint Programming (CP&apos;98)</title>
+				<meeting>the 4th International Conference on Principles and Practice of Constraint Programming (CP&apos;98)</meeting>
+		<imprint>
+			<date type="published" when="1998">1998</date>
+			<biblScope unit="page" from="417" to="431" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<monogr>
+		<author>
+			<persName><forename type="first">P</forename><surname>Toth</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Vigo</surname></persName>
+		</author>
+		<title level="m">Vehicle Routing: Problems, Methods, and Applications. SIAM</title>
+				<imprint>
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+	<note>2nd edition</note>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Complexity of vehicle routing and scheduling problems</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">K</forename><surname>Lenstra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">H G</forename><surname>Rinnooy Kan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Networks</title>
+		<imprint>
+			<biblScope unit="volume">11</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="221" to="227" />
+			<date type="published" when="1981">1981</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

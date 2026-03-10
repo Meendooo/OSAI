@@ -1,0 +1,631 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Image-Based Classification of Olive Species Specific to Türkiye with Deep Neural Networks</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">İrfan</forename><surname>Atabaş</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department" key="dep1">Department of Computer Engineering</orgName>
+								<orgName type="department" key="dep2">Faculty of Engineering and Natural Sciences</orgName>
+								<orgName type="institution">Kırıkkale University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Hatice</forename><surname>Karataş</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department" key="dep1">Department of Computer Engineering</orgName>
+								<orgName type="department" key="dep2">Faculty of Engineering and Natural Sciences</orgName>
+								<orgName type="institution">Kırıkkale University</orgName>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Image-Based Classification of Olive Species Specific to Türkiye with Deep Neural Networks</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date/>
+						</imprint>
+					</monogr>
+					<idno type="MD5">85A69BEB713637D4FA74B6E6D60B62ED</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.7.2" ident="GROBID" when="2026-03-10T12:10+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>Olive Classification Image Processing Deep Learning CNN MobileNetV2 EfficientNetB0</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>In this study, image processing and deep learning methodologies were employed to automatically classify local olive species cultivated in Türkiye. A stereo camera was utilized to capture images of five distinct olive species, which were then preprocessed to ensure their suitability for analysis. Convolutional Neural Network (CNN) architectures, specifically MobileNetV2 and EfficientNetB0, were employed for image classification. These models were optimized through a transfer learning approach. The training and testing results indicated that the EfficientNetB0 model exhibited the optimal performance, with an accuracy of 94.5%. The findings demonstrate that deep learning-based systems offer an effective solution for classifying olive species with high accuracy. The developed method has significant potential for application in areas such as automatic identification and quality control of agricultural products.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.">Introduction</head><p>Olive is an agricultural product of considerable economic value both for table consumption and oil production <ref type="bibr" target="#b0">[1]</ref>. Türkiye occupies a significant position in world olive production owing to its geographical location and climatic characteristics <ref type="bibr" target="#b0">[1,</ref><ref type="bibr" target="#b1">2]</ref>. Numerous local olive varieties with distinct morphological and physical features are cultivated across the Aegean, Mediterranean, Marmara, and Southeastern Anatolia regions. While this diversity reflects the country's agricultural richness, it simultaneously gives rise to challenges in terms of quality control, product tracking, and variety-based marketing strategies <ref type="bibr" target="#b2">[3]</ref>.</p><p>The accurate classification of olive varieties is a process that directly benefits both producers and. However, conventional classification methods are generally based on expert opinion and are susceptible to human error. Furthermore, since characteristics such as color, shape, and size of the olive fruit can be influenced by environmental factors over time, the manual evaluation of such parameters may not yield objective results. This has created a need for a faster, more reliable, and reproducible classification methodology.</p><p>In recent years, significant advances have been achieved in such classification tasks through the widespread adoption of image processing, artificial intelligence, and particularly deep learning technologies in agriculture <ref type="bibr" target="#b3">[4]</ref><ref type="bibr" target="#b4">[5]</ref><ref type="bibr" target="#b5">[6]</ref><ref type="bibr" target="#b6">[7]</ref><ref type="bibr" target="#b7">[8]</ref><ref type="bibr" target="#b8">[9]</ref><ref type="bibr" target="#b9">[10]</ref><ref type="bibr" target="#b10">[11]</ref>. Through image processing techniques, attributes such as shape, color, and texture of an object can be digitally quantified, and classification models can be constructed from these features using machine learning algorithms. In particular, deep learning models such as convolutional neural networks (CNNs) have come to the forefront in this field by achieving high accuracy rates in image classification problems <ref type="bibr" target="#b11">[12,</ref><ref type="bibr" target="#b12">13]</ref>.</p><p>In this study, the classification of olive varieties grown in different regions of Türkiye using image processing and deep learning techniques was targeted. To this end, images of various olive varieties were collected using a stereo camera system, features were extracted from these images, and suitable classification models were developed. Due to the substantial computational power required during model training, a high-performance graphics processing unit (GPU)-supported hardware infrastructure was utilized throughout the project.</p><p>The primary contributions of this study are as follows:</p><p>• An image dataset comprising local olive varieties indigenous to Türkiye was constructed.</p><p>• Image processing-based feature extraction was performed, and various deep learning-based classification models were trained on the resulting data.</p><p>• Model performance was evaluated using metrics such as accuracy, precision, recall, and F1 score.</p><p>• An original system proposal for the automatic identification of olive varieties is presented.</p><p>The outcomes of this study may serve as a precursor to automated diagnostic systems applicable in production facilities or agricultural applications in the future. Furthermore, the classification results are expected to make significant contributions to the monitoring of agricultural product quality, the preservation of product standards, and the automation of production processes.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.">Material and Method</head><p>In this study, automatic discrimination of olive varieties grown in different regions of Türkiye was targeted through image processing techniques and deep learning-based classification methods. Within this scope, images of olive varieties were first collected using a stereo camera, after which these images were subjected to various preprocessing steps. In the final stage, classification was performed using Convolutional Neural Network (CNN) architectures. The methods followed from dataset construction to model training are presented in detail in this section. The schematic diagram of the study is provided in Figure <ref type="figure">1</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Figure 1. Schematic diagram of the proposed study</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.1">Dataset Construction</head><p>During the data collection phase, samples of five different local olive varieties grown in various agricultural regions of Türkiye were procured. Approximately 500 images per variety were captured at high resolution using a stereo camera system. Imaging was conducted under fixed lighting conditions and against a plain background to minimize the influence of environmental variables. The use of a stereo camera enabled the acquisition not only of two-dimensional images but also of depth information pertaining to individual olive fruits. This information facilitated the segmentation of images and enabled more precise delineation of object boundaries in subsequent stages. Representative sample images from the dataset are provided in Figure <ref type="figure" target="#fig_0">2</ref>. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.2">Image Preprocessing</head><p>The collected images were subjected to various preprocessing steps to render them suitable for the classification task. First, all images were rescaled to a resolution of 224×224 pixels to conform to the input dimensions of the deep learning models. Subsequently, Gaussian filtering was applied to eliminate noise present in the images, thereby yielding sharper contours. A segmentation procedure was performed to reduce background influence and isolate the region occupied solely by the olive fruit. In this process, binary images were generated using Otsu's thresholding method, and only the object-specific regions were extracted through contour analysis. Data augmentation techniques were applied to enhance the model's ability to generalize. In this process, images were randomly rotated, flipped, and subjected to brightness variations to improve the model's robustness against diverse conditions.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.3">Convolutional Neural Network (CNN)</head><p>CNNs are multilayer artificial neural network models that have revolutionized the field of image processing in particular. By extracting hierarchical features from input data, CNNs exhibit exceptional performance in learning complex patterns and structural relationships. The convolution operation enables the progressive abstraction of fundamental features such as edges, textures, and color transitions in images across successive layers, allowing the model to progress from simple visual cues to high-level semantic representations.</p><p>CNN architectures were first widely adopted in image classification and object recognition tasks. Particularly following AlexNet's remarkable success in the ImageNet competition in 2012, deep learning models became fundamental building blocks in the field of computer vision. Subsequently developed architectures such as VGG, ResNet, Inception, and EfficientNet achieved both deeper and more efficient structures, enabling their applicability to a wide range of problems <ref type="bibr" target="#b13">[14,</ref><ref type="bibr" target="#b14">15]</ref>. Today, CNN-based solutions are employed not only in image classification but also in various tasks including segmentation, object detection, face recognition, motion analysis, and scene interpretation <ref type="bibr" target="#b15">[16]</ref>. Their effectiveness has been demonstrated in numerous application domains, including the analysis of radiological images for disease detection in medicine, product defect detection in industrial quality control processes, anomaly detection in security systems, traffic analysis in smart cities, and plant disease diagnosis in agriculture <ref type="bibr" target="#b16">[17,</ref><ref type="bibr" target="#b17">18]</ref>.</p><p>In the agricultural domain, CNN-based models are employed for numerous tasks such as diagnosis of plant leaf diseases, fruit and vegetable classification, harvest prediction, and land classification; these models provide faster, more reproducible, and more objective results compared to conventional methods relying on human expertise <ref type="bibr" target="#b18">[19]</ref><ref type="bibr" target="#b19">[20]</ref><ref type="bibr" target="#b20">[21]</ref>.</p><p>In this context, CNN architectures constitute the foundation not only of theoretical successes but also of practical systems capable of generating solutions to real-world problems. For challenging classification problems such as the morphological similarity exhibited by olive varieties, the powerful feature extraction capabilities of CNNs offer considerable advantages. In this regard, CNN architectures have become not merely an option but a modern necessity in agricultural classification applications.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.4">Classification Model and Training</head><p>The data obtained from the images were classified using deep learning methods. CNN architectures, which deliver high performance for image-based classification problems, were preferred. During model training, a transfer learning approach was adopted, and lightweight, fast-operating architectures previously trained on large datasets-specifically MobileNetV2 and EfficientNetB0-were integrated into the project. This approach reduced training time and enabled high accuracy rates to be achieved with limited data. The Adam optimizer was selected as the optimization algorithm during model training, and Categorical Cross-Entropy, which is well-suited to multiclass classification problems, was used as the loss function. The learning rate was set to 0.001, and training was conducted over 20 epochs. An early stopping strategy was implemented to prevent the model from overfitting.</p><p>The obtained dataset was partitioned into three subsets: training (80%), validation (10%), and testing (10%). Following the training process, the optimal weights based on validation performance were recorded. The final model was evaluated on the test dataset using performance metrics such as accuracy, recall, specificity, and F1 score.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.">Results</head><p>This section presents the experimental evaluations and the performance metrics obtained from the developed classification models. The models trained on images belonging to different olive varieties were tested on the previously partitioned test dataset. The obtained results were analyzed using widely adopted classification performance metrics including accuracy, precision, recall, and F1 score.</p><p>Two different deep learning architectures were comparatively employed in the study: MobileNetV2 and EfficientNetB0. Using a transfer learning approach, these models were customized to achieve high accuracy with limited data. The performance evaluation results of the models are presented in Table <ref type="table" target="#tab_0">1</ref>. The results indicate that both models were able to classify olive varieties with high performance. However, the EfficientNetB0 architecture demonstrated superior performance across all metrics compared to MobileNetV2. This difference may be attributed to the more detailed feature extraction capability and the broader learning capacity of the model.</p><p>The classification accuracies of the models were monitored throughout the training process, and the accuracy/epoch curves are presented in Figure <ref type="figure" target="#fig_1">3</ref>. In both models, accuracy values increased steadily, no signs of overfitting were observed, and the early stopping mechanism was found to operate effectively. Additionally, a confusion matrix generated to analyze classification performance in greater detail. The matrix constructed for the EfficientNetB0 model revealed that high accuracy was achieved across all classes and that discrimination between visually similar varieties was successfully accomplished. Although minimal misclassifications were observed between certain classes, the overall classification performance remained above 94%.</p><p>In conclusion, the developed deep learning-based system enabled the classification of olive varieties grown in Türkiye with high accuracy. These results demonstrate that the proposed approach can offer a reliable and practical solution for the agricultural sector.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.">Discussion and Conclusion</head><p>In this study, the classification of local olive varieties grown in Türkiye using image processing and deep learning methods was targeted, and the results obtained were found to be highly successful when compared to similar studies in the literature. The use of deep learning architectures provided higher accuracy and generalization capability compared to conventional machine learning methods, once again demonstrating the effectiveness of CNN-based models in agricultural product classification.</p><p>The preference for stereo camera technology in the construction of the dataset was assessed as one of the significant advantages of the study. Thanks to this technology, not only two-dimensional images of olive fruits but also three-dimensional structural characteristics were incorporated into the dataset, and this positively impacted segmentation and classification performance. However, it should also be considered that the processing of stereo images requires a more complex procedure compared to classical single-view images.</p><p>The preprocessing and data augmentation steps were observed to play a critical role in model performance. In particular, the augmentation of images captured from different angles and under various lighting conditions helped the model achieve generalized learning without overfitting. The variety of data augmentation techniques employed at this stage made it possible for the model to become more adaptable to different scenarios that may be encountered in field conditions.</p><p>In the comparison conducted among lightweight, fast-operating CNN architectures such as MobileNetV2 and EfficientNetB0, the EfficientNetB0 model was observed to be superior in all performance metrics. This result can be attributed to the optimized layer structure and parametric efficiency of the EfficientNet architecture. The achievement of high accuracy rates despite a short training duration demonstrates the effectiveness of the transfer learning method and confirms that it offers an important solution for studies with limited data such as this.</p><p>Nevertheless, the observation of classification errors between certain varieties indicates that the discrimination of morphologically similar olive varieties by the model can still pose a challenge. It is thought that this issue can be overcome in future studies through larger sample sizes and more advanced architectures. Furthermore, the integration of the model into mobile or embedded systems to enhance its field applicability can also be considered an important research direction.</p><p>In future studies, the dataset may be expanded to further improve the generalization capability of the model, and additional olive varieties may be incorporated into the classification process. Moreover, it is possible to develop more robust models by increasing feature diversity through different imaging techniques such as hyperspectral imaging. In addition, integration with mobile devices or embedded systems can be achieved to enable the use of the developed system under field conditions or in production facilities.</p><p>In conclusion, this study has demonstrated that image processing and deep learning techniques can be effectively employed in the classification of olive varieties, while also once again highlighting the power and applicability of artificial intelligence-based solutions in agricultural technologies.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 2 .</head><label>2</label><figDesc>Figure 2. Representative sample images selected from the dataset</figDesc><graphic coords="3,172.20,56.70,250.90,110.89" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 3 .</head><label>3</label><figDesc>Figure 3. Training and validation accuracy curves (MobileNetV2 and EfficientNetB0)</figDesc><graphic coords="4,131.10,518.15,333.09,222.05" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head>Table 1 .</head><label>1</label><figDesc>Classification performance of MobileNetV2 and EfficientNetB0 models</figDesc><table><row><cell>Model</cell><cell>Accuracy (%)</cell><cell>Precision</cell><cell>Recall</cell><cell>F1 Score</cell></row><row><cell>MobileNetV2</cell><cell>92.8</cell><cell>0.91</cell><cell>0.93</cell><cell>0.92</cell></row><row><cell>EfficientNetB0</cell><cell>94.5</cell><cell>0.94</cell><cell>0.95</cell><cell>0.94</cell></row></table></figure>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Acknowledgment</head><p>This study was carried out within the scope of project number 2023/152 supported by the Kırıkkale University Scientific Research Projects Coordination Unit (BAP). The author would like to express sincere gratitude to the Kırıkkale University BAP Commission for their support.</p></div>
+			</div>
+
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Identification of olive fruit, in intensive olive orchards, by means of its morphological structure using convolutional neural networks</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Aquino</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">M</forename><surname>Ponce</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">M</forename><surname>Andújar</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computers and Electronics in Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">176</biblScope>
+			<biblScope unit="page">105616</biblScope>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Online system for the identification and classification of olive fruits for the olive oil production process</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Aguilera Puerto</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ó</forename><surname>Moreno</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">M</forename><surname>Martínez Gila</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">Gómez</forename><surname>Ortega</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">Gámez</forename><surname>García</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Food Measurement and Characterization</title>
+		<imprint>
+			<biblScope unit="volume">13</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="716" to="727" />
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<title level="m" type="main">Olive production manual</title>
+		<author>
+			<persName><forename type="first">G</forename><forename type="middle">S</forename><surname>Sibbett</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Ferguson</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2005">2005</date>
+			<publisher>UCANR Publications</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Abc-based weighted voting deep ensemble learning model for multiple eye disease detection</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Uyar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Yurdakul</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ş</forename><surname>Taşdemir</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Biomedical Signal Processing and Control</title>
+		<imprint>
+			<biblScope unit="volume">96</biblScope>
+			<biblScope unit="page">106617</biblScope>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Almond (Prunus dulcis) varieties classification with genetic designed lightweight CNN architecture</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Yurdakul</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">İ</forename><surname>Atabaş</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ş</forename><surname>Taşdemir</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">European Food Research and Technology</title>
+		<imprint>
+			<biblScope unit="volume">250</biblScope>
+			<biblScope unit="issue">10</biblScope>
+			<biblScope unit="page" from="2625" to="2638" />
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Flower pollination algorithm-optimized deep CNN features for almond (Prunus dulcis) classification</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Yurdakul</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">İ</forename><surname>Atabaş</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ş</forename><surname>Taşdemir</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2024 International Conference on Emerging Systems and Intelligent Computing (ESIC)</title>
+				<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="433" to="438" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Chestnut (Castanea Sativa) Varieties Classification with Harris Hawks Optimization based Selected Features and SVM</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Yurdakul</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">İ</forename><surname>Atabaş</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ş</forename><surname>Taşdemir</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2024 International Conference on Advances in Computing, Communication, Electrical, and Smart Systems (iCACCESS)</title>
+				<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="1" to="5" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">BC-YOLO: MBConv-ECA based YOLO framework for blood cell detection</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Yurdakul</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ş</forename><surname>Taşdemir</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Signal, Image and Video Processing</title>
+				<imprint>
+			<date type="published" when="2025">2025</date>
+			<biblScope unit="volume">19</biblScope>
+			<biblScope unit="page">712</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<monogr>
+		<title level="m" type="main">An enhanced yolov8 model for real-time and accurate pothole detection and measurement</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Yurdakul</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ş</forename><surname>Tasdemir</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2505.04207</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Webserver-Based mobile application for Multi-class chestnut (Castanea sativa) classification using deep features and attention mechanisms</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Yurdakul</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Uyar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ş</forename><surname>Taşdemir</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Applied Fruit Science</title>
+		<imprint>
+			<biblScope unit="volume">67</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page">102</biblScope>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Enhanced ore classification through optimized CNN ensembles and feature fusion</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Yurdakul</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Uyar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ş</forename><surname>Taşdemir</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Iran Journal of Computer Science</title>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="491" to="509" />
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">AF-RCNN: An anchor-free convolutional neural network for multi-categories agricultural pest detection</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Jiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Xie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computers and Electronics in Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">174</biblScope>
+			<biblScope unit="page">105522</biblScope>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">An efficient strawberry segmentation model based on Mask R-CNN and TensorRT</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Crespo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Moncada</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Crespo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">E</forename><surname>Morocho-Cayamcela</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Artificial Intelligence in Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">15</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="327" to="337" />
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Deep residual learning for image recognition</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Ren</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Sun</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE conference on computer vision and pattern recognition</title>
+				<meeting>the IEEE conference on computer vision and pattern recognition</meeting>
+		<imprint>
+			<date type="published" when="2016">2016</date>
+			<biblScope unit="page" from="770" to="778" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<monogr>
+		<title level="m" type="main">Mobilenets: Efficient convolutional neural networks for mobile vision applications</title>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">G</forename><surname>Howard</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1704.04861</idno>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Artificial intelligence in education: A review</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Lin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE access</title>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="page" from="75264" to="75278" />
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Automated techniques for blood vessels segmentation through fundus retinal images: A review</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Akbar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Sharif</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">U</forename><surname>Akram</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Saba</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Mahmood</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Kolivand</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Microscopy research and technique</title>
+		<imprint>
+			<biblScope unit="volume">82</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="153" to="170" />
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Enhancing energy efficiency with ai: a review of machine learning models in electricity demand forecasting</title>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">O</forename><surname>Aderibigbe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">C</forename><surname>Ani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">E</forename><surname>Ohenhen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">C</forename><surname>Ohalete</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">O</forename><surname>Daraojimba</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Engineering Science &amp; Technology Journal</title>
+		<imprint>
+			<biblScope unit="volume">4</biblScope>
+			<biblScope unit="issue">6</biblScope>
+			<biblScope unit="page" from="341" to="356" />
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">YOLOv11-GSF: an optimized deep learning model for strawberry ripeness detection in agriculture</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Ma</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Frontiers in Plant Science</title>
+		<imprint>
+			<biblScope unit="volume">16</biblScope>
+			<biblScope unit="page">1584669</biblScope>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Toward precision irrigation for intensive strawberry cultivation</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">G</forename><surname>Morillo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Martín</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Camacho</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">R</forename><surname>Díaz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Montesinos</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Agricultural Water Management</title>
+		<imprint>
+			<biblScope unit="volume">151</biblScope>
+			<biblScope unit="page" from="43" to="51" />
+			<date type="published" when="2015">2015</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Light-resilient visual regression of strawberry ripeness for robotic harvesting</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Sun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Xiong</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computers and Electronics in Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">241</biblScope>
+			<biblScope unit="page">111169</biblScope>
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<monogr>
+		<title level="m" type="main">Acoustic signal analysis with deep neural network for detecting fault diagnosis in industrial machines</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Yurdakul</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Tasdemir</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2312.01062</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<monogr>
+		<title level="m" type="main">A Novel Public Dataset for Strawberry (Fragaria x ananassa) Ripeness Detection and Comparative Evaluation of YOLO-Based Models</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Yurdakul</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><forename type="middle">S</forename><surname>Bastug</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">E</forename><surname>Gok</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Taşdemir</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2602.15656</idno>
+		<imprint>
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

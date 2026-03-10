@@ -1,0 +1,1474 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">AeroDaaS: A Programmable Drones-as-a-Service Platform for Intelligent Aerial Systems</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+				<date type="published" when="2026-02-28">28 Feb 2026</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Kautuk</forename><surname>Astu</surname></persName>
+							<email>kautukastu@iisc.ac.in</email>
+							<affiliation key="aff0">
+								<orgName type="department">Department of Computational and Data Sciences</orgName>
+								<orgName type="institution">Indian Institute of Science</orgName>
+								<address>
+									<postCode>560012</postCode>
+									<settlement>Bangalore</settlement>
+									<country key="IN">India</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Suman</forename><surname>Raj</surname></persName>
+							<email>sumanraj@iisc.ac.in</email>
+							<affiliation key="aff0">
+								<orgName type="department">Department of Computational and Data Sciences</orgName>
+								<orgName type="institution">Indian Institute of Science</orgName>
+								<address>
+									<postCode>560012</postCode>
+									<settlement>Bangalore</settlement>
+									<country key="IN">India</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Priyanshu</forename><surname>Pansari</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">Department of Computational and Data Sciences</orgName>
+								<orgName type="institution">Indian Institute of Science</orgName>
+								<address>
+									<postCode>560012</postCode>
+									<settlement>Bangalore</settlement>
+									<country key="IN">India</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Yogesh</forename><surname>Simmhan</surname></persName>
+							<email>simmhan@iisc.ac.in</email>
+							<affiliation key="aff0">
+								<orgName type="department">Department of Computational and Data Sciences</orgName>
+								<orgName type="institution">Indian Institute of Science</orgName>
+								<address>
+									<postCode>560012</postCode>
+									<settlement>Bangalore</settlement>
+									<country key="IN">India</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">AeroDaaS: A Programmable Drones-as-a-Service Platform for Intelligent Aerial Systems</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2026-02-28">28 Feb 2026</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">162167D45385A0CD43CD762FFFE7F00F</idno>
+					<idno type="arXiv">arXiv:2603.00506v1[cs.DC]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.7.2" ident="GROBID" when="2026-03-10T12:10+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>The increasing adoption of UAVs equipped with advanced sensors and GPUaccelerated edge computing has enabled real-time AI-driven applications in domains such as precision agriculture, wildfire monitoring, and environmental conservation. However, the integrated design and orchestration of navigation, sensing, and analytics, together with seamless real-time coordination across drone, edge, and cloud resources, remains a significant challenge. To address these challenges, we propose AeroDaaS, a service-oriented framework that abstracts UAV-based sensing complexities and provides a Drone-as-a-Service (DaaS) model for intelligent decisionmaking. AeroDaaS offers modular service primitives for on-demand UAV sensing, navigation and analytics as composable microservices, ensuring cross-platform compatibility and scalability across heterogeneous UAV and edge-cloud infrastructures. AeroDaaS also supports plug-and-play scheduling modules, including Waypoint and Analytics schedulers, which enable trajectory optimization and real-time coordination of inference workloads. We implement and evaluate AeroDaaS for six real-world DaaS applications, of which two are evaluated in real-world scenarios and four in simulation. AeroDaaS requires ≤ 40 lines of code for the applications and has minimal platform overhead of ≤ 20 ms per frame and ≤ 1 GB memory usage on Orin Nano and a AMD RTX 3090 GPU workstation. These results are promising for AeroDaaS as an efficient, flexible and scalable UAV programming framework for autonomous aerial analytics.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>Unmanned Aerial Vehicles (UAVs), commonly referred to as drones 1 , equipped with onboard computing and communication capabilities are increasingly deployed as ondemand aerial services for applications such as disaster response <ref type="bibr" target="#b0">[1,</ref><ref type="bibr" target="#b1">2,</ref><ref type="bibr" target="#b2">3]</ref>, precision agriculture <ref type="bibr" target="#b3">[4,</ref><ref type="bibr" target="#b4">5]</ref>, urban traffic management <ref type="bibr" target="#b5">[6,</ref><ref type="bibr" target="#b6">7]</ref>, and accessibility <ref type="bibr" target="#b7">[8,</ref><ref type="bibr" target="#b8">9]</ref>. They rely on deep learning-driven analytics, such as object detection and anomaly identification, using realtime camera feeds and sensor data for autonomous decision-making. Drones-as-a-Service (DaaS) extends this paradigm by enabling UAVs to be accessed as scalable, autonomous services for diverse domains. DaaS has been proposed for logistics, where drones optimize package delivery while reducing environmental impact <ref type="bibr" target="#b9">[10]</ref>, and in healthcare, for timely transport of medical supplies to disaster-affected areas <ref type="bibr" target="#b10">[11,</ref><ref type="bibr" target="#b11">12]</ref>.</p><p>Advances in edge computing and networked architectures further enhance DaaS by enabling distributed processing and multi-drone coordination <ref type="bibr" target="#b12">[13,</ref><ref type="bibr" target="#b13">14]</ref>. For example, in an urban safety scenario, a UAV that is observing various regions of a city may detect a specific stolen car or missing person, and start following it, and once emergency responders intercept the entity, the UAV resumes its broader mission. However, these require custom application design, joint scheduling of trajectory and analytics <ref type="bibr" target="#b14">[15,</ref><ref type="bibr" target="#b15">16]</ref> and runtime optimizations for edge-cloud offloading and drone coordination <ref type="bibr" target="#b16">[17]</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.1">Challenges</head><p>Companies like DJI, Parrot, and Skydio offer diverse drone platforms, requiring proprietary Software Development Kits (SDKs) such as DJI Mobile SDK <ref type="bibr" target="#b17">[18]</ref> to program them. These offer APIs for low-level control over drone navigation and on-board sensors. Custom drone applications developed using these SDKs are limited to that specific vendor, and often support a specific drone model as the SDK capabilities differ. This prevents their portability to other drones and substantially increases developer effort. Further, these SDKs lack high-level primitives for task-driven application composition. Practical DaaS applications require real-time analytics for autonomous navigation and intelligence. Given the pervasiveness of Deep Neural Network (DNN) models over vision and sensor data, these analytics also require edge accelerators, such as Nvidia Jetson, present onboard or co-located with the drone for rapid inferencing <ref type="bibr" target="#b18">[19,</ref><ref type="bibr" target="#b19">20]</ref>. These must be complemented by cloud resources and Inferencing-as-a-Service, intermittently accessible through cellular networks <ref type="bibr" target="#b20">[21,</ref><ref type="bibr" target="#b21">22,</ref><ref type="bibr" target="#b22">23]</ref>.</p><p>This also requires intelligent scheduling of analytics and offloading from on-board edge devices to the cloud <ref type="bibr" target="#b23">[24]</ref>. Further, when analytics drive navigation decisions, such as dynamically prioritizing triggered events over routine missions <ref type="bibr" target="#b24">[25]</ref>, the challenge extends to co-scheduling analytics and drone navigation. This close-coupling of analytics with trajectory scheduling highlights the need for unified frameworks that can jointly manage analytics, task priorities, and navigation in DaaS frameworks.</p><p>Lastly, given the safety-critical nature of drone applications, they must also be tested in simulation environments like Gazebo before deployment <ref type="bibr" target="#b25">[26]</ref>. This requires the same DaaS application written for physical drones and environments to also support different virtual drone platforms and scenarios, and also linking the simulation environment with the analytics runtime on edge and cloud. This will reduce the friction between development, testing and reliable deployment.  <ref type="bibr" target="#b34">[35]</ref> Java × ✓ ✓ ✓ × × SkyQuery <ref type="bibr" target="#b30">[31]</ref> Custom DSL ✓ × × ✓ × × Buzz <ref type="bibr" target="#b31">[32]</ref> Buzz language × ✓ ✓ × ✓ × VOLTRON <ref type="bibr" target="#b35">[36]</ref> Java and C++</p><formula xml:id="formula_0">✓ × ✓ × ✓ × PaROS [37] Java ✓ ✓ ✓ × ✓ × BeeCluster [25] Python × × ✓ × ✓ × AnDrone [38] Android Things × ✓ ✓ × ✓ × AeroDaaS Python ✓ ✓ ✓ ✓ ✓ ✓</formula><p>An earlier short version <ref type="bibr" target="#b32">[33]</ref> of this article motivated the need for programming abstractions in DaaS frameworks, introduced the AeroDaaS architecture to support sensing, navigation, and analytics for composing DaaS applications, provided APIs to integrate DNN analytics across the edge-cloud continuum, and demonstrated its use for a basic navigation task in simulation and a complex analytics task on real hardware. The current article extends it substantially by first discussing various navigation patterns ( § 3) to motivate priority-aware trajectory planning, and then enhancing the APIs by introducing INavigate and updating other interfaces as well as the architecture. Next, AeroDaaS defines workflows to realize the navigation patterns ( § 5). Finally, we evaluate these contributions across an extensive set of scenarios, both in simulation using Gazebo and on hardware using Jetson Orin Nano and a Ryze Tello drone in outdoor campus environments ( § 8). Our prior poster paper <ref type="bibr" target="#b33">[34]</ref> demonstrates integration of DNN analytics but does not exploit the edge-cloud continuum or complex compositions, which are addressed by AeroDaaS <ref type="bibr" target="#b32">[33]</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">Related Work</head><p>This section reviews existing frameworks, tools, and methodologies for UAV services, analyzing their contributions and limitations.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.1">Cross-Platform UAV Programming</head><p>Several frameworks provide low-level hardware abstractions for drones, focusing on control and actuation rather than higher-level services. AeroStack2 <ref type="bibr" target="#b28">[29]</ref> offers a ROS2-based abstraction layer, managing UAV hardware through a plugin-oriented architecture. Aero-DaaS builds on AeroStack2, automating infrastructure generation while extending capabilities to analytics integration, orchestration, and multi-device collaboration. UAV Abstraction Layer (UAL) <ref type="bibr" target="#b29">[30]</ref> defines basic UAV functions but lacks extensibility and cross-platform compatibility. AeroDaaS provides a higher-level service layer, enabling analytics-driven applications and distributed coordination beyond UAL's foundational controls. SoftwarePilot 2.0 <ref type="bibr" target="#b34">[35]</ref> employs a microservices-based approach, containerizing mission logic using Docker and Kubernetes. However, its complex deployment and DJIonly support limit usability. AeroDaaS simplifies deployment while ensuring scalability, interoperability, and service-driven orchestration across diverse drone platforms.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.2">Domain Specific Languages (DSL) for UAVs</head><p>Several frameworks leverage Domain-Specific Languages (DSLs) to abstract low-level drone operations. SkyQuery <ref type="bibr" target="#b30">[31]</ref> enables video analytics and waypoint generation but lacks direct drone control services. Buzz <ref type="bibr" target="#b31">[32]</ref> provides a swarm programming DSL, but its reliance on the Buzz Virtual Machine (BVM) and absence of built-in analytics primitives add complexity. BeeCluster <ref type="bibr" target="#b24">[25]</ref> optimizes multi-drone missions using predictive analytics, yet lacks cross-platform compatibility. AeroDaaS goes beyond DSL limitations by providing a service-driven, platform-agnostic framework that integrates analytics, navigation, and multi-device orchestration, enabling seamless UAV application development without low-level complexities.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.3">Programming Framework for UAVs</head><p>VOLTRON <ref type="bibr" target="#b35">[36]</ref> simplifies multi-drone coordination but is restricted to sensing services. PaROS <ref type="bibr" target="#b36">[37]</ref> offers swarm orchestration primitives, automating specific missions but lacking DNN-based analytics services that leverage edge accelerators. AnDrone <ref type="bibr" target="#b37">[38]</ref> virtualizes drones using Linux containers called Android Things. Users can configure virtual drones in the cloud, utilizing existing Android apps and resources, which are then safely deployed on real drone hardware. AnDrone is limited to Android apps, and offers just navigation and sensing capabilities. We use a similar Docker-based approach that can work across the edge and cloud continuum.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.4">Software Development Kits (SDKs) for UAVs</head><p>Most commercial SDKs, such as the DJI SDKs <ref type="bibr" target="#b17">[18]</ref>, Parrot GroundSDK <ref type="bibr" target="#b38">[39]</ref>, and Autel SDK <ref type="bibr" target="#b39">[40]</ref>, are proprietary and tightly coupled to vendor-specific hardware, leading to vendor lock-in and poor portability. Open-source frameworks like PX4 <ref type="bibr" target="#b26">[27]</ref>, ArduPilot <ref type="bibr" target="#b27">[28]</ref>, and Paparazzi UAV [41] offer greater flexibility but mainly expose low-level flight control and telemetry APIs without unified abstractions for sensing, analytics, or orchestration. Middleware such as MAVSDK <ref type="bibr" target="#b40">[42]</ref>, DroneKit <ref type="bibr" target="#b41">[43]</ref>, and AirSim <ref type="bibr" target="#b42">[44]</ref> support cross-platform communication and simulation but require extensive customization for multi-UAV or edge-cloud integration. Due to their reliance on MAVLink-based control, DroneKit and AirSim have already announced their deprecation. Lightweight APIs like the Crazyflie Python API <ref type="bibr" target="#b43">[45]</ref> and Dronecode SDK-Python <ref type="bibr" target="#b44">[46]</ref> are similarly limited in scalability. Finally, MATLAB's UAV and Robotics System Toolkit <ref type="bibr" target="#b45">[47]</ref> enables high-level modeling and simulation but remains confined to the proprietary MATLAB/Simulink ecosystem and is heavily reliant on PX4 for interoperability with real-world experiments. Unlike these SDKs, which are primarily developed for roboticists and require an understanding of low-level expertise, AeroDaaS exposes high-level, declarative APIs that allow users to have a smoother learning curve.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.5">Integration of Task and Route Schedulers with DaaS</head><p>The integration of task scheduling and route planning in DaaS frameworks has become a critical aspect in aerial edge computing. Several studies have focused on either optimizing the drone trajectories or improving computational task allocation, but real-world conditions may require scheduling in both aspects. For instance, Hamadi <ref type="bibr" target="#b46">[48]</ref> and Alkouz <ref type="bibr" target="#b47">[49]</ref> investigated the drone service selection problem under varying drone behaviors and service models, yet they assumed static flight plans and ignored the arrival of new tasks during operation. Similarly, Wang et al. <ref type="bibr" target="#b48">[50]</ref> proposed a task offloading mechanism for UAVs but did not account for spatial locality among drones or adaptive trajectory optimization. Gao et al. <ref type="bibr" target="#b49">[51]</ref> explored a joint trajectory-resource optimization scheme, but its applicability is limited to lightweight tasks that UAVs can execute while flying, without considering dynamically evolving tasks, which may have an impact on the trajectory. Similarly, the Serv-HU framework <ref type="bibr" target="#b50">[52]</ref> achieves smooth task migration between MEC servers by determining optimal spatio-temporal handover points; however, it ignores unforeseen trajectory deviations. In contrast, AeroDaaS provides a modular architecture that seamlessly integrates both the task scheduler and the route scheduler as plugins, enabling flexible and co-optimized coordination between computational and mobility decisions.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.6">Contrast with Prior Work</head><p>AeroDaaS significantly advances over AeroDaaS <ref type="bibr" target="#b32">[33]</ref> by expanding both the architectural and experimental scope. It first formalizes a taxonomy of UAV navigation patterns, which motivates the design of priority-aware trajectory planning. The core architecture is further refined with the addition of INavigate abstraction and enhancements to other APIs, enabling extensible integration of both task and route scheduling logic. Building upon these extensions, the proposed AeroDaaS framework illustrates executable workflows that capture diverse navigation and scheduling patterns. Finally, AeroDaaS provides a comprehensive evaluation across Gazebo simulations to real-world experiments on Jetson Orin Nano and DJI Ryze Tello drones in outdoor campus deployments.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Motivation and DaaS Requirements</head><p>In this section, we discuss various mission patterns motivated by real-world drone scenarios, and subsequently outline the requirements these patterns impose on AeroDaaS for their effective composition. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">Drone Service Paradigms</head><p>We identify two representative drone service paradigms that leverage a sensing-analyticsnavigation loop for a DaaS programming framework: (1) Analytics-Driven Services (ADS): Drones autonomously adjust their trajectory based on real-time analytics. E.g., UAV-based assistive services can track a visually impaired person by detecting their hazard vest using a DNN, issue navigation commands, and provide obstacle alerts <ref type="bibr" target="#b7">[8,</ref><ref type="bibr" target="#b21">22]</ref>.</p><p>In addition to assistive services, UAVs can track moving vehicles to improve traffic management and monitor critical infrastructures <ref type="bibr" target="#b51">[53]</ref>. (2) Waypoint-Driven Services (WDS): Drones follow a predefined trajectory based on waypoints, and execute sensing or analytics tasks at specific locations during the flight. E.g., UAVs capture traffic images along city roads to assess congestion and optimize traffic signaling <ref type="bibr" target="#b52">[54,</ref><ref type="bibr" target="#b15">16]</ref>, or be used in farm surveying <ref type="bibr" target="#b4">[5]</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">Taxonomy of Mission Patterns</head><p>Next, we discuss 5 major patterns observed in drone missions. The simplest one is (a) Pre-defined mission with static waypoints as shown in Fig. <ref type="figure" target="#fig_0">1a</ref>. Here, the drone follows a set of waypoints predefined by the user, which remain unchanged during the mission. While the drone is in flight, an onboard analytics can be optionally run based on the collected data. A complex version of this is (b) Pre-defined mission with dynamic waypoints as shown in Fig. <ref type="figure" target="#fig_0">1e</ref>. Here, the drone initially follows a set of predefined waypoints, but new waypoints can be added to the set during the mission. These can be updated either through a remote user or an independent analytics server, allowing for dynamic adjust-ments based on observations or changing mission requirements. Both of these patterns follow the WDS paradigm. Another trivial pattern motivated by autonomous navigation is (c) Sensor data-driven mission in which the navigation of the drone is controlled solely by the commands generated using real-time onboard analytics of the live drone feeds from onboard camera (Fig. <ref type="figure" target="#fig_0">1c</ref>). This leverages the ADS paradigm. We also discuss two complex hybrid patterns that combine characteristics of ADS and WDS. In (d) Analytics-driven mission update, the drone's mission initially consists of predefined user waypoints; however, onboard analytics can generate high-priority waypoints (triggers) during flight. This enables the drone to dynamically switch from its ongoing mission to address a high-priority task based on real-time analysis or triggered events, and subsequently resume its original mission (Fig. <ref type="figure" target="#fig_0">1d</ref>). A related variant is shown in (e) Analytics-driven mission abort, where the onboard analytics have the authority to completely override the current mission. Upon detecting or triggering a critical event, the analytics module clears the existing navigation queue and generates new high-priority waypoints, preventing the drone from returning to its prior mission as in the previous pattern (Fig. <ref type="figure" target="#fig_0">1b</ref>).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3">Requirements</head><p>Based on these mission patterns, we highlight requirements of AeroDaaS, which we address in this article.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.">Composable Interfaces for Common Application Logic: A unified framework with</head><p>APIs for sensing, navigation and analytics is essential for addressing common drone application needs. While existing solutions provide limited support based on specific drone hardware, they lack cross-platform compatibility. E.g., DJI SDKs offer missionspecific services such as Revolve, Follow, and waypoint-based navigation, but these do not extend to other drones.</p><p>2. Hardware-Agnostic Implementation: A unified, service-oriented stack that modularizes sensing, navigation, and analytics is required to enable seamless deployment across diverse drone hardware. Simulation tools should be further supported to test without altering application logic.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.">Service Deployment and Execution Isolation:</head><p>To ensure seamless deployment of drone applications with diverse dependencies across heterogeneous compute environments, we require a containerized service model that encapsulates applications and inferencing services in isolated environments, enabling conflict-free execution, improved security, and efficient resource utilization.</p><p>4. Analytics Services across Edge-Cloud Continuum: Given the computational demands of DNN-based analytics, resource constraints on the mission computers (edge devices) can limit performance. Applications must define priorities and performance guarantees for analytics tasks, necessitating seamless integration of intelligent analyt-  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.">Intelligent Trajectory Scheduling:</head><p>To ensure efficient and reliable operation of drone within the onboard battery constraints, there is a need of trajectory scheduler which optimizes drone trajectory, minimises battery usage, reduces service time of waypoints, maximizes throughput by serving maximum number of waypoints. Applications should define the coordinates, priorities, and deadlines for the waypoints, enabling seamless integration with the trajectory scheduler. The scheduler should be able to efficiently handle waypoints from both Analytics-Driven Services and Waypoint-Driven Services.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Architecture and Programming Framework</head><p>AeroDaaS offers core programming APIs and data models to enable developers to intuitively compose DaaS applications. It builds on core components of the drone ecosystem by abstracting their complexity into modular services. It leverages AeroStack2 as the hardware abstraction layer for seamless integration with Pixhawk <ref type="bibr" target="#b53">[55]</ref> as the flight controller. It offloads compute-intensive tasks such as DNN inferencing to companion mission computers like the Nvidia Jetson or remote cloud resources. By extending autopilot platforms such as PX4 <ref type="bibr" target="#b26">[27]</ref> and ArduPilot <ref type="bibr" target="#b27">[28]</ref>, AeroDaaS enables analytics-driven autonomous navigation. Also, it utilizes offboard APIs in high-level languages like Python to bridge drones with external compute and sensing resources, ensuring flexible, programmable, and scalable control across edge and cloud.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1">AeroDaaS Architecture</head><p>We describe the architecture of AeroDaaS using Fig. <ref type="figure" target="#fig_1">2</ref>. DaaS applications are built using AeroDaaS's APIs (Table <ref type="table">.</ref> 2, which abstracts low-level drone navigation, controls, sensing and analytics into intuitive, composable Python-based interfaces. Internally, some of these APIs extend Aerostack2's capabilities by integrating with onboard sensors and actuators across both real-world and simulated environments.</p><p>The key novelty in AeroDaaS lies in its Analytics and Navigation service layers (shown in green). The analytics layer enables DNN-based models to run across edge, fog and cloud resources for a hybrid execution model. These analytics services can be intelligently used by plugging in task schedulers to dynamically distribute workloads to balance performance and cost. The navigation layer, on the other hand, incorporates a waypoint scheduler that optimizes UAV trajectories to achieve an optimal mission completion based on user requirements. Moreover, this layer provides a modular interface that allows seamless integration of diverse path-planning algorithms, facilitating adaptability across application domains and deployment environments. To ensure modularity and isolation, AeroDaaS employs containerized service execution using Docker. Each service, such as sensor access, analytics and compute management, runs in an independent container, allowing seamless deployment and encapsulation between layers.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2">AeroDaaS APIs</head><p>AeroDaaS provides a set of API interfaces that enable developers to orchestrate analytics and navigation services, manage UAV fleets, and integrate custom scheduling or pathplanning modules with ease. These are discussed in detail.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.1">Environment Management Interface (IEnvironment)</head><p>This provides unified access to environmental resources such as sensors, drones, and compute devices. These can be initialized from a configuration file or dynamically discovered. Developers can query sensor and robot (drone) availability (e.g., hasEnvSensors(), getEnvSensorByID(), getRobotByID()) present in the environment. Additionally, compute resources that are accessible within the environment can be accessed through getComputeResources(), and specific ones can be fetched using getComputeResource-ByID(). These may be edge devices onboard the drone, nearby edge accelerators, or remote cloud resources. The setTrajectoryScheduler() and setAnalyticsScheduler() can be used to plug in custom waypoints schedulers and analytics schedulers in the drone ecosystem, respectively. If these APIs are not used, AeroDaaS uses the default schedulers. This enables adaptive, responsive drone applications. While our current work implements core functionality, future efforts will allow initializing IEnvironment using a drone service provider's URL to access remote resources seamlessly. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.2">Mission Control Interface (IRobot)</head><p>This enables hardware-agnostic mission execution and control of drone operations. It supports lifecycle interfaces such as startMission() and endMission() for custom logic, as well as pauseMission() and resumeMission() to temporarily halt and resume missions. The availability of onboard sensors are first verified using hasSensors(), and, if available, can be accessed through getSensors() or retrieved individually using getSensorByID() for a specific sensor type. Navigation-related services include isNavigable(), which determines whether a robot supports navigation, and navigate(IAeroData&lt;AeroNav&gt;) to execute navigation commands based on provided parameters. In future, this can even be extended to ground robots alongside UAVs.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.3">Sensor Data Access Interface (ISensor)</head><p>This enables seamless interaction with onboard and environmental sensors. Applications can query sensor attributes using getSensorProperty(prop) and identify sensors via get-SensorID(). Real-time data acquisition is supported through getDataStream(), returning continuous AeroStreamData. It supports flexibility in data handling using IPushSensor for callback-based subscriptions and IPullSensor for periodic polling. We also design a new sensor, stat-stream, which implements the ISensor interface. It is a software-based odometry sensor modeled as a finite state machine that tracks and reports the current mission state of the drone. This sensor provides reliable state feedback, enhancing mission robustness and improving tolerance to odometry inaccuracies.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.4">Data Management Interface (IAeroData)</head><p>This standardizes data handling in AeroDaaS through the generic AeroData&lt;E&gt; type, enabling consistent manipulation of diverse data such as images, sensor readings, and analysis results. It provides getData() and setData(E data) methods for accessing and modifying encapsulated values, supporting structured, unstructured, and custom formats. Extensions like AeroStreamData, used by ISensor, provide continuous data streams, while AeroListData enables managing collections, such as navigation waypoints in AeroNav.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.5">Compute Management Interface (ICompute &amp; IDeployable)</head><p>ICompute manages compute resources across the edge-cloud continuum and enables initialization and access to analytics services. Developers can retrieve device capabilities using getComputeProperties(), including details like processing power, memory, and accelerators. Analytics can be deployed via IDeployable, which may internally use edge, cloud, or hybrid analytics schedulers initialised using setAnalyticsScheduler() in IEnvironment to balance workloads. The design is extensible to support diverse compute and scheduling strategies. This design enables seamless integration of navigation functions for dynamically managing and updating the drone's trajectory. Developers can initialize the initial route by invoking the generateNavigation() method, which takes a user-defined set of waypoints and applies the scheduling logic defined in setTrajectoryScheduler() within IEnvironment to generate an optimized waypoint sequence. These waypoints are then inserted into a queue for execution. The navigate() function in IRobot subsequently polls waypoints from this queue to control the robot's movement. New waypoints can be dynamically inserted during the mission using addNavigation(), which supports appending at custom indices, thereby enabling mid-mission updates and priority-based scheduling. Meanwhile, the clearNavigation() method resets the queue by removing all existing waypoints, allowing the drone to transition to a new mission when required. Collectively, these methods provide a flexible and efficient mechanism for managing drone trajectories across diverse mission patterns.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.7">Analytics and Analytics-based Navigation Interface (IAnalyse and</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>INavigableAnalyse)</head><p>IAnalyse enables analytics-driven decision-making by allowing applications to invoke analyse(IAeroData) for AI-based insights, such as performing object detection and returning bounding boxes over a video stream input. Data from external sensors can also be incorporated into the decision-making process using the instantiate() method. Additionally, the trigger() method enables the dynamic invocation of other analytics modules during mission execution. These triggers can originate from the output of existing analytics or be initiated dynamically by a remote user. Furthermore, INavigableAnalyse Together, these interfaces facilitate seamless integration of DNN models for real-time analysis and control, thereby enhancing the system's autonomy. Users can also implement custom analytics modules, such as IMonitoringAnalytics, which implements IAnalyse and supports visualization of parameters like battery status and odometry data. When integrated with the stat-stream sensor, it serves as a feedback mechanism to reconcile the drone's perceived navigation progress with its actual odometry readings. Fig. <ref type="figure">3</ref> illustrates an example of the drone's mission states, where the stat-stream sensor defines 13 distinct states (depicted in light-green boxes) that collectively represent the full mission cycle across various possible mission patterns.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Workflows</head><p>In this section, we discuss various mission workflows in detail based on the mission patterns described in Sec. 3.2. Across all workflows, the mission is initiated by the user, following which the mission controller issues appropriate commands to the motion controller for drone takeoff and subsequently initializes the onboard sensors. Once activated, the sensors begin streaming data to the analytics scheduler, which coordinates the execution of onboard analytics modules. A waypoint priority queue collects waypoints originating from multiple sources with varying levels of priority. These waypoints are processed by the trajectory scheduler, which selects and dispatches the next waypoint to the motion controller, guiding the drone's movement to the next location or initiating landing operations as required. An overview of all the workflows is illustrated in Fig. <ref type="figure">4</ref>, where each mission pattern has a distinct source for waypoint generation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.1">Pre-defined Mission (PDM) with Static Waypoints</head><p>In this workflow, the user initializes the mission using a predefined set of static waypoints. These waypoints are processed by the trajectory scheduler and sequentially dispatched to the motion controller for execution. Meanwhile, onboard sensors may stream data to the analytics module for task-specific processing. This workflow supports deterministic operations suited for pre-planned missions that require repeatability and precision, such as surveying or area mapping, without any real-time trajectory modification.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.2">Sensor Data-driven Mission</head><p>In this workflow, the mission begins without any predefined waypoints. Instead, the analytics module dynamically generates waypoints in real time based on incoming sensor (e.g., video) data and continuously inserts them into the waypoint queue. The trajectory scheduler processes these waypoints and forwards them to the motion controller for execution. As a result, the entire navigation process becomes fully autonomous and adaptive, guided by sensor-driven analytics.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.3">Pre-defined Mission (PDM) with Dynamic Waypoints</head><p>This workflow starts with a predefined set of waypoints, similar to § 5.1, but allows dynamic modifications during execution. New waypoints can be inserted into the queue, either by remote analytics or user intervention, based on live sensor data or environmental feedback. The trajectory scheduler reprocesses the updated waypoints and sends them to the motion controller in sequence, enabling responsive and flexible mission adaptation in real time.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.4">Analytics-driven mission update</head><p>In this workflow, the mission begins similarly to § 5.2. However, based on onboard analytics output, a new analytics module can be dynamically launched, which generates high-priority waypoints based on detected events or real-time analytical insights (e.g., anomaly detection or target identification). These analytics-generated waypoints are inserted into the existing waypoint queue with elevated priority, enabling the drone to temporarily deviate from its ongoing mission to address critical tasks. Once the highpriority task is completed, the trajectory scheduler automatically restores the previous mission plan, allowing the drone to resume its original route seamlessly. This workflow exemplifies closed-loop autonomy where the Analytics layer directly influences navigation decisions through data-driven triggers, ensuring responsiveness to dynamic and unpredictable environments.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.5">Analytics-driven mission abort</head><p>In this workflow, onboard analytics are granted full authority to override the ongoing mission upon detecting or triggering a critical event, such as an obstacle, hazard, or  When such an event occurs, the analytics module issues a clear-Navigation signal to the trajectory scheduler, immediately clearing all existing waypoints from the navigation queue. Unlike § 5.4, the drone does not resume its prior mission once the abort signal is received. This workflow demonstrates a robust fail-safe mechanism that prioritizes mission safety and real-time adaptability, ensuring the system can autonomously respond to unforeseen circumstances.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6">Developing Applications using AeroDaaS</head><p>In this section, we use the AeroDaaS APIs to compose the DaaS applications from our motivating use cases. We provide representative code snippets that use the programming and data interfaces to compose application services as dataflows. Fig. <ref type="figure" target="#fig_2">5</ref> illustrates the coverage of our APIs by the applications. The environment initialization bootstraps the resources available to the developer. For simplicity, we assume obstacle avoidance is enabled natively by default for the drones.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.1">Situation Awareness</head><p>We show an analytics-driven (specifically, sensor-driven) application where drones are used to assist visually impaired people (VIP) for navigation <ref type="bibr" target="#b7">[8]</ref>. Here, the drone's camera stream is processed by a Hazard Vest Detection module based on YOLOv8-nano. The module generates bounding boxes around the vest, which are then translated into navigation commands using a PID controller, allowing the drone to autonomously track the VIP. Simultaneously, the same camera feed is analyzed by a Body Pose Analytics module that leverages a ResNet18-based DNN in combination with an SVM classifier to identify any gestures requiring responsive actions, such as commanding the drone to land when the VIP raises a hand or detecting a fall event for immediate assistance. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.2">Farm Survey</head><p>Here, we present a waypoint-driven application in which a PX-4 controller drone called quadrotor_base is initialized to survey a predefined rectangular or polygonal area, with boundary waypoints specified by the user. During the mission, the drone's GPS data and camera video feed are continuously streamed to downstream applications, which can either store the data locally or upload it to the cloud for further processing and analysis. drone.navigate(drone_nav_data) drone.start_mission()</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.3">Human-in-the-loop Disaster Zone Survey</head><p>Here, we demonstrate a waypoint-driven Human-in-the-Loop application in which both a remote user and an onboard analytics module collaboratively control the drone. The mission begins with a predefined survey area specified through boundary waypoints provided by the user. Throughout the mission, the drone's GPS telemetry and camera video feed are continuously streamed to downstream analytics modules, enabling real-time monitoring, adaptive decision-making, and interactive user intervention when required. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.4">Surveillance and Tracking</head><p>In this application, we present a hybrid waypoint and analytics-driven application, where the mission begins with a predefined area-surveillance task using boundary waypoints. During flight, the drone's camera stream is continuously analyzed, and upon detecting a specific target vehicle, the system transitions into a tracking mode. The video feed is processed by the CarFollow analytics, which uses a YOLOv11-medium model to identify the target and generate navigation commands for vehicle tracking. Once the vehicle exits the surveillance region, the drone autonomously reverts to its survey mission.</p><p># Initialize env, edge resource, tello drone Get Tello camera stream like 3-7 from 6.1 wp1 : Waypoint = Waypoint(id = "wp1", waypoint_type="relative", x=20, y=20, z =10)</p><p>wp2 : Waypoint = Waypoint(id = "wp2", waypoint_type="relative", x=40, y=20, z =10)</p><p>wp3 : Waypoint = Waypoint(id = "wp3", waypoint_type="relative", x=60, y=20, z =10)</p><p>waypoints_list: AeroListData = AeroListData([wp1, wp2 </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7">Runtime Implementation</head><p>Fig. <ref type="figure" target="#fig_4">6</ref> illustrates the key components of the AeroDaaS runtime implementation. The user interacts with the AeroDaaS APIs, selects a subset of available functions to define their application, and submits their application through a user-facing file. The following subsections detail the involved steps.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7.1">Automated Code and Infrastructure Generation</head><p>We implement our runtime in Python3 and provide equivalent Python APIs for the AeroDaaS services. Users develop applications as Python scripts, which execute within an isolated container. This container is set up using a pre-configured Docker image that includes (a) the AeroStack2 library, (b) backend support for the target drone hardware, AeroDaaS relies on Aerostack2 plugins as the hardware abstraction layer, requiring them to be active before any interface is used. When a user executes their Python application, it first invokes generate_code, the core function responsible for infrastructure setup. This function generates a Python-based ROS2 node file containing services for analytics, navigation, sensing, and compute, along with corresponding bash scripts to launch necessary services. The main file is dynamically populated based on user inputs using Jinja2 <ref type="bibr" target="#b54">[56]</ref>. The bash scripts then initialize the required containers, including Aerostack2 services, analytics modules, and optional simulation environments if no physical drone is used. Finally, the generated ROS2 node executes, starting the mission.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7.2">Containers Coordination using AeroDaaS Services</head><p>AeroStack2 provides control interfaces for drone navigation and sensor interfaces for accessing onboard data, both exposed via ROS topics and messages. AeroDaaS ensures seamless inter-container communication by running all containers on the host network, enabling data exchange over localhost. ISensor allows analysis containers to retrieve sensor data, while IAnalyse facilitates transfer of analytics outputs from these containers to the AeroStack2 container. The navigate function in IRobot is responsible for transmitting navigation waypoints generated by INavigate from the AeroStack2 container to either the simulation environment or the physical hardware robot. Similarly, telemetry data from the robot is received by the AeroStack2 container through IMon-itoringAnalytics, enabling real-time monitoring of system states and mission progress. The inter-container coordination mechanism remains identical in both real-world and simulated environments. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8">Evaluation</head><p>We perform a detailed evaluation of AeroDaaS for five motivating applications: Farm Survey, Human-in-the-loop Disaster Survey, Situation Awareness, Search and Rescue, Surveillance and Vehicle Tracking. These are implemented using our programming API and deployed within our runtime. These applications validate both real-world deployment with the Tello Drone using hardware-in-the-loop (HITL), and a simulation-based evaluation using a Quadrotor Base model drone supporting PX-4 controller featuring onboard GPS camera using software-in-the-loop (SITL). These demonstrate the flexibility of the framework to execute the application on different target platforms with optimized trajectory by integrating with a trajectory scheduler. We also evaluate the use of edge and cloud resources, individually and together, using a modular scheduler to execute analytics that drive the DaaS application.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.1">Setup</head><p>For the HITL experiment, we use a DJI Ryze Tello drone and an Nvidia Jetson Orin Nano edge accelerator. The Orin Nano has a six-core Arm Cortex-A78AE CPU, 1024 Ampere CUDA cores, and 8GB of RAM shared by CPU and GPU (Fig. <ref type="figure" target="#fig_5">7a</ref>). It has a power range of 7-15W, is powered by a portable power bank with the max output of 12V/18W, has compact dimensions of 100 × 79mm, and connects to the drone over TP-Link TL-WN722N 150 Mbps high gain wireless USB WiFi adapter. The DJI Tello is equipped with an onboard camera capable of generating live video feeds at 30 FPS at 720p resolution (Fig. <ref type="figure" target="#fig_5">7b</ref>). For the situation awareness and search-and-rescue experiments, a proxy VIP (Fig. <ref type="figure" target="#fig_5">7c</ref>) carries a smartphone with Android OS version 14. We use the GPS Logger Lite Android application<ref type="foot" target="#foot_0">2</ref> available on the Google Play Store, to record the VIP's current location during the experiments. The drone was maintaining a constant distance of 2m from the VIP throughout the experiment, and the experiments run on our university campus. AeroStack2 and the required DNN models were executed inside Docker containers with base image of Ubuntu 20.04, Python 3.8.10 and PyTorch v2.0.0 and run on the NVIDIA Jetson Orin Nano for edge-based experiments, while Amazon Web Services (AWS) Lambda is utilized for cloud-based experiments. We follow the cloud experiment setup outlined in <ref type="bibr" target="#b21">[22]</ref>. For SITL simulations, we use a Quadrotor base model drone that generates live video feeds at 15 FPS (Fig. <ref type="figure" target="#fig_5">7d</ref>) and use the Baylands virtual world with a dummy cell tower (Fig. <ref type="figure" target="#fig_5">7e</ref>) which, although lacking communication functionality, provides the necessary infrastructure for evaluating the Radio Tower Inspection application and Prius Hybrid car model<ref type="foot" target="#foot_1">3</ref> (Fig. <ref type="figure" target="#fig_5">7f</ref>) to support Vehicle Tracking application. The simulations are run in Gazebo simulator (GZ Garden) integrated with ROS2 (Humble) running inside a Docker container on a GPU workstation equipped with an AMD Ryzen 9 3900X 12-core CPU, 24GB RAM, and a Nvidia RTX 3090 GPU having 128 GB VRAM.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.2">Workloads</head><p>We assess the performance of AeroDaaS using six representative applications that covers multiple UAV use case domains. A summary of these workloads is provided in Table <ref type="table" target="#tab_9">3</ref> with the following detailed descriptions:  This application demonstrates a pre-planned static mission designed to survey a small 10m×10, m area (Fig. <ref type="figure" target="#fig_7">8a</ref>). The experiment was conducted in Gazebo using the Baylands virtual world and a quadrotor base model where the drone was flown at an altitude of 1.5m with a speed of 0.5m/s. The onboard camera streamed video at 15 FPS, which was stored locally for offline analysis. At each waypoint, the drone hovered for 5 seconds before proceeding to the next, completing the full survey in approximately 120 seconds.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.2.2">Disaster Survey with Human Supervision</head><p>This workload demonstrates a mid-mission modification pattern aimed at surveying a small disaster-affected region under human supervision. The mission begins with a preplanned survey consisting of 4 initial waypoints covering a 10m × 10m area, followed by 3 remotely injected waypoints covering a 10m × 20m area (Fig. <ref type="figure" target="#fig_7">8b</ref>) to emulate dynamic task allocation during execution. The experiment was performed in simulation, where the drone was flying at an altitude of 1.5m for 142 seconds at a speed of 1.5m/s while capturing video.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.2.3">Situation Awareness</head><p>This workload demonstrates a sensor-driven mission aimed at assisting a VIP in an outdoor environment <ref type="bibr" target="#b7">[8]</ref>. In the HITL experiment, the drone was tasked with continuously following a VIP wearing a hazard vest. It flew at an altitude of 1.5m with a variable speed ranging from 0.1m/s to 1m/s maintaining a constant distance of approximately 2m from the VIP. The onboard camera streamed video at 5 FPS, which was processed using the fine-tuned YOLOv8-nano model for hazard vest detection. The detection results were post-processed to generate navigation speed commands for the drone. Simultaneously, the GPS Logger Lite application recorded the VIP's location data to support spatio-temporal analysis. The experiment lasted for approximately 250 seconds.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.2.4">Surveillance and Vehicle Tracking</head><p>This workload represents an analytics-driven mission update that integrates area surveillance with vehicle tracking. The experiment was conducted in Gazebo using the Baylands virtual world, with a Prius Hybrid car serving as the moving target and a quadrotor base model drone flying at an altitude of 2.5m. The drone was initialized with a pre-planned survey mission consisting of three waypoints. During execution, it successfully completed the first waypoint before detecting a car through its onboard camera feed, processed using a fine-tuned YOLOv8-nano model. Upon detection, the drone dynamically transitioned from survey mode to vehicle-tracking mode and followed the car for approximately 30m (Fig. <ref type="figure" target="#fig_7">8d</ref>). The car moved at a low speed of 0.5m/s to enable reliable detection and tracking. Once the car exited the survey boundary taking a sharp right turn and moving out of the drone's FPV camera the drone autonomously resumed its original survey mission to complete the remaining waypoints. In the absence of any pre-planned waypoints, this workload naturally reduces to a pure vehicle tracking scenario following the sensor-driven paradigm. Fig. <ref type="figure" target="#fig_7">8c</ref> further illustrates a simulated drone tracking a car for more than 64m in Gazebo.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.2.5">Search and Rescue</head><p>This workload represents an analytics-driven abort mission in real world where the drone is initialized with a search mission followed by a rescue mission. The experiment was performed in the real world with the drone initialized with 4 waypoints to search for a VIP wearing a hazard vest. During the mission, the VIP was detected at the second waypoint using the onboard camera feed processed by the fine-tuned YOLOv8-nano model. Upon detection, the drone aborted its search mission and transitioned into the VIP following mode. The drone then followed the VIP for next 6 minutes until the VIP reached a safe waypoint located 40m away from the initial position (Fig. <ref type="figure" target="#fig_7">8f</ref>).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.2.6">Radio Tower Inspection</head><p>This workload demonstrates an analytics-driven abort mission performed in simulation using the Gazebo simulator with the world having a dummy cell tower for inspection.  The drone was initialized with 4 waypoints to locate the cell tower. Upon identifying the tower between waypoints 2 and 3, the drone switched to an inspection mode, capturing images from the tower's base to an altitude of 35m (refer Fig. <ref type="figure" target="#fig_7">8e</ref>) and streaming them to the fine-tuned YOLOv8-nano model for analysis. After completing the inspection, the drone made a smooth landing.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>PDM with</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.3">Results</head><p>Next, we present key insights from our experiments that validate these six applications, implemented and orchestrated using AeroDaaS, each running for more than 250 seconds.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.3.1">Overheads of AeroDaaS framework</head><p>We evaluate the overhead latency of AeroDaaS using a combination of simulated and real-world analytics-driven experiments. The end-to-end latency consists receiving image frames from the drone over WiFi, executing DNN inference on the edge device, processing the inference outputs, generating navigation velocity or waypoint commands via a PID control loop, scheduling these commands, and transmitting them back to the drone. For efficient resource utilization, the DNN analytics pipeline operates on every alternate frame (15 FPS) in simulation and on every sixth frame (5 FPS) in hardware-based experiments. The AeroDaaS overhead is defined as the end-to-end latency excluding the inference and post-processing latencies. Based on our analysis (Fig.  end-to-end latency for simulated experiments was 35 ms, while the hardware experiments exhibited a slightly higher latency of 73 ms. The obsereved median latency overhead of AeroDaaS was 13 ms in simulation and 17 ms in hardware experiments, demonstrating that AeroDaaS introduces only a marginal computational cost while maintaining realtime responsiveness. The consistency across both experimental settings highlights the scalability and robustness of the framework for diverse mission scenarios. Additionally, to demonstrate the deployment feasibility of AeroDaaS, we analyze its system resource consumption using a set of simulated and real-world experiments. An overview of resource utilization during the simulation experiments is shown in Fig. <ref type="figure">9</ref>, which illustrates that RAM usage varied between 15% and 23%, while VRAM usage ranged from 6% to 26% across different mission scenarios. Fig. <ref type="figure" target="#fig_1">12</ref> and 13 show the detailed resource consumption for simulation and real-world experiments. In simulation, with AeroDaaS startup at t = 30s and analytics activation at t = 44s, we observe that running on a GPU workstation alongside the Gazebo simulator increased GPU memory usage by about 20% (≈ 4.8 GB on an NVIDIA RTX 3090 GPU). For the real-world experiment, the startup occurred at t = 20s and analytics activation at t = 70s. Running models on the edge device increased memory usage by around 40% (≈ 3.2 GB on the Orin Nano). From Fig. <ref type="figure" target="#fig_1">12</ref>, it can be observed that the RAM consumption increases by ≤ 1% (≈ 1 GB) from the initialization of AeroDaaS at t = 30s to the start of analytics at t = 44s, indicating that AeroDaaS introduces minimal memory overhead. Overall, AeroDaaS adds ≤ 0.5 GB, i.e., only 8% overhead. This trend is consistent across both GPU workstations and edge devices such as the Orin Nano, reaffirming its suitability for real-time applications.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.3.2">Capability of plugging in schedulers</head><p>To demonstrate the flexibility of our system, we employed a NearestNeighbor waypoint scheduler as a plug-in module for evaluation. This scheduler dynamically selects the next waypoint based on the nearest distance, thereby optimizing the drone's trajectory.</p><p>In the Disaster Survey application, this scheduling strategy resulted in a reduction of 22 meters (refer Fig. <ref type="figure" target="#fig_7">8b</ref>) in total travel distance, highlighting its potential for significant energy and time savings. The scheduler's queuing capability further enables seamless switching between different missions, such as transitioning from a surveillance task to vehicle tracking, without requiring a full system reset. Similarly, the analytics scheduler coordinates onboard DNN inference tasks in parallel with navigation, ensuring efficient utilization of compute resources. We evaluated the analytics scheduler plug-in capability of AeroDaaS using the scheduler of Ocularone <ref type="bibr" target="#b21">[22]</ref> with their DEMS algorithm. Fig. <ref type="figure" target="#fig_0">14</ref> shows that the median end-to-end latency of the Situation Awareness application, which involves analytical tasks such as VIP detection and bodypose identification of the VIP, is 158 ms with an AeroDaaS overhead of only 10 ms. This overhead primarily consists of passing the input camera feed to the analytical models, scheduling their generated navigation commands, and transmitting those commands to the drone. The modular nature of these schedulers allows different strategies to be plugged in based on mission context, environment, and computational constraints.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Analytics Driven</head><note type="other">Waypoint Driven</note></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.3.3">Concise Composition of AeroDaaS applications</head><p>AeroDaaS significantly reduces the Lines of Code (LoC), by upto 5×, required for users to compose UAV applications compared to other platforms, making it highly efficient and user-friendly. As shown in Fig. <ref type="figure" target="#fig_11">15</ref>, PX4 requires around 200 LoC for analyticsdriven applications and over 130 LoC for waypoint-driven applications, making it the most code-intensive. Aerostack2 reduces this overhead but still requires over 140 LoC for analytics-driven tasks and more than 100 LoC for waypoint-driven applications. Similarly, native DJI TelloPy code demands over 100 LoC and around 70 LoC for the two kind of tasks, respectively. In contrast, AeroDaaS requires fewer than 40 LoC for both types of applications, offering the lowest complexity while maintaining flexibility and hardware-agnostic deployment.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.3.4">Extensible analytics in AeroDaaS</head><p>We highlight the benefits of the MonitoringAnalytics service, which provides access to odometry data that can be leveraged for downstream applications. For instance, Fig. <ref type="figure" target="#fig_12">16</ref> illustrates the consumption of the Tello drone's battery and altitude over time as it follows the VIP in real-world during execution of Situation Awareness application. This information can be integrated into energy-aware drone handoff algorithms to optimize mission continuity. The PID controller employed in the Situation Awareness application was programmed to keep the drone at an altitude of 1.5m for robust tracking of VIP but we observe that the actual altitude oscillates between 1.3m and 1.6m. This realtime data can be fed into the PID controller to dynamically correct errors, ensuring robust tracking performance. Furthermore, such telemetry data can be used to analyze controller stability, detect sensor drift, and assess environmental influences. It can also log operational statistics which can later be used for predictive decision making and performance benchmarking across different flight scenarios. Additionally, we demonstrate the capabilities of Monitoring Analytics through Farm Survey application using Gazebo. The Quadrotor Base Model drone (highlighted in blue in Fig. <ref type="figure" target="#fig_5">7d</ref>) surveying a rectangular area of 10m × 10m at an altitude of 1.5m. By exposing odometry readings, we visualize the drone's trajectory in Fig. <ref type="figure" target="#fig_7">8a</ref>, where it takes off from the origin (0, 0, 0), follows a predefined set of waypoints covering a distance of 40m and returns to its starting position upon completing the survey.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="9">Conclusions and Future Work</head><p>In this paper, we present the design for AeroDaaS, a programming framework that enables intuitive design, orchestration and management of Drone-as-a-Service application across the edge-cloud continuum. It abstracts low-level drone navigation, sensing and communication complexities through high-level APIs to design drone applications across diverse drone hardware. It also integrates these with advanced user-defined analytics that can execute on edge and cloud resources. It further integrates modular pluggable schedulers for both waypoint and analytics, enabling adaptable trajectory, mission switch and efficient execution in different scenarios. We thoroughly validated the AeroDaaS across six complex real-world DaaS applications executed using its APIs and runtime, both on real and simulated drones. The results showed that AeroDaaS efficiently handle diverse operational scenarios while maintaining minimal runtime and memory overheads on both GPU workstations and embedded edge devices confirming that AeroDaaS eases development with minimal runtime overheads.</p><p>As future work, we plan to expand the AeroDaaS APIs to support automatic highlevel application code generation and controls for drone using capabilities of agentic AI. We will focus on further enhancing the scalability, resilience, and performance of AeroDaaS runtime while enabling multiple concurrent applications from different users on the same drone with coordinated execution. We also aim to introduce primitives for fleet-level operations and evaluate AeroDaaS on additional drone platforms.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 1 :</head><label>1</label><figDesc>Figure 1: Different patterns of interaction between User-Analytics-Drone</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 2 :</head><label>2</label><figDesc>Figure 2: AeroDaaS Architecture and Services</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Figure 5 :</head><label>5</label><figDesc>Figure 5: Diverse applications composed using various interfaces offered by AeroDaaS</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head></head><label></label><figDesc>env: IEnvironment = Environment("environment.json") edge_compute: ICompute = env.getComputeResourceById("edge") drone: IRobot = env.getRobotById("quadrotor_base") scheduler = NearestNeighborScheduler(env) env.setTrajectoryScheduler(scheduler) odometry: IPushSensor = drone.getSensorById("odom") odometry_data_stream: AeroStreamData[Odom] = odometry.getDataStream() # Drone odometry monitoring odometry_analytics: IAnalyse = MonitoringAnalytics(["battery", "height", "gps "]) odometry_analytics.deploy(edge_compute) _: AeroStreamData[Odom] = odometry_analytics.analyse(odometry_data_stream) wp1: Waypoint = Waypoint(id="wp1", x=20, y=20, z=10, hover_duration=5, waypoint_type="relative") wp2: Waypoint = Waypoint(id="wp2", x=20, y=100, z=10, hover_duration=5, waypoint_type="relative")wp3: Waypoint = Waypoint(id="wp3", x=60, y=100, z=10, hover_duration=5, waypoint_type="relative") wp4: Waypoint = Waypoint(id="wp4", x=60, y=20, z=10, hover_duration=5, waypoint_type="relative")waypoints_list: AeroNavigation = AeroNavigation(NavigationType. DISTANCE_DRIVEN, [wp1, wp2, wp3, wp4], SchedulingType.UNORDERED) drone_nav_data: IAeroData[AeroNavigation] = scheduler.generateNavigation( waypoints_list)</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Figure 6 :</head><label>6</label><figDesc>Figure 6: AeroDaaS Runtime Implementation</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Figure 7 :</head><label>7</label><figDesc>Figure 7: Experimental Setup</figDesc><graphic coords="21,121.84,-27.09,664.56,375.01" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_7"><head>Figure 8 :</head><label>8</label><figDesc>Figure 8: Trajectory of simulated or real drone for different workloads</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_8"><head>Figure 10 :</head><label>10</label><figDesc>Figure 10: AeroDaaS overhead and latency of analytics during simulation of sensor-data driven pattern</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_9"><head>Figure 11 :Figure 12 :</head><label>1112</label><figDesc>Figure 11: AeroDaaS overhead and latency of analytics during real world experiment of sensor-data driven pattern</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_10"><head>Figure 13 :Figure 14 :</head><label>1314</label><figDesc>Figure 13: System metrics during real world experiment of sensor-data driven pattern</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_11"><head>Figure 15 :</head><label>15</label><figDesc>Figure 15: Lines of Code (LoC) used by different frameworks</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_12"><head>Figure 16 :</head><label>16</label><figDesc>Figure 16: Battery and altitude of drone during Situation Awareness application</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head>Table 1 :</head><label>1</label><figDesc>Comparison of Service-Oriented Frameworks for Drones-as-a-Service (DaaS) Applications</figDesc><table><row><cell>Framework</cell><cell>Programming Interface</cell><cell>Cross-Hardware</cell><cell cols="3">Navigation Sensing Analytics</cell><cell>Generaliza-bility</cell><cell>Edge + Cloud</cell></row><row><cell>UAL [30]</cell><cell>Python</cell><cell>✓</cell><cell>✓</cell><cell>✓</cell><cell>×</cell><cell>✓</cell><cell>×</cell></row><row><cell>Aerostack2 [29]</cell><cell>Python</cell><cell>✓</cell><cell>✓</cell><cell>✓</cell><cell>×</cell><cell>✓</cell><cell>×</cell></row><row><cell>SoftwarePilot</cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2"><head>Table 2 :</head><label>2</label><figDesc>APIs provided by AeroDaaS</figDesc><table><row><cell>Interface</cell><cell>Function</cell><cell>Input</cell><cell>Output</cell><cell>Description</cell></row><row><cell></cell><cell>hasEnvSensors</cell><cell>-</cell><cell>boolean</cell><cell>Returns True if the environment has sensors.</cell></row><row><cell></cell><cell>getEnvSensors</cell><cell>-</cell><cell cols="2">List&lt;ISensor&gt; Returns a list of sensors in the environment.</cell></row><row><cell></cell><cell>getEnvSensor-ByID</cell><cell>str</cell><cell>ISensor</cell><cell>Returns the requested sensor to the user.</cell></row><row><cell>IEnvironment</cell><cell>getEnvRobots</cell><cell>-</cell><cell>List&lt;IRobot&gt;</cell><cell>Returns a list of all the robots available in the environment.</cell></row><row><cell></cell><cell>getRobotByID</cell><cell>str</cell><cell>IRobot</cell><cell>Returns the requested robot to the user.</cell></row><row><cell></cell><cell>isRobotSensorA-vailable</cell><cell>str</cell><cell>boolean</cell><cell>Returns True if a robot has required onboard sensor available.</cell></row><row><cell></cell><cell>getRobotSensors</cell><cell>-</cell><cell>List&lt;ISensor&gt;</cell><cell>Returns a list of all the sensors present on all robots in environment.</cell></row><row><cell></cell><cell>getComputeRe-sources</cell><cell>-</cell><cell>List&lt;ICompute&gt;</cell><cell>Returns all the compute resources available.</cell></row><row><cell></cell><cell>getComputeRe-sourceByID</cell><cell>str</cell><cell>ICompute</cell><cell>Returns the requested compute resource to the user.</cell></row><row><cell></cell><cell>setTrajecto-ryScheduler</cell><cell>INavigate</cell><cell>-</cell><cell>Plugs in the trajectory scheduler in the environment.</cell></row><row><cell></cell><cell>setAnalyticsS-cheduler</cell><cell>str</cell><cell>-</cell><cell>Plugs in the analytics scheduler in the environment.</cell></row><row><cell></cell><cell>startMission</cell><cell>-</cell><cell>-</cell><cell>Hook for the user code to be run before starting a mission.</cell></row><row><cell></cell><cell>endMission</cell><cell>-</cell><cell>-</cell><cell>Hook for the user code to be run after a mission ends.</cell></row><row><cell>IRobot</cell><cell>pauseMission resumeMission</cell><cell>--</cell><cell>--</cell><cell>Pause the ongoing mission by putting the drone in hover mode. Resume the ongoing mission.</cell></row><row><cell></cell><cell>hasSensors</cell><cell>-</cell><cell>boolean</cell><cell>Returns True if the robot has any onboard sensors.</cell></row><row><cell></cell><cell>getSensors</cell><cell>-</cell><cell cols="2">List&lt;ISensor&gt; Returns a list of all the sensors present on board.</cell></row><row><cell></cell><cell>getSensorByID</cell><cell>str</cell><cell>ISensor</cell><cell>Returns the requested sensor.</cell></row><row><cell></cell><cell>isNavigable</cell><cell>-</cell><cell>boolean</cell><cell>Returns True if a robot is navigable.</cell></row><row><cell></cell><cell>navigate</cell><cell>IAero-Data&lt;AeroNav&gt;</cell><cell>-</cell><cell>Invokes navigation commands based on navigation data.</cell></row><row><cell>ISensor</cell><cell>getSensorProp-erty getSensorID</cell><cell>str -</cell><cell>str str</cell><cell>Get properties of a sensor. Returns the unique ID of a sensor.</cell></row><row><cell></cell><cell>getDataStream</cell><cell>-</cell><cell>AeroStreamData</cell><cell>Returns an iterator implementing IAeroData to yield sensor data</cell></row><row><cell>IAeroData</cell><cell>getData setData</cell><cell>-E</cell><cell>E -</cell><cell>Returns a data item of type E. Sets a data item of type E.</cell></row><row><cell>ICompute</cell><cell>getCom-puteProperties</cell><cell>-</cell><cell>dict</cell><cell>Returns the properties of the compute resource.</cell></row><row><cell></cell><cell>analyse</cell><cell>IAeroData</cell><cell>IAeroData</cell><cell>Invokes an analysis function.</cell></row><row><cell>IAnalyse</cell><cell>instantiate</cell><cell>-</cell><cell>IAeroData</cell><cell>Invokes an analytic function which receives data from external sources.</cell></row><row><cell></cell><cell>deploy</cell><cell>ICompute</cell><cell>-</cell><cell>Assigns the compute device for executing analysis.</cell></row><row><cell></cell><cell>generateNaviga-</cell><cell>IAero-</cell><cell>IAero-</cell><cell>Generates a sequence of waypoints based on the</cell></row><row><cell></cell><cell>tion</cell><cell>Data&lt;AeroNav&gt;</cell><cell>Data&lt;AeroNav&gt;</cell><cell>navigation scheduler logic.</cell></row><row><cell>INavigate</cell><cell>addNavigation</cell><cell>IAero-Data&lt;AeroNav&gt;</cell><cell>-</cell><cell>Adds new waypoints to the already existing queue.</cell></row><row><cell></cell><cell>clearNavigation</cell><cell>-</cell><cell>-</cell><cell>Clears the existing waypoints from the queue.</cell></row><row><cell>INavigable-Analyse</cell><cell>generateNaviga-tion</cell><cell>IAeroData</cell><cell>IAero-Data&lt;AeroNav&gt;</cell><cell>Generates navigation commands based on analytics.</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_8"><head></head><label></label><figDesc>In this application, we demonstrate a Search and Rescue mission that integrates both waypoint-based and analytics-driven control within a Mission Abort scenario. The drone initially performs an autonomous search over a predefined area defined by user-provided boundary waypoints. During the operation, if a person wearing a hazard vest is detected, the onboard analytics triggers a mission abort, causing the drone to immediately terminate its current search and transition into a tracking mode. The live camera feed is then routed to the VipFollowAnalytics module, which uses a YOLOv8-nano model to detect the hazard vest and generate real-time navigation commands, enabling the drone to closely follow the detected individual.</figDesc><table><row><cell>drone_nav_data: IAeroData[AeroNavigation] = scheduler.generateNavigation(</cell></row><row><cell>low_priority_queue)</cell></row><row><cell>car_analytics: IAnalyse = CarFollowAnalytics(env)</cell></row><row><cell>car_analytics.deploy(edge_compute)</cell></row><row><cell>car_nav_data: IAeroData[AeroNavigation] = car_analytics.analyse(</cell></row><row><cell>camera_data_stream)</cell></row><row><cell>car_nav_queue: PriorityQueue[AeroNavigation] = PriorityQueue(car_nav_data,</cell></row><row><cell>priority=1)</cell></row><row><cell>scheduler.addNavigation(car_nav_queue)</cell></row><row><cell>drone.navigate(drone_nav_data)</cell></row><row><cell>drone.start_mission()</cell></row><row><cell>6.5 Search and Rescue</cell></row><row><cell># Initialize env, edge resource, tello drone</cell></row><row><cell>Get Tello camera stream like 3-7 from 6.1</cell></row><row><cell>Waypoint list generation same as 12 -17 from 6.2</cell></row><row><cell>Detect vip in the area like 9-15 from 6.1</cell></row><row><cell># On detecting vip, reset the queue and start vip following mission</cell></row><row><cell>scheduler.clearNavigation() # Reset the queue</cell></row><row><cell>scheduler.addNavigation(vip_nav_data)</cell></row><row><cell>drone.navigate(drone_nav_data)</cell></row><row><cell>drone.start_mission()</cell></row><row><cell>, wp3])</cell></row><row><cell>low_priority_queue: PriorityQueue[AeroListData] = PriorityQueue(</cell></row><row><cell>waypoints_list, priority=2)</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_9"><head>Table 3 :</head><label>3</label><figDesc>Summary of workloads and experimental configurations.</figDesc><table><row><cell>Workload</cell><cell>Analytical Models Used</cell><cell>FPS</cell><cell>Setup</cell><cell>Duration</cell><cell>Area/Distance Covered</cell><cell cols="2">Drone Altitude Drone Speed</cell></row><row><cell>Farm Survey</cell><cell>-</cell><cell>15</cell><cell>Gazebo (Bayland world)</cell><cell>2min</cell><cell>10m × 10m</cell><cell>1.5m</cell><cell>0.5 m/s</cell></row><row><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell>10m × 10m</cell><cell></cell><cell></cell></row><row><cell>Disaster Survey</cell><cell>-</cell><cell>15</cell><cell>Gazebo (Bayland world)</cell><cell>2.5min</cell><cell>(preplanned) and 10m × 20m</cell><cell>1.5m</cell><cell>1.5 m/s</cell></row><row><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell>(remotely injected)</cell><cell></cell><cell></cell></row><row><cell></cell><cell>YOLOv8-nano</cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell></row><row><cell>Situation Awareness</cell><cell>(object-detection),</cell><cell>5</cell><cell>Outdoor field (IISc Bangalore campus)</cell><cell>4min</cell><cell>50m</cell><cell>1.5m</cell><cell>1.0 m/s</cell></row><row><cell></cell><cell>GPS Logger</cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell></row><row><cell>Vehicle Tracking</cell><cell>YOLOv8-nano detection) (vehicle</cell><cell>15</cell><cell>Gazebo (Bayland Hybrid car) world with Prius</cell><cell>5min</cell><cell>50 m</cell><cell>2.5m -5m</cell><cell>0.5m/s-1.0 m/s</cell></row><row><cell>Search and Rescue</cell><cell>YOLOv8-nano (hazard vest detection)</cell><cell>5</cell><cell>Outdoor field (IISc Bangalore campus)</cell><cell>6min</cell><cell>50m</cell><cell>1.5m</cell><cell>1.0 m/s</cell></row><row><cell>Radio Tower Inspection</cell><cell cols="2">YOLOv8-nano 15</cell><cell>Gazebo (Bayland cell tower) world with dummy</cell><cell>6min</cell><cell>130m</cell><cell>2m-35m</cell><cell>0.5m/s-1.5m/s</cell></row></table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="2" xml:id="foot_0">https://play.google.com/store/apps/details?id=com.peterhohsy.gpsloggerlite</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="3" xml:id="foot_1">https://github.com/osrf/car_demo/</note>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Acknowledgments</head><p>We thank Rajdeep Singh for his contributions to the development of the earlier version of AeroDaaS. We also thanks the students of the DREAM:Lab in their assistance with the drone experiments.</p></div>
+			</div>
+
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Dome: Drone-assisted monitoring of emergent events for wildland fire resilience</title>
+		<author>
+			<persName><forename type="first">Fangqi</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Janine</forename></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ann</forename><surname>Baijnath-Rodino</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tung-Chun</forename><surname>Chang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tirtha</forename><surname>Banerjee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nalini</forename><surname>Venkatasubramanian</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the ACM/IEEE 14th International Conference on Cyber-Physical Systems (with CPS-IoT Week 2023)</title>
+				<meeting>the ACM/IEEE 14th International Conference on Cyber-Physical Systems (with CPS-IoT Week 2023)</meeting>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="56" to="67" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Uavassisted maritime search and rescue: A holistic approach</title>
+		<author>
+			<persName><forename type="first">Martin</forename><surname>Messmer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Benjamin</forename><surname>Kiefer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Leon</forename></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Amadeus</forename><surname>Varga</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Andreas</forename><surname>Zell</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/ICUAS60882.2024.10556878</idno>
+	</analytic>
+	<monogr>
+		<title level="m">ICUAS</title>
+				<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<title level="m" type="main">Wildfire and smoke early detection for drone applications: A light-weight deep learning approach. Engineering Applications of AI</title>
+		<author>
+			<persName><forename type="first">Abhinav</forename><surname>Kumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Adolfo</forename><surname>Perrusquía</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Saba</forename><surname>Al-Rubaye</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Weisi</forename><surname>Guo</surname></persName>
+		</author>
+		<idno type="DOI">10.1016/j.engappai.2024.108977</idno>
+		<ptr target="https://doi.org/10.1016/j.engappai.2024.108977" />
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<monogr>
+		<title level="m" type="main">A fast and efficient approach to estimate wild blueberry yield using machine learning with drone photography: Flight altitude, sampling method and model effects. Computers and Electronics in Agriculture</title>
+		<author>
+			<persName><forename type="first">Hongchun</forename><surname>Qu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chaofang</forename><surname>Zheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hao</forename><surname>Ji</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kallol</forename><surname>Barai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yong-Jiang</forename><surname>Zhang</surname></persName>
+		</author>
+		<idno type="DOI">10.1016/j.compag.2023.108543</idno>
+		<ptr target="https://doi.org/10.1016/j.compag.2023.108543" />
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Drone-based bug detection in orchards with nets: A novel orienteering approach</title>
+		<author>
+			<persName><forename type="first">Francesco</forename><surname>Betti Sorbelli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Federico</forename><surname>Coró</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Sajal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lorenzo</forename><surname>Das</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Cristina</forename><forename type="middle">M</forename><surname>Palazzetti</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Pinotti</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">ACM Transactions on Sensor Networks</title>
+		<imprint>
+			<biblScope unit="volume">20</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="1" to="28" />
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Enhancing traffic state estimation using uav-based measurements</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Englezou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Timotheou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">G</forename><surname>Panayiotou</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/ICUAS60882.2024.10556942</idno>
+	</analytic>
+	<monogr>
+		<title level="m">ICUAS</title>
+				<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">On the new era of urban traffic monitoring with massive drone data: The pneuma large-scale field experiment</title>
+		<author>
+			<persName><forename type="first">Emmanouil</forename><surname>Barmpounakis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nikolas</forename><surname>Geroliminis</surname></persName>
+		</author>
+		<idno type="DOI">10.1016/j.trc.2019.11.023</idno>
+		<ptr target="https://doi.org/10.1016/j.trc.2019.11.023" />
+	</analytic>
+	<monogr>
+		<title level="j">Transportation Research Part C: Emerging Techn</title>
+		<idno type="ISSN">0968-090X</idno>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Ocularone: Exploring dronesbased assistive technologies for the visually impaired</title>
+		<author>
+			<persName><forename type="first">Suman</forename><surname>Raj</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Swapnil</forename><surname>Padhi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yogesh</forename><surname>Simmhan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">CHI EA</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Dronenavigator: Using leashed and free-floating quadcopters to navigate visually impaired travelers</title>
+		<author>
+			<persName><forename type="first">Mauro</forename><forename type="middle">Avila</forename><surname>Soto</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Markus</forename><surname>Funk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Matthias</forename><surname>Hoppe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Robin</forename><surname>Boldt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Katrin</forename><surname>Wolf</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Niels</forename><surname>Henze</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 19th international acm sigaccess conference on computers and accessibility</title>
+				<meeting>the 19th international acm sigaccess conference on computers and accessibility</meeting>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Composing drone-as-a-service (daas) for delivery</title>
+		<author>
+			<persName><forename type="first">Babar</forename><surname>Shahzaad</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Athman</forename><surname>Bouguettaya</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sajib</forename><surname>Mistry</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Azadeh</forename><surname>Ghari</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Neiat</forename></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2019 IEEE International Conference on Web Services (ICWS)</title>
+				<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="28" to="32" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Swarm-based drone-as-aservice (sdaas) for delivery</title>
+		<author>
+			<persName><forename type="first">Balsam</forename><surname>Alkouz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Athman</forename><surname>Bouguettaya</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sajib</forename><surname>Mistry</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2020 IEEE International Conference on Web Services (ICWS)</title>
+				<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page" from="441" to="448" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">A game-theoretic droneas-a-service composition for delivery</title>
+		<author>
+			<persName><forename type="first">Babar</forename><surname>Shahzaad</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Athman</forename><surname>Bouguettaya</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sajib</forename><surname>Mistry</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2020 IEEE International Conference on Web Services (ICWS)</title>
+				<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page" from="449" to="453" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">A holistic service provision strategy for drone-as-a-service in mec-based uav delivery</title>
+		<author>
+			<persName><forename type="first">Liju</forename><surname>Chu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xuejun</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jia</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Azadeh</forename><surname>Ghari Neiat</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiao</forename><surname>Liu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2021 IEEE International Conference on Web Services (ICWS)</title>
+				<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="669" to="674" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Uav-asa-service for robotic edge system resilience</title>
+		<author>
+			<persName><forename type="first">Shi</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jiong</forename><surname>Jin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mahbuba</forename><surname>Afrin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Qiushi</forename><surname>Zheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jing</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yu-Chu</forename><surname>Tian</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2024 IEEE International Conference on Web Services (ICWS)</title>
+				<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="142" to="148" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Joint task offloading, resource allocation, and trajectory design for multi-uav cooperative edge computing with task priority</title>
+		<author>
+			<persName><forename type="first">Hao</forename><surname>Hao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Changqiao</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wei</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shujie</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gabriel-Miro</forename><surname>Muntean</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/TMC.2024.3350078</idno>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Mobile Computing</title>
+		<imprint>
+			<biblScope unit="volume">23</biblScope>
+			<biblScope unit="issue">9</biblScope>
+			<biblScope unit="page" from="8649" to="8663" />
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Improved algorithms for co-scheduling of edge analytics and routes for uav fleet missions</title>
+		<author>
+			<persName><forename type="first">Aakash</forename><surname>Khochare</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Francesco</forename><forename type="middle">Betti</forename><surname>Sorbelli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yogesh</forename><surname>Simmhan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sajal</forename><forename type="middle">K</forename><surname>Das</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE/ACM Transactions on Networking</title>
+		<imprint>
+			<biblScope unit="volume">32</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page">2024</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Graph-represented computation-intensive task scheduling over airground integrated vehicular networks</title>
+		<author>
+			<persName><forename type="first">Minghui</forename><surname>Liwang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhibin</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Seyyedali</forename><surname>Hosseinalipour</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yuhan</forename><surname>Su</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xianbin</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Huaiyu</forename><surname>Dai</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/TSC.2023.3270169</idno>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Services Computing</title>
+		<imprint>
+			<biblScope unit="volume">16</biblScope>
+			<biblScope unit="issue">5</biblScope>
+			<biblScope unit="page" from="3397" to="3411" />
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<monogr>
+		<title level="m">DJI. DJI Mobile SDK Documentation</title>
+				<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Edge-accelerated uav operations: A case study of open source solutions</title>
+		<author>
+			<persName><forename type="first">Julio</forename><surname>Diez-Tomillo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jose</forename><forename type="middle">M</forename><surname>Alcaraz-Calero</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Qi</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2024 International Wireless Communications and Mobile Computing (IWCMC)</title>
+				<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Scheduling dnn inferencing on edge and cloud for personalized uav fleets</title>
+		<author>
+			<persName><forename type="first">Suman</forename><surname>Raj</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Harshil</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yogesh</forename><surname>Simmhan</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/CCGrid57682.2023.00063</idno>
+	</analytic>
+	<monogr>
+		<title level="m">2023 IEEE/ACM 23rd International Symposium on Cluster, Cloud and Internet Computing (CCGrid)</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="615" to="626" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Reserve: An energyefficient edge cloud architecture for intelligent multi-uav</title>
+		<author>
+			<persName><forename type="first">Beiqing</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Haihang</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jianguo</forename><surname>Yao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Haibing</forename><surname>Guan</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/TSC.2019.2962469</idno>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Services Computing</title>
+		<imprint>
+			<biblScope unit="volume">15</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="819" to="832" />
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Adaptive heuristics for scheduling dnn inferencing on edge and cloud for personalized uav fleets</title>
+		<author>
+			<persName><forename type="first">Suman</forename><surname>Raj</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Radhika</forename><surname>Mittal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Harshil</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yogesh</forename><surname>Simmhan</surname></persName>
+		</author>
+		<idno type="DOI">10.1016/j.future.2025.107874.URLhttps://www.sciencedirect.com/science/article/pii/S0167739X25001694</idno>
+		<ptr target="https://doi.org/10.1016/j.future.2025.107874.URLhttps://www.sciencedirect.com/science/article/pii/S0167739X25001694" />
+	</analytic>
+	<monogr>
+		<title level="j">Future Generation Computer Systems</title>
+		<idno type="ISSN">0167- 739X</idno>
+		<imprint>
+			<biblScope unit="volume">173</biblScope>
+			<biblScope unit="page">107874</biblScope>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Confect: Computation offloading for tasks with hard/soft deadlines in edge computing</title>
+		<author>
+			<persName><forename type="first">Xin</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jiaqi</forename><surname>Zheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Qiang</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Haipeng</forename><surname>Dai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bowen</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wanchun</forename><surname>Dou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Guihai</forename><surname>Chen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2021 IEEE International Conference on Web Services (ICWS)</title>
+				<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="262" to="271" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<monogr>
+		<title level="m" type="main">Adaptive heuristics for scheduling dnn inferencing on edge and cloud for personalized uav fleets</title>
+		<author>
+			<persName><forename type="first">Suman</forename><surname>Raj</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Radhika</forename><surname>Mittal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Harshil</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yogesh</forename><surname>Simmhan</surname></persName>
+		</author>
+		<ptr target="https://arxiv.org/abs/2412.20860" />
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">Beecluster: drone orchestration via predictive optimization</title>
+		<author>
+			<persName><forename type="first">Songtao</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Favyen</forename><surname>Bastani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Arjun</forename><surname>Balasingam</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Karthik</forename><surname>Gopalakrishna</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ziwen</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mohammad</forename><surname>Alizadeh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hari</forename><surname>Balakrishnan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Cafarella</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tim</forename><surname>Kraska</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sam</forename><surname>Madden</surname></persName>
+		</author>
+		<idno type="DOI">10.1145/3386901.3388912</idno>
+	</analytic>
+	<monogr>
+		<title level="m">ACM MobiSys, 2020. ISBN 9781450379540</title>
+				<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Design and use paradigms for gazebo, an open-source multi-robot simulator</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Koenig</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Howard</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/IROS.2004.1389727</idno>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/RSJ IROS</title>
+				<imprint>
+			<date type="published" when="2004">2004</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<monogr>
+		<ptr target="https://px4.io" />
+		<title level="m">Px4</title>
+				<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<monogr>
+		<title/>
+		<author>
+			<persName><surname>Ardupilot</surname></persName>
+		</author>
+		<ptr target="https://ardupilot.org" />
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<monogr>
+		<title level="m" type="main">Aerostack2: A software framework for developing multi-robot aerial systems</title>
+		<author>
+			<persName><forename type="first">Miguel</forename><surname>Fernandez-Cortizas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Martin</forename><surname>Molina</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pedro</forename><surname>Arias-Perez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rafael</forename><surname>Perez-Segui</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">David</forename><surname>Perez-Saura</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pascual</forename><surname>Campoy</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2303.18237</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">Unmanned aerial vehicle abstraction layer: An abstraction layer to operate unmanned aerial vehicles</title>
+		<author>
+			<persName><forename type="first">Fran</forename><surname>Real</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Arturo</forename><surname>Torres-González</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pablo</forename><surname>Ramon-Soria</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jesús</forename><surname>Capitán</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Anibal</forename><surname>Ollero</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Inter. Jour. of Adv. Robotic Sys</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">Skyquery: an aerial drone video sensing platform</title>
+		<author>
+			<persName><forename type="first">Favyen</forename><surname>Bastani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Songtao</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ziwen</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Osbert</forename><surname>Bastani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sam</forename><surname>Madden</surname></persName>
+		</author>
+		<idno type="DOI">10.1145/3486607.3486750</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 2021 ACM SIGPLAN International Symposium on New Ideas, New Paradigms, and Reflections on Programming and Software, 2021. ISBN 9781450391108</title>
+				<meeting>the 2021 ACM SIGPLAN International Symposium on New Ideas, New Paradigms, and Reflections on Programming and Software, 2021. ISBN 9781450391108</meeting>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main">Buzz: An extensible programming language for heterogeneous swarm robotics</title>
+		<author>
+			<persName><forename type="first">Carlo</forename><surname>Pinciroli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Giovanni</forename><surname>Beltrame</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/IROS.2016.7759558</idno>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/RSJ IROS</title>
+				<imprint>
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<analytic>
+		<title level="a" type="main">Aerodaas: Towards an application programming framework for drones-as-a-service</title>
+		<author>
+			<persName><forename type="first">Suman</forename><surname>Raj</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rajdeep</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kautuk</forename><surname>Astu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yogesh</forename><surname>Simmha</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/ICWS67624.2025.00076</idno>
+		<ptr target="https://doi.org/10.1109/ICWS67624.2025.00076" />
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Web Services (ICWS)</title>
+				<imprint>
+			<biblScope unit="page">2025</biblScope>
+		</imprint>
+	</monogr>
+	<note>Short Paper</note>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<analytic>
+		<title level="a" type="main">Towards a generalized sdk for a programmable drones-as-a-service</title>
+		<author>
+			<persName><forename type="first">Suman</forename><surname>Raj</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rajdeep</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kautuk</forename><surname>Astu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yogesh</forename><surname>Simmhan</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/HiPCW63042.2024.00056</idno>
+	</analytic>
+	<monogr>
+		<title level="m">2024 IEEE 31st International Conference on High Performance Computing, Data and Analytics Workshop (HiPCW)</title>
+				<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="157" to="158" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<analytic>
+		<title level="a" type="main">Scalable distributed microservices for autonomous uav swarms: poster abstract</title>
+		<author>
+			<persName><forename type="first">Kevyn Angueira</forename><surname>Irizarry</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ziehen</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Christopher</forename><surname>Stewart</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jayson</forename><surname>Boubin</surname></persName>
+		</author>
+		<idno type="DOI">10.1145/3565386.3565484</idno>
+	</analytic>
+	<monogr>
+		<title level="m">International Middleware Conference Demos and Posters, 2022. ISBN 9781450399319</title>
+				<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main">Team-level programming of drone sensor networks</title>
+		<author>
+			<persName><forename type="first">Luca</forename><surname>Mottola</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mattia</forename><surname>Moretta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kamin</forename><surname>Whitehouse</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Carlo</forename><surname>Ghezzi</surname></persName>
+		</author>
+		<idno type="DOI">10.1145/2668332.2668353</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 12th ACM Conference on Embedded Network Sensor Systems</title>
+				<meeting>the 12th ACM Conference on Embedded Network Sensor Systems</meeting>
+		<imprint>
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<analytic>
+		<title level="a" type="main">A framework for programming a swarm of uavs</title>
+		<author>
+			<persName><forename type="first">Dimitris</forename><surname>Dedousis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vana</forename><surname>Kalogeraki</surname></persName>
+		</author>
+		<idno type="DOI">10.1145/3197768.3197772</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 11th PErvasive Technologies Related to Assistive Environments Conference</title>
+				<meeting>the 11th PErvasive Technologies Related to Assistive Environments Conference</meeting>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="volume">9781450363907</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<analytic>
+		<title level="a" type="main">Androne: Virtual drone computing in the cloud</title>
+		<author>
+			<persName><forename type="first">Alexander</forename><surname>Van't Hof</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jason</forename><surname>Nieh</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">EuroSys Conference</title>
+				<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<analytic>
+		<title/>
+	</analytic>
+	<monogr>
+		<title level="j">Parrot Developers. Parrot GroundSDK</title>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<analytic>
+		<title/>
+	</analytic>
+	<monogr>
+		<title level="j">Autel Robotics. Autel Robotics SDK</title>
+		<imprint>
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<monogr>
+		<title level="m" type="main">MAVSDK: MAVLink Software Development Kit</title>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+	<note>Dronecode Foundation</note>
+</biblStruct>
+
+<biblStruct xml:id="b41">
+	<monogr>
+		<title level="m">3D Robotics. DroneKit Python API</title>
+				<imprint>
+			<date type="published" when="2015">2015</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b42">
+	<monogr>
+		<title level="m" type="main">AirSim: High-Fidelity Simulator for Autonomous Vehicles</title>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+			<publisher>Microsoft Research</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b43">
+	<analytic>
+		<title/>
+	</analytic>
+	<monogr>
+		<title level="j">Bitcraze AB. Crazyflie Python API</title>
+		<imprint>
+			<date type="published" when="2013">2013</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b44">
+	<monogr>
+		<title level="m">Dronecode Foundation. Dronecode SDK-Python</title>
+				<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b45">
+	<monogr>
+		<title level="m">MathWorks. MATLAB UAV and Robotics System Toolboxes</title>
+				<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b46">
+	<analytic>
+		<title level="a" type="main">Drone-as-a-service composition under uncertainty</title>
+		<author>
+			<persName><forename type="first">Ali</forename><surname>Hamdi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Flora</forename><forename type="middle">D</forename><surname>Salim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yong</forename><surname>Du</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Azadeh</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Athman</forename><surname>Ghari Neiat</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Bouguettaya</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/TSC.2021.3066006</idno>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Services Computing</title>
+		<imprint>
+			<biblScope unit="volume">15</biblScope>
+			<biblScope unit="issue">5</biblScope>
+			<biblScope unit="page" from="2685" to="2698" />
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b47">
+	<analytic>
+		<title level="a" type="main">In-flight energy-driven composition of drone swarm services</title>
+		<author>
+			<persName><forename type="first">Balsam</forename><surname>Alkouz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Amani</forename><surname>Abusafia</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/TSC.2022.3203033</idno>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Services Computing</title>
+		<imprint>
+			<biblScope unit="volume">16</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="1919" to="1933" />
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note>Abdallah Lakhdari, and Athman Bouguettaya</note>
+</biblStruct>
+
+<biblStruct xml:id="b48">
+	<analytic>
+		<title level="a" type="main">Joint task offloading and migration optimization in uavenabled dynamic mec networks</title>
+		<author>
+			<persName><forename type="first">Liang</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bingnan</forename><surname>Shen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lianbo</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yao</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yingnan</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hongzhi</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhiwen</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bin</forename><surname>Guo</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/TSC.2025.3576644</idno>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Services Computing</title>
+		<imprint>
+			<biblScope unit="volume">18</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="2143" to="2157" />
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b49">
+	<analytic>
+		<title level="a" type="main">Improving user qoe via joint trajectory and resource optimization in multi-uav assisted mec</title>
+		<author>
+			<persName><forename type="first">Yang</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jun</forename><surname>Tao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yifan</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zuyan</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yu</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Meiling</forename><surname>Wang</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/TSC.2025.3568283</idno>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Services Computing</title>
+		<imprint>
+			<biblScope unit="volume">18</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="1472" to="1486" />
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b50">
+	<analytic>
+		<title level="a" type="main">Serv-hu: Service hand-off for uav-as-a-service</title>
+		<author>
+			<persName><forename type="first">Arijit</forename><surname>Roy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Veera</forename><surname>Manikantha Rayudu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vinay</forename><surname>Tummala</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Yadam</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/TSC.2024.3521684</idno>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Services Computing</title>
+		<imprint>
+			<biblScope unit="volume">18</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="414" to="426" />
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b51">
+	<analytic>
+		<title level="a" type="main">A vision-based ground moving target tracking system for quadrotor uavs</title>
+		<author>
+			<persName><forename type="first">Runze</forename><surname>Tian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Runze</forename><surname>Ji</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chengchao</forename><surname>Bai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jifeng</forename><surname>Guo</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/ICUS58632.2023.10318456</idno>
+	</analytic>
+	<monogr>
+		<title level="m">2023 IEEE International Conference on Unmanned Systems (ICUS)</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="1750" to="1754" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b52">
+	<analytic>
+		<title level="a" type="main">Uav-based traffic analysis: A universal guiding framework based on literature survey</title>
+		<author>
+			<persName><forename type="first">Wim</forename><surname>Muhammad Arsalan Khan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tom</forename><surname>Ectors</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Davy</forename><surname>Bellemans</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Geert</forename><surname>Janssens</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Wets</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Transportation research procedia</title>
+		<imprint>
+			<biblScope unit="volume">22</biblScope>
+			<biblScope unit="page" from="541" to="550" />
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b53">
+	<analytic>
+		<title level="a" type="main">Pixhawk: A system for autonomous flight using onboard computer vision</title>
+		<author>
+			<persName><forename type="first">Lorenz</forename><surname>Meier</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Petri</forename><surname>Tanskanen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Friedrich</forename><surname>Fraundorfer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Marc</forename><surname>Pollefeys</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/ICRA.2011.5980229</idno>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE International Conference on Robotics and Automation</title>
+		<imprint>
+			<date type="published" when="2011">2011. 2011</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b54">
+	<monogr>
+		<title level="m" type="main">Jinja2 -a template engine for python</title>
+		<author>
+			<persName><forename type="first">Armin</forename><surname>Ronacher</surname></persName>
+		</author>
+		<ptr target="https://pypi.org/project/Jinja2/" />
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<biblScope unit="page" from="2024" to="2036" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

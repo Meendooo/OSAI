@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  grobid:
+    image: lfoppiano/grobid:0.7.2
+    ports:
+      - "8070:8070"
+    
+
+  analyzer:
+    build: .
+    volumes:
+      - ./data:/app/data  
+    depends_on:
+      - grobid
+    environment:
+        - GROBID_URL=http://grobid:8070

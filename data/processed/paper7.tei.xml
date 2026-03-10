@@ -1,0 +1,894 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">GDA-YOLO11: Amodal Instance Segmentation for Occlusion-Robust Robotic Fruit Harvesting</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Caner</forename><surname>Beldek</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Emre</forename><surname>Sariyildiz</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Son</forename><forename type="middle">Lam</forename><surname>Phung</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Gursel</forename><surname>Alici</surname></persName>
+						</author>
+						<title level="a" type="main">GDA-YOLO11: Amodal Instance Segmentation for Occlusion-Robust Robotic Fruit Harvesting</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date/>
+						</imprint>
+					</monogr>
+					<idno type="MD5">65980A9E2073134FCD96C94AA02A58EF</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.7.2" ident="GROBID" when="2026-03-10T12:10+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>
+					<term>Amodal instance segmentation</term>
+					<term>robotic harvesting</term>
+					<term>Occlusion</term>
+					<term>YOLO11</term>
+					<term>Agricultural robotics</term>
+				</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Occlusion remains a critical challenge in robotic fruit harvesting, as undetected or inaccurately localised fruits often results in substantial crop losses. To mitigate this issue, we propose a harvesting framework using a new amodal segmentation model, GDA-YOLO11, which incorporates architectural improvements and an updated asymmetric mask loss. The proposed model is trained on a modified version of a public citrus dataset and evaluated on both the base dataset and occlusion-sensitive subsets with varying occlusion levels. Within the framework, full fruit masks, including invisible regions, are inferred by GDA-YOLO11, and picking points are subsequently estimated using the Euclidean distance transform. These points are then projected into 3D coordinates for robotic harvesting execution. Experiments were conducted using real citrus fruits in a controlled environment simulating occlusion scenarios. Notably, to the best of our knowledge, this study provides the first practical demonstration of amodal instance segmentation in robotic fruit harvesting. GDA-YOLO11 achieves a precision of 0.844, recall of 0.846, mAP@50 of 0.914, and mAP@50:95 of 0.636, outperforming YOLO11n by 5.1%, 1.3%, and 1.0% in precision, mAP@50, and mAP@50:95, respectively. The framework attains harvesting success rates of 92.59%, 85.18%, 48.14%, and 22.22% at zero to high occlusion levels, improving success by 3.5% under medium and high occlusion. These findings demonstrate that GDA-YOLO11 enhances occlusionrobust segmentation and streamlines perception-to-action integration, paving the way for more reliable autonomous systems in agriculture.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>I. INTRODUCTION</head><p>NSUSTAINABLE agricultural practices contribute to significant food waste, directly undermining the economic stability of farmlands, exacerbating environmental degradation, increasing greenhouse gas emissions, and threatening global food security <ref type="bibr" target="#b0">[1]</ref><ref type="bibr" target="#b1">[2]</ref><ref type="bibr" target="#b2">[3]</ref>. Among the various factors, conventional inefficient harvesting techniques stand out as a primary cause of food waste, resulting in substantial crop losses and resource wastage throughout the food production chain <ref type="bibr" target="#b3">[4]</ref>. As the world faces mounting challenges such as hunger, increasing food demand and resource scarcity, there is an urgent need to modernise our C. Beldek, E. Sariyildiz, S. L. Phung and G. Alici are with the School of Engineering, University of Wollongong, 2522, NSW, Australia (e-mail: cb018@uowmail.edu.au, emre@uow.edu.au, phung@uow.edu.au, gursel@uow.edu.au).</p><p>harvesting practices to enhance productivity and ensure sustainability <ref type="bibr" target="#b0">[1]</ref>. Recently, robotic technology has gained increasing importance in sustainable agricultural harvesting <ref type="bibr" target="#b4">[5]</ref><ref type="bibr" target="#b5">[6]</ref><ref type="bibr" target="#b6">[7]</ref>, primarily due to intelligent harvesters equipped with various sensors and actuators. These systems are capable of gently picking a wide range of crops without human intervention <ref type="bibr" target="#b6">[7]</ref>.</p><p>One of the fundamental requirements for such robotic harvesting systems is the ability to perceive their environment. In this context, target fruit recognition plays a critical role, as it marks the first step of the harvesting process, and the entire pipeline depends on the accurate localisation of the identified fruit. In the literature, fruit recognition tasks are commonly addressed by leveraging computer vision (CV) strategies in conjunction with deep learning (DL) <ref type="bibr" target="#b5">[6]</ref>. This trend is driven by the widespread use of Red-Green-Blue-Depth (RGB-D) cameras in practical applications, due to their affordable cost and 3D sensing capabilities <ref type="bibr" target="#b7">[8]</ref>.</p><p>Fruit recognition in agricultural settings has been widely addressed using CV tasks, including object detection <ref type="bibr" target="#b8">[9]</ref>, semantic segmentation <ref type="bibr" target="#b9">[10]</ref>, and instance segmentation <ref type="bibr" target="#b10">[11]</ref><ref type="bibr" target="#b11">[12]</ref><ref type="bibr" target="#b12">[13]</ref>, typically implemented using DL models. Object detection methods in agricultural robotics estimate fruit locations using bounding boxes, offering fast but coarse localisation. In contrast, segmentation methods generate precise masks that enable the pixel-level accuracy required for robotic harvesting. Semantic segmentation typically classifies each pixel, but cannot distinguish between individual fruits, limiting its use in precise harvesting tasks that need spatial features such as location, orientation, and size. Consequently, instance segmentation offers a more suitable framework for precise harvesting tasks, as it provides object-level differentiation and preserves essential spatial features required for accurate manipulation <ref type="bibr" target="#b11">[12]</ref>.</p><p>Despite growing interest and successful applications in fruit recognition, most existing vision-based DL approaches focus solely on the visible portions of target fruits, offering no solution for occluded regions <ref type="bibr" target="#b13">[14]</ref>. However, partial occlusion, which is caused by leaves or surrounding plant organs, is a prevalent issue in agricultural environments. It not only degrades recognition accuracy but also disrupts the localisation of the picking point, which is directly inferred from the prediction. As a result, fruits may remain unrecognised or be recognised inaccurately, leading to incorrect picking points. These problems can ultimately hinder the harvesting, causing missed picks, fruit damage, or mechanical collision <ref type="bibr" target="#b14">[15]</ref>. However, occlusion represents not U only a vision-based sensing challenge but also a physical manipulation constraint for the robotic arm and end-effector <ref type="bibr" target="#b15">[16]</ref>.</p><p>To mitigate the occlusion effect in agricultural fields, earlier studies have approached this problem through depth-based shape reconstruction and geometric modelling. For example, Gong et al. <ref type="bibr" target="#b16">[17]</ref> proposed a method to reconstruct the full 3D shape of an occluded tomato using fused depth maps, allowing estimation of its centre and radius before grasping. Furthermore, shape-fitting techniques leveraging prior knowledge of fruit geometry, such as spheres or ellipsoids, have been employed to infer the hidden structure of partially visible fruits <ref type="bibr" target="#b17">[18,</ref><ref type="bibr" target="#b18">19]</ref>. However, relying solely on prior shape assumptions limits adaptability in agricultural settings, where scenes are inherently complex, fields are unstructured, and fruit appearance varies greatly, making such assumptions unreliable for consistent identification <ref type="bibr" target="#b13">[14]</ref>. Other approaches have focused on occlusion-aware segmentation by incorporating shape priors and occlusion recovery algorithms <ref type="bibr" target="#b19">[20]</ref>, or by integrating multi-view data and point cloud completion <ref type="bibr" target="#b20">[21]</ref>. Nevertheless, these segmentation pipelines frequently involve complex and time-consuming multi-step processes, including visible mask extraction, camera calibration, or geometry-based completion, and generally lack validation in practical robotic harvesting scenarios <ref type="bibr" target="#b21">[22]</ref>.</p><p>Unlike methods that address occlusion by focusing only on the visible regions, amodal instance segmentation aims to predict the complete shape of an object, which is crucial for accurate fruit positioning and precise grasping <ref type="bibr" target="#b22">[23]</ref>. Similar to standard instance segmentation, amodal instance segmentation individually detects each fruit and captures spatial features, but it also covers predicting occluded regions. Gené-Mola et al. <ref type="bibr" target="#b22">[23]</ref> were among the first to explore this concept in fruit imagery, estimating complete apple sizes under occlusion using an amodal instance segmentation model in 2023. Yang et al. <ref type="bibr" target="#b23">[24]</ref> and Kim et al. <ref type="bibr" target="#b13">[14]</ref> extended this research to tomatoes and cucumbers, respectively, applying amodal segmentation for shape reconstruction and occlusion recovery. However, these studies did not integrate their results into a full harvesting pipeline. More broadly, related works on dataset development and benchmarking <ref type="bibr" target="#b24">[25]</ref> often lack validation through physical experiments or real hardware implementations, limiting practical relevance. While prior studies have explored amodal segmentation for estimating full fruit shape under occlusion, these methods largely remain at the perception level and have not been extended to robotic harvesting. The lack of integration between amodal perception and physical interaction limits their practical utility, as most approaches do not validate whether predicted full-object masks translate into effective robotic actions. Bridging this gap is essential to assess the true relevance of amodal reasoning in field robotics and to advance beyond isolated perception tasks toward actionable, deployment-ready systems.</p><p>To this end, this paper presents a perception-to-action harvesting framework based on a novel amodal instance segmentation model, built upon the nano-sized YOLO11 architecture. A Global Attention Module (GAM) was integrated into the model's structure by embedding one at the end of YOLO11's neck, and the Cross Stage Partial with Spatial Attention (C2f-PSA) block was replaced with another GAM. In addition, the kernel size of the Spatial Pyramid Pooling-Fast (SPPF) block, which is at the end of the backbone, was increased to enhance the receptive field. Furthermore, the baseline's head was deepened, and its standard mask loss function was updated with an asymmetric mask loss. This new loss was specifically designed to handle occlusion by penalising false negatives more heavily than false positives, thereby encouraging the model to preserve partial object masks. The developed model yielded 84.4% precision, 84.6% recall, 91.4% mAP@50, and 63.6% mAP@50:95, outperforming YOLO11 by 5.1% in precision, 1.3% in mAP@50 and 1% in mAP@50:95, while increasing the number of parameters by only 18%. To thoroughly validate the enhanced model, predictions on the occlusionspecific subsets and robotic harvesting experiments were conducted. Under occlusion, harvesting scenarios were run in a controlled lab environment with a real fruit setup. The harvesting outcomes demonstrated that GDA-YOLO11 achieved picking performances of 92.59% without occlusion, 85.18% under low occlusion, 48.14% under medium occlusion, and 22.22% under high occlusion. These results confirm that the proposed improvements surpassed the baseline model by over 3.5% in challenging medium and high occlusion scenarios. Additionally, a strong correlation between mAP@50 scores of GDA-YOLO11's occlusionsensitive subsets and harvesting performance was observed across all corresponding occlusion classes, evidenced by an R 2 of approximately 0.986. This strong alignment between segmentation accuracy and harvesting success not only underscores the practical value of amodal perception but also establishes its viability as a core enabler for reliable, occlusion-robust operation in practical agricultural harvesting robotics systems. Within this context, the main contributions of this paper are follows: 1) the development of GDA-YOLO11, a new amodal instance segmentation model that extends the lightweight YOLO11 architecture with explicit occlusion handling capabilities, specifically designed to address partial occlusions in fruit harvesting scenarios; and 2) the integration of amodal perception into a practical robotic harvesting application (Fig. <ref type="figure" target="#fig_0">1</ref>), marking, the first known demonstration of amodal instance segmentation applied to a controlled fruit harvesting application.</p><p>The rest of the paper is organised as follows. Section II defines the methodology to introduce the proposed novel model structure with improvements. Section III presents the training strategy, including the dataset preparation, and evaluation metrics, Section IV introduces harvesting framework with all subworks. Section V includes results and discussion in terms of the proposed model and fruit picking framework. Finally, Section VI concludes the paper.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>II. METHODOLOGY</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Architecture overview</head><p>The GDA-YOLOv11 retains the standard YOLO11 backbone, where features pass through only one C3k2 block before multi-scale fusion in the neck. As a single-stage, anchor-free detector, YOLOv11 optimises feature extraction and spatial representation through integrated attention mechanisms. While the baseline typically employs a standard, lightweight segmentation head and a standard Binary Cross Entropy (BCE) mask loss, these core components were modified to enhance amodal segmentation under occlusion, as illustrated in Fig. <ref type="figure" target="#fig_1">2</ref>. First, the network's neck was modified to create a dual-attention structure by adding a Global Attention Module (GAM) at its end while also replacing the initial C2f-PSA block with a second GAM as shown in Fig. <ref type="figure" target="#fig_1">2a and 2b</ref>. Concurrently, the SPPF kernel size was expanded to 7x7 to provide a wider receptive field for superior spatial context aggregation. Second, the segmentation head was structurally deepened to better resolve the fine-grained boundaries of partially visible objects (Fig. <ref type="figure" target="#fig_1">2c</ref>). Finally, an asymmetric mask loss function was implemented, using a weighted Binary Cross Entropy (BCE) that more heavily penalizes false negatives to improve recall in cluttered scenes as shown in Fig. <ref type="figure" target="#fig_1">2d</ref>. The proposed architecture is named GDA-YOLOv11 to reflect these three core enhancements (GAM integration, a Deepened head, and an Asymmetric mask loss) and is optimized for robust performance in complex and occluded visual environments.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. GAM</head><p>As illustrated in Fig. <ref type="figure" target="#fig_1">2</ref>, the GAM <ref type="bibr" target="#b25">[26]</ref> is an attention mechanism that enhances both channel-wise and spatial feature representations by sequentially applying channel attention followed by spatial attention within a residual framework. These attentions are applied in a multiplicative manner to refine the features and compute the intermediate state and output feature map as described in Eqs. <ref type="bibr" target="#b0">(1,</ref><ref type="bibr" target="#b1">2)</ref>.</p><formula xml:id="formula_0">F 2 = (ℳ C (F 1 ) ⊗ (F 1 ))<label>(1)</label></formula><formula xml:id="formula_1">F 3 = (ℳ S (F 2 ) ⊗ (F 2 ))<label>(2)</label></formula><p>where F 1 ∈ ℝ 𝐶×𝐻×𝑊 is the input tensor, with 𝐶, 𝐻, and 𝑊 denoting the number of channels, height, and width, respectively; F 2 is the intermediate state feature map; F 3 is the output map; ℳ C is the channel attention map; ℳ S is the spatial attention map; and ⊗ denotes element-wise multiplication. This structure allows the module to learn both what to focus on (channel-wise) and where to focus (spatially), enhancing semantic consistency and improving the network's ability to identify occluded or ambiguous object regions. The sequential design ensures that global and local cues are captured hierarchically, while the residual path facilitates stable gradient flow during training. The channel attention module computes a weight vector highlighting important feature channels by aggregating spatial information using average pooling z avg = AvgPool(F 1 ) and max pooling z max = MaxPool(F 1 ) as defined in <ref type="bibr" target="#b2">(3)</ref>.</p><formula xml:id="formula_2">z = σ(MLP(z avg ) + (z max ) (<label>3</label></formula><formula xml:id="formula_3">)</formula><p>where σ is the sigmoid activation, MLP denotes a shared multi-layer perceptron consisting of two convolutional layers reducing and restoring the channel dimension with a reduction ratio equal to 16. The output channel attention map ℳ C (F 1 ) is broadcasted spatially and multiplied element-wise with the input F 1 .</p><p>The spatial attention module focuses on highlighting important spatial regions by compressing the channel dimension, employing average pooling f avg = AvgPool(F 2 ) ∈ ℝ 1×H×W and max pooling f max = MaxPool(F 2 ) ∈ ℝ 1×H×W feature maps, described as:</p><formula xml:id="formula_4">ℳ S (X) = σ(f 7×7 (D)) (4)</formula><p>where σ denotes sigmoid activation; f 7×7 is a convolutional layer with a 7×7 kernel to capture spatial relationships across a larger context; and D is the concentration of average-pooled and max-pooled spatial summaries, which is Concat[AvgPool(X), MaxPool(X)]. Finally, this attention map is applied element-wise to each channel of the input feature map. The combination of these two modules enables the network to focus selectively both across and within feature maps, making GAM particularly effective in handling occluded scenes.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Deep Head</head><p>To enhance the segmentation performance under occlusion, the original YOLO11n prediction head was replaced with a deeper structure. Specifically, the number of intermediate feature channels was increased from 32 to 64, and the input feature dimension to the final segmentation block was expanded from 256 to 512. This modification allows the model to extract richer feature representations before prediction, leading to more accurate segmentation in visually complex or overlapping object scenarios. While the prediction output dimensions remain unchanged, the deeper feature fusion improves the model's ability to resolve ambiguity and preserve object boundaries under challenging conditions</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Asymmetric Mask Loss Function</head><p>The proposed model adopts a hybrid loss function composed of three components: bounding box regression, asymmetric mask segmentation, and classification. These components are jointly optimised to improve detection and instance segmentation performance under occlusion. The total loss is formulated as: <ref type="bibr" target="#b4">(5)</ref> where ℒ 𝐶𝐼𝑜𝑈 denotes the CIoU loss for bounding box regression; ℒ 𝑎𝑠𝑦𝑚−𝐵𝐶𝐸 is the asymmetric BCE loss is used for pixel-level mask supervision; ℒ 𝐵𝐶𝐸 is the default BCE loss for class prediction; and 𝜆 𝑏𝑜𝑥 ,𝜆 𝑚𝑎𝑠𝑘 ,𝜆 𝑐𝑙𝑠 ∈ ℝ + are weighting coefficients for each term.</p><formula xml:id="formula_5">ℒ 𝑡𝑜𝑡𝑎𝑙 = 𝜆 𝑏𝑜𝑥 • ℒ 𝐶𝐼𝑜𝑈 + 𝜆 𝑚𝑎𝑠𝑘 • ℒ 𝑎𝑠𝑦𝑚−𝐵𝐶𝐸 + 𝜆 𝑐𝑙𝑠 • ℒ 𝐵𝐶𝐸</formula><p>The asymmetric mask loss is specifically designed to handle occlusion by penalising false negatives more heavily than false positives, encouraging the model to preserve partial object masks. It is defined as:</p><formula xml:id="formula_6">ℒ 𝑎𝑠𝑦𝑚−𝐵𝐶𝐸 (𝑝, 𝑦) = −[𝛼 𝐹𝑁 • 𝑦 • log(𝑝) + 𝛼 𝐹𝑃 • (1 − 𝑦) • log(1 − 𝑝)] (<label>6</label></formula><formula xml:id="formula_7">)</formula><p>where p ∈[0,1] is the predicted probability; y ∈[0,1] is the ground truth label for each pixel; 𝛼 𝐹𝑁 is the asymmetry coefficient for the positive (foreground) class, empirically set to 1.1; and 𝛼 𝐹𝑃 is for the negative (background) class, empirically set to 0.9. By integrating this asymmetric formulation, the model is biased toward generating more </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>III. DATA AND TRAINING STRATEGY</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Dataset preparation</head><p>This study employs a dataset comprising 1,000 RGB images captured in an outdoor citrus orchard, naturally exhibiting varying degrees of occlusion. The images originate from a publicly accessible dataset designed by Hou et al. <ref type="bibr" target="#b26">[27]</ref> for citrus detection tasks. A total of 3,749 citruses were manually annotated using polygon-based instance segmentation masks via the Roboflow platform. To support amodal segmentation, each annotation was deliberately extended to include the full extent of the fruit, even when parts were visually occluded. The dataset was subsequently partitioned into 700 images for training, 200 for validation, and 100 for testing. No data augmentation techniques or postprocessing steps were applied for this partition. This dataset will be referred to as the initial dataset throughout the remainder of this paper.</p><p>To prepare occlusion-sensitive subsets, 71 images with a 256×256-pixel size were manually cropped from the 100 test images by selecting the fruit regions. The cropped images were grouped by occlusion level and annotated with previously described amodal masks. Unlike the initial dataset annotations, this set was augmented using horizontal and vertical flips, rotations between ±15°, shear of ±10°, exposure variation between −15% and +15%, and random noise affecting up to 1.45% of pixels. This process tripled the image count for each occlusion class. The final occlusion-sensitive subset included 42 images with zero occlusion (fully visible), 96 with low occlusion (∼0-20%), 51 with medium occlusion (∼20-50%), and 45 with high occlusion (∼over 50%). An example of this preparation is illustrated in Fig. <ref type="figure" target="#fig_2">3</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Implementation Details</head><p>The experiments were conducted using Python 3.8.20 and PyTorch 2.4.1 with CUDA 12.1 support. Training and validation were performed on a system featuring an NVIDIA GeForce RTX 3060 GPU with 12 GB of VRAM. The model was trained for 100 epochs with a batch size of 8. Stochastic Gradient Descent (SGD) was used as the optimiser, configured with an initial learning rate of 0.01, a momentum of 0.937, and a weight decay of 0.0005. The loss weight coefficients for bounding box regression, mask segmentation, and classification were maintained at their default values, consistent with standard YOLO11n training configurations. No transfer learning was applied, and the model was trained from scratch using the initial dataset.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Model Evaluation Metrics</head><p>This study evaluates the proposed model's performance using Precision (P), Recall (R), mean Average Precision at IoU threshold of 50% (mAP@50), and mean Average Precision calculated over IoU thresholds ranging from 50% to 95% (mAP@50:95). The corresponding performance metrics are as described in Eqs. <ref type="bibr">(</ref> </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IV. FRUIT HARVESTING</head><p>To verify the effectiveness of the proposed model under realworld-inspired conditions, harvesting experiments were conducted across varying levels of occlusion. The tests were performed in a controlled laboratory environment to ensure consistency and repeatability. As shown in Fig. <ref type="figure" target="#fig_3">4a</ref>, the experimental setup included an Emika Franka Panda robotic arm equipped with an Intel RealSense D415 depth camera, interacting with an artificial tree to simulate robotic picking tasks. To strictly evaluate the perception system's performance, the mechanical complexity of fruit detachment was simplified. Real fruits were mounted on the outer periphery of the synthetic tree using low-resistance metal fixtures, as explicitly depicted in Fig. <ref type="figure" target="#fig_3">4a</ref>. Fig. <ref type="figure" target="#fig_3">4b</ref> (1-4) illustrates a group of real fruit examples that were used in the picking experiments, classified into zero (fully visible (Fig. <ref type="figure" target="#fig_3">4b</ref> (1)), low (Fig. <ref type="figure" target="#fig_3">4b</ref> (2)), medium (Fig. <ref type="figure" target="#fig_3">4b</ref> (3)), and high (Fig. <ref type="figure" target="#fig_3">4b (4</ref>)) occlusion levels, reflecting increasing visual complexity. This setup physically replicates the occlusionsensitive subsets described in Section III, using the same occlusion ratio ranges. The complete target fruit localisation methodology is summarised in Fig. <ref type="figure" target="#fig_3">4c</ref>. In the harvesting experiments, this categorisation enabled a structured comparison between segmentation performance and picking success across each occlusion level. For each occlusion class, 54 fruits were presented, resulting in 216 trials per model and a total of 432.</p><p>To physically validate the GDA-YOLO11's segmentation performance across increasing occlusion exposure on occlusion-sensitive subsets and to quantify the overall outcome of the harvesting pipeline, the harvesting success metric H was defined as shown in Eq. ( <ref type="formula">11</ref>).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>H =</head><p>N picked N total <ref type="bibr" target="#b10">(11)</ref> where N picked denotes the number of successfully picked citrus; and N total represents the total number of citrus that have been included in the harvesting experiments.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Picking point identification</head><p>To estimate the accurate picking point of the partially occluded target fruit, a Euclidean distance transform-based method was employed <ref type="bibr" target="#b27">[28]</ref>. Formalising this approach, the optimal picking point 𝑃 * is determined by solving the following maximisation problem:</p><formula xml:id="formula_8">𝑃 * = arg max (𝑥,𝑦)𝜖ℳ (‖(𝑥, 𝑦) − 𝓑‖ 2 ) (<label>12</label></formula><formula xml:id="formula_9">)</formula><p>where ℳ represents the set of foreground pixels constituting the binary instance mask, 𝓑 denotes the set of background pixels, and ‖•‖ 2 represents the Euclidean norm. This method prioritises the most stable region of the visible fruit segment by maximising clearance from object boundaries. Fig. <ref type="figure" target="#fig_5">5</ref> explains the overall process: an amodal instance segmentation mask has been generated from an occluded fruit instance (Fig. <ref type="figure" target="#fig_5">5a</ref>), and the picking point has been identified based on Eq. ( <ref type="formula" target="#formula_8">12</ref>) as illustrated in Fig. <ref type="figure" target="#fig_5">5b</ref>. Finally, at the end of the process, the defined picking point in the real application obtained from the RGB-D camera frame can be seen in Fig. <ref type="figure" target="#fig_5">5c</ref>. This approach offers greater stability than moment-based centroids, which may be distorted when objects are partially hidden.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Target Fruit Localisation and Manipulation</head><p>In the robotic setup, an RGB-D camera is mounted near the end of the robotic arm in an eye-in-hand configuration, meaning the camera moves jointly with the arm during the harvesting operation. This configuration allows positional transformation directly from the robot, using its known joint positions provided through the manufacturer's official library, libfranka.</p><p>The localisation process begins with the segmentation of the target fruit in the image frame. The fruit's picking point is determined, along with its associated depth value, from the RGB-D camera. Using this information, the 3D coordinates of the fruit in the camera coordinate frame are obtained via backprojection using the image projection model:</p><formula xml:id="formula_10">[ 𝑢 𝑣 𝑤 ] = [ 𝐊 𝟎 𝟎 1 ] [ 𝐑 𝐭 𝟎 1 ] [ 𝑋 𝑌 𝑍 1 ] (<label>13</label></formula><formula xml:id="formula_11">)</formula><p>where 𝑢 and 𝑣 are the pixel coordinates of the fruit in the image, and 𝑤 is a homogeneous scale factor related to the   Once the 3D position is calculated in the camera frame, it is first transformed into the end-effector frame using the calibrated hand-eye transformation matrix. This accounts for the physical displacement between the RGB-D sensor and the robot's end-effector. Subsequently, the fruit's position is transformed into the robot base frame by following the full kinematic chain of the robotic arm, as shown in Fig. <ref type="figure" target="#fig_6">6</ref>.</p><p>Once the 3D position is calculated in the camera frame, it is first transformed into the end-effector frame using the calibrated hand-eye transformation matrix. This accounts for the physical displacement between the RGB-D sensor and the robot's end-effector. Subsequently, the fruit's position is transformed into the robot base frame by following the full kinematic chain of the robotic arm, as shown in Fig. <ref type="figure" target="#fig_6">6</ref>.</p><p>To ensure a robust grasp, the approach strategy was decomposed into a two-stage motion primitive. First, the endeffector moves to a pre-grasp waypoint aligned with the target's centroid but offset by a safety margin. From this waypoint, a linear approach vector is executed to reach the final grasping coordinates. A fixed end-effector orientation ({−𝜋, − 𝜋 2 , 0 }) relative to the base frame was maintained during this phase, simplifying the path planning by reducing the search space to 3D Cartesian position control.</p><p>The motion planning for the harvesting operation was executed using Cartesian-space control with quintic polynomial velocity profiles to ensure smooth trajectories. The end-effector moved from the home position to the computed target coordinates using a deterministic point-to-point motion generator (via LibOrl <ref type="bibr" target="#b28">[29]</ref>). In this experimental setup, explicit dynamic collision avoidance algorithms were not employed. Instead, as an additional safety measure, target fruits were positioned on the outer periphery of the synthetic tree to mitigate manipulation and grasping difficulties arising from occlusion, ensuring an obstacle-free workspace for the preplanned Cartesian paths. Finally, to secure the fruit, a +2 cm forward position offset was applied along the approach axis, ensuring the gripper fingers fully enclosed the target before actuation. Consequently, robotic action focused on 'approach and enclose' rather than complex grasping strategies, preventing mechanical compliance from compensating for localisation errors. Although the robotic framework supports manipulation primitives such as rotation, these were disabled for this experiment to isolate the grasping success as a direct function of localisation accuracy, rather than mechanical gripping force or stem resistance.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>V. RESULTS AND DISCUSSION</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. GDA-YOLO11</head><p>The experimental results demonstrate the effectiveness of the proposed improvements on the model's performance. GDA-YOLO11 achieved 84.4% precision, 84.6% recall, 91.4% mAP@50, and 63.6% mAP@50:95 on the initial validation set, demonstrating strong overall performance in the amodal instance segmentation task. As shown in Table <ref type="table" target="#tab_1">I</ref>, the proposed updates systematically improve the baseline model. Incorporating GAM, SPPF extension, deep head, and asymmetric mask loss leads to an over 5.1% increase in precision and a 1.3% rise in mAP@50. Notably, the use of double GAM contributed to approximately a 1% boost in the most sensitive metric, mAP@50:95, due to their ability to capture global contextual information and enhance feature representation under occluded conditions. Although the recall remains comparable to YOLO11's, it is marginally lower; however, the ablation experiment results indicate the loss function contributes a positive effect of around 0.8% on the recall score. While GFLOPs increased due to the added extra complexity of the deep head, the number of the model's parameters increased by approximately 18%. Despite these modifications, the model maintains real-time inference speed with only a minimal 1.3 ms increase in total inference time. This increase primarily originates from the deepening of the segmentation head, which introduces additional parameters and slightly raises the GFLOPs count. At the same time, this structural enhancement is also the key factor behind the improvement observed in the mAP@50 and mAP@50:95 metrics. These findings confirm that the enhancements  To further validate the model's effectiveness, GDA-YOLO11 was compared against several state-of-the-art nanoscale(n) and small-scale(s) architectures trained on the initial dataset and under the same experimental conditions, as shown in Table <ref type="table" target="#tab_1">II</ref>. GDA-YOLO11 achieved the highest precision score with 0.844, outperforming models like NVW-YOLOv8n with 0.817, SGW-YOLOv8n with 0.816, and even the larger YOLO11s model, which reached 0.814. GDA-YOLO11 remained highly competitive with a recall of 0.846, suppressing all custom models as well as the YOLOv8n in recall performance. Also, it achieved a mAP@50 of 0.914, surpassing all nano-scale alternatives. Additionally, the proposed model nearly matched the 0.915 score of YOLO11s while using significantly fewer parameters, with 3.34 million and offering faster inference at 6.8 milliseconds compared to YOLO11s' 8.1 milliseconds. Additionally, GDA-YOLO11 recorded the highest mAP@50:95 among all n-scale models, with a score of 0.636. These results confirm that GDA-YOLO11 not only outperforms comparable lightweight models across all major performance indicators but also approaches the accuracy of larger architectures without compromising speed or efficiency. This balance makes it highly suitable for practical deployment in agricultural harvesting scenarios where real-time inference and compact model size are critical.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Harvesting experiments</head><p>During the harvesting experiments, artificially occluded citrus fruits were picked using the proposed framework. Under zero occlusion, YOLO11 achieved 52 successful picks (96.29% H), slightly outperforming GDA-YOLO11, which resulted in 50 successful picks (92.59% H). However, in low occlusion, both models reached identical harvesting performance, completing 46 picks with an 85.18% success rate, indicating that minor foliage does not significantly differentiate the models. As occlusion severity increased, GDA-YOLO11 demonstrated more robust performance. Under medium occlusion, it attained 26 successful picks (48.14% H) versus YOLO11's 24 picks (44.44% H). In high occlusion, where the task is most challenging, GDA-YOLO11 completed 12 successful picks (22.22%) compared to YOLO11's 10 successful picking attempts (18.51%). While the absolute numerical margin appears modest, it represents a substantial relative improvement in robustness when visual cues are scarce.</p><p>To correctly interpret these results, it is essential to define the failure modes. Crucially, due to the low-resistance experimental setup described in Section IV-A, zero mechanical interaction failures (e.g., gripper slip or insufficient force) were observed; thus, all failures were attributable to perception limitations. Detailed inspection revealed that, in high occlusion trials, only three failures were due to inaccurate or low-quality masks (localisation errors) where the gripper missed the fruit volume. The remaining failures occurred because no valid mask could be generated due to extreme occlusion (detection failures). In contrast, no such failures were observed in the zero and low occlusion groups, where all masks were successfully generated. Instead, the few unsuccessful cases in these groups were explicitly identified as localisation errors stemming from suboptimal mask quality, which led to the computation of inaccurate picking points under varying fruit orientations.</p><p>Finally, the experiments revealed a strong positive correlation (𝑅 2 ≈ 0.986) between the segmentation accuracy (mAP@50) and the physical harvesting success rate (H). This finding aligns with trends reported in the literature (𝑅 2 ≈ 0.940) <ref type="bibr" target="#b16">[17]</ref> and validates the hypothesis that segmentation quality is a reliable proxy for robotic picking performance in controlled environments. Furthermore, the sharp decline in success rates beyond 50% occlusion (medium and high levels) reinforces prior findings <ref type="bibr" target="#b34">[35]</ref> that this occlusion ratio represents a critical harvestability threshold for current vision systems.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>VI. CONCLUSION</head><p>This study presents a robotic harvesting framework based on amodal instance segmentation for occlusion handling, which is one of the most critical tasks in vision-driven robotic harvesting. A novel amodal instance segmentation model was introduced and evaluated specifically under varying occlusion conditions using both segmentation benchmarks and realistic harvesting experiments. In this regard, the study bridges amodal perception and robotic action by generating instance-  (1) '×' indicates that the corresponding study does not implement the process; '✓' signifies that the process is implemented; '✓✓' denotes that the process is applied in two distinct stages within the study; bold values indicate the best results in each category. "M" is the model name. "GAM" means the "GAM" module, "S" is the "SFPP" block, and "DH" is the Deep head. "L" stands for the Asymmetric mask loss function, and "C" is "C2PSA". Finally, "B" is the "YOLOv11" base model, and terms like "G-v", "GD-v", and "GDA" refer to the different model versions developed in this work. (1, 2) For performance metrics, "P" is Precision and "R" is Recall. "@50" means the mAP score at 0.50 IoU, while "@50:95" is the mAP score across different IoU levels. For computational cost, "T" is time, "G" is GFLOPs, and "PN" is the number of parameters. (3) O' represents the occlusion classes, denoted as "Z", "L", "M", and "H" for zero, low, medium, and high levels, respectively. 'H' shows the harvesting success out of 54 trials, while 'H (%)' is the corresponding percentage.</p><p>level amodal masks through a dedicated deep learning without additional geometric processing or reconstruction steps. This unified framework enables a perception-driven and occlusionrobust harvesting and represents, to the best of our knowledge, the first real-world validation of an amodal segmentation approach for fruit harvesting since its initial application to fruit imagery in 2023. By eliminating intermediate steps such as 3D reconstruction, shape fitting or mask refinement, the proposed method simplifies the system architecture and preserves robustness against occlusion, making it more scalable and deployable in complex agricultural environments. While this work demonstrates the feasibility of amodal perception for robotic harvesting, further studies are needed to improve model performance, particularly under high-level occlusion and to explore more advanced amodal segmentation strategies. Additionally, RGB-D cameras, despite their widespread use and advantages, remain insufficient for handling full occlusion scenarios, indicating the need for alternative sensing or reasoning mechanisms in future work.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Fig. 1 .</head><label>1</label><figDesc>Fig. 1. Overview of the proposed framework. (a) The process workflow, ranging from raw data acquisition to the harvesting application. (b) The technical pipeline for occlusion-sensitive tests, including, augmentation, resizing, model training, and mask generation.</figDesc><graphic coords="2,101.15,568.90,401.38,137.10" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Fig. 2 .</head><label>2</label><figDesc>Fig. 2. Overall architecture of GDA-YOLO11. a) GAM block, b) GAM block replacing the C2F-PSA, and kernel extension of SPFF, c) deepened segmentation head, and d) updated mask loss function with asym-mask.</figDesc><graphic coords="3,100.25,59.50,391.20,263.18" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Fig. 3 .</head><label>3</label><figDesc>Fig. 3. Data augmentation examples of occlusion sensitive subsets of a) zero-level occlusion, b) low-level occlusion, c) medium-level occlusion and d) high-level occlusion.</figDesc><graphic coords="4,44.50,499.50,250.65,202.34" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Fig. 4 .</head><label>4</label><figDesc>Fig. 4. Harvesting experiments setup; a) Artificial tree and Emika Franka Panda cobot, b) real fruits used in the picking experiments, categorised into 1) zero (fully visible, 2), low, 3) medium, and 4) high occlusion levels.</figDesc><graphic coords="5,319.50,535.55,246.35,151.80" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head></head><label></label><figDesc>fruit's depth. The vector [𝑋, 𝑌, 𝑍] T represents the fruit's position in the world coordinate frame. The intrinsic matrix 𝐊 contains the focal lengths and principal point of the camera, and the extrinsic transformation[𝐑|𝐭]  represents the rotation and translation between coordinate frames. The intrinsic parameters were determined through intrinsic camera calibration, while the extrinsic transformation was obtained through hand-eye calibration, which accounts for the fixed offset between the camera and the end-effector.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Fig. 5 .</head><label>5</label><figDesc>Fig. 5. Picking point identification: a) occluded fruit instance in dataset b) Distance transform-based picking point identification process and, c) amodal mask generation with defined picking point.</figDesc><graphic coords="6,48.50,49.70,249.55,75.80" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head>Fig. 6 .</head><label>6</label><figDesc>Fig. 6. Visualisation of the proposed robotic localisation and manipulation framework. (a) The coordinate transformation chain for target localisation, illustrating the mapping from 2D image coordinates to the 3D robot base frame via intrinsic back-projection and kinematic chain transformations. (b) The sequential execution of the harvesting strategy: (1) Initialisation at home configuration, (2) Alignment with the pre-grasp waypoint under fixed orientation, (3) Linear approach with a +2 cm safety offset to ensure full enclosure, (4) Grasping actuation, and (5) Transport to the collection basket and release.</figDesc><graphic coords="6,319.00,432.00,246.30,196.47" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head>TABLE I</head><label>I</label><figDesc></figDesc><table><row><cell></cell><cell></cell><cell></cell><cell></cell><cell cols="4">ABLATION EXPERIMENTS (1)</cell><cell></cell><cell></cell><cell></cell></row><row><cell>M</cell><cell>G A M</cell><cell>S</cell><cell>D H</cell><cell>L C P</cell><cell>R</cell><cell>@ 50</cell><cell>@ 50: 95</cell><cell>T</cell><cell>G</cell><cell>P N</cell></row><row><cell>B</cell><cell cols="4">× × × × ✓ 0.7</cell><cell>0.8</cell><cell>0.9</cell><cell>0.6</cell><cell cols="2">5.5 10.</cell><cell>2.</cell></row><row><cell></cell><cell></cell><cell></cell><cell></cell><cell>93</cell><cell>53</cell><cell>01</cell><cell>27</cell><cell></cell><cell>2</cell><cell>83</cell></row><row><cell>G-</cell><cell cols="4">✓ × × × ✓ 0.8</cell><cell>0.8</cell><cell>0.9</cell><cell>0.6</cell><cell cols="2">4.7 10.</cell><cell>2.</cell></row><row><cell>v1</cell><cell></cell><cell></cell><cell></cell><cell>24</cell><cell>42</cell><cell>06</cell><cell>28</cell><cell></cell><cell>2</cell><cell>83</cell></row><row><cell>G-</cell><cell>✓</cell><cell>×</cell><cell></cell><cell>× × 0.8</cell><cell>0.8</cell><cell>0.9</cell><cell>0.6</cell><cell cols="2">5.5 10</cell><cell>2.</cell></row><row><cell>v2</cell><cell>✓</cell><cell></cell><cell>×</cell><cell>39</cell><cell>25</cell><cell>04</cell><cell>36</cell><cell></cell><cell></cell><cell>60</cell></row><row><cell>G-</cell><cell>✓</cell><cell>✓</cell><cell></cell><cell>× × 0.8</cell><cell>0.8</cell><cell>0.9</cell><cell>0.6</cell><cell cols="2">5.3 10</cell><cell>2.</cell></row><row><cell>v3</cell><cell>✓</cell><cell></cell><cell>×</cell><cell>33</cell><cell>39</cell><cell>01</cell><cell>3</cell><cell></cell><cell></cell><cell>60</cell></row><row><cell>G</cell><cell>✓</cell><cell>×</cell><cell></cell><cell>× × 0.8</cell><cell>0.8</cell><cell>0.9</cell><cell>0.6</cell><cell>7</cell><cell>20.</cell><cell>3.</cell></row><row><cell>D-v1</cell><cell>✓</cell><cell></cell><cell>✓</cell><cell>15</cell><cell>41</cell><cell>07</cell><cell>32</cell><cell></cell><cell>5</cell><cell>34</cell></row><row><cell>G</cell><cell>✓</cell><cell>✓</cell><cell></cell><cell>× × 0.8</cell><cell>0.8</cell><cell>0.9</cell><cell>0.6</cell><cell>7</cell><cell>20.</cell><cell>3.</cell></row><row><cell>D-v2</cell><cell>✓</cell><cell></cell><cell>✓</cell><cell>34</cell><cell>34</cell><cell>03</cell><cell>32</cell><cell></cell><cell>5</cell><cell>34</cell></row><row><cell>G</cell><cell>✓</cell><cell cols="3">✓ ✓ ✓ × 0.8</cell><cell>0.8</cell><cell>0.9</cell><cell>0.6</cell><cell cols="2">6.8 20.</cell><cell>3.</cell></row><row><cell>D A</cell><cell>✓</cell><cell></cell><cell></cell><cell>44</cell><cell>46</cell><cell>14</cell><cell>36</cell><cell></cell><cell>5</cell><cell>34</cell></row></table></figure>
+		</body>
+		<back>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<monogr>
+		<title level="m" type="main">United Nations</title>
+		<ptr target="https://population.un.org/wpp/Publications/Files/WPP2019_10KeyFindings.pdf" />
+		<imprint>
+			<date type="published" when="2019-04-19">2019. Apr. 19, 2025</date>
+		</imprint>
+	</monogr>
+	<note>Key findings</note>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<monogr>
+		<title level="m" type="main">Understanding Food Loss and Waste-why Are We Losing and Wasting food?</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Ishangulyyev</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">H</forename><surname>Lee</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2019-07">Jul. 2019</date>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="page">297</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">The concept of food waste and food loss prevention and measuring tools</title>
+		<author>
+			<persName><forename type="first">F</forename><surname>Economou</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Waste Manag. Res</title>
+		<imprint>
+			<biblScope unit="volume">42</biblScope>
+			<biblScope unit="issue">8</biblScope>
+			<date type="published" when="2024-03">Mar. 2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<monogr>
+		<ptr target="https://wwfint.awsassets.panda.org/downloads/wwf_uk__driven_to_waste___the_global_impact_of_food_loss_and_waste_on_farms.pdf" />
+		<title level="m">DRIVEN TO WASTE: THE GLOBAL IMPACT OF FOOD LOSS AND WASTE ON FARMS</title>
+				<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+		<respStmt>
+			<orgName>WWF</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">A lab-customized autonomous humanoid apple harvesting robot</title>
+		<author>
+			<persName><forename type="first">X</forename><surname>Yu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Comput. Elect. Eng</title>
+		<imprint>
+			<biblScope unit="volume">96</biblScope>
+			<biblScope unit="page">107459</biblScope>
+			<date type="published" when="2021-12">Dec. 2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">A Method of Grasping Detection for Kiwifruit Harvesting Robot Based on Deep Learning</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Ma</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Agronomy</title>
+		<imprint>
+			<biblScope unit="volume">12</biblScope>
+			<biblScope unit="issue">12</biblScope>
+			<biblScope unit="page" from="3096" to="3096" />
+			<date type="published" when="2022-12">Dec. 2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Realtime detection and localization using SSD method for oyster mushroom picking robot</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Qian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Jiacheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Pengbo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Changxing</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2020 IEEE International Conference on Real-time Computing and Robotics (RCAR)</title>
+				<meeting><address><addrLine>Asahikawa, Japan</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page" from="158" to="163" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Harvesting tomatoes with a Robot: an evaluation of Computer-Vision capabilities</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Stepanova</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2023 IEEE International Conference on Autonomous Robot Systems and Competitions (ICARSC)</title>
+				<meeting><address><addrLine>Tomar, Portugal</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="63" to="68" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">YOLO-P: An efficient method for pear fast detection in complex orchard picking environment</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Sun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Xue</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Front. Plant Sci</title>
+		<imprint>
+			<biblScope unit="volume">13</biblScope>
+			<date type="published" when="2023-01">Jan. 2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Multi-network fusion algorithm with transfer learning for green cucumber segmentation and recognition under complex natural environment</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Bai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Cao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Zhang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Comput. Electron. Agric</title>
+		<imprint>
+			<biblScope unit="volume">194</biblScope>
+			<biblScope unit="page" from="106789" to="106789" />
+			<date type="published" when="2022-03">Mar. 2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Monocular positioning of sweet peppers: An instance segmentation approach for harvest robots</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Bao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Ren</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Biosyst. Eng</title>
+		<imprint>
+			<biblScope unit="volume">196</biblScope>
+			<biblScope unit="page" from="15" to="28" />
+			<date type="published" when="2020-08">Aug. 2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Tomato ripeness detection and fruit segmentation based on instance segmentation</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wei</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Front. Plant Sci</title>
+		<imprint>
+			<biblScope unit="volume">16</biblScope>
+			<biblScope unit="page">1503256</biblScope>
+			<date type="published" when="2025-05">May 2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">FruitQuery: A lightweight query-based instance segmentation model for in-field fruit ripeness determination</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Hicks</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Sun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Luo</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Smart Agric. Technol</title>
+		<imprint>
+			<biblScope unit="volume">12</biblScope>
+			<biblScope unit="page">101068</biblScope>
+			<date type="published" when="2025-06">Jun. 2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Application of amodal segmentation on cucumber segmentation and occlusion recovery</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S.-J</forename><surname>Hong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ryu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C.-H</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Kim</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Comput. Electron. Agric</title>
+		<imprint>
+			<biblScope unit="volume">210</biblScope>
+			<biblScope unit="page" from="107847" to="107847" />
+			<date type="published" when="2023-07">Jul. 2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Mature pomegranate fruit detection and location combining improved F-PointNet with 3D point cloud clustering in orchard</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Xie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Li</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Comput. Electron. Agric</title>
+		<imprint>
+			<biblScope unit="volume">200</biblScope>
+			<biblScope unit="page">107233</biblScope>
+			<date type="published" when="2022-09">Sep. 2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Development and evaluation of a robust soft robotic gripper for apple harvesting</title>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Kang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Au</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">Y</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computers and Electronics in Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">204</biblScope>
+			<biblScope unit="page">107552</biblScope>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Robotic harvesting of the occluded fruits with a precise shape and position reconstruction approach</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Gong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Liu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Field Robotics</title>
+		<imprint>
+			<biblScope unit="volume">39</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="69" to="84" />
+			<date type="published" when="2021-10">Oct. 2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Occlusionaware fruit segmentation in complex natural environments under shape prior</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Liang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Lei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Zhong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Cai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Jiao</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computers and Electronics in Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">217</biblScope>
+			<biblScope unit="page">108620</biblScope>
+			<date type="published" when="2024-01">Jan. 2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Occluded apples orientation estimator based on deep learning model for robotic harvesting</title>
+		<author>
+			<persName><forename type="first">E</forename><surname>Kok</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computers and Electronics in Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">219</biblScope>
+			<biblScope unit="page">108781</biblScope>
+			<date type="published" when="2024-04">Apr. 2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Contrastive 3D Shape Completion and Reconstruction for Agricultural Robots Using RGB-D Frames</title>
+		<author>
+			<persName><forename type="first">F</forename><surname>Magistri</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">7</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="10120" to="10127" />
+			<date type="published" when="2022-07">Jul. 2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Occluded Apple Fruit Detection and Localization with a Frustum-Based Point-Cloud-Processing Approach for Robotic Harvesting</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Feng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Qiu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Xie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Zhao</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Remote Sensing</title>
+		<imprint>
+			<biblScope unit="volume">14</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page">482</biblScope>
+			<date type="published" when="2022-01">Jan. 2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Imagebased size estimation of broccoli heads under varying degrees of occlusion</title>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">M</forename><surname>Blok</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">J</forename><surname>Van Henten</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><forename type="middle">K</forename><surname>Van Evert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Kootstra</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Biosyst. Eng</title>
+		<imprint>
+			<biblScope unit="volume">208</biblScope>
+			<biblScope unit="page" from="213" to="233" />
+			<date type="published" when="2021-08">Aug. 2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Looking behind occlusions: A study on amodal segmentation for robust on-tree apple fruit size estimation</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Gené-Mola</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Comput. Electron. Agric</title>
+		<imprint>
+			<biblScope unit="volume">209</biblScope>
+			<biblScope unit="page">107854</biblScope>
+			<date type="published" when="2023-06">Jun. 2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Application of amodal segmentation for shape reconstruction and occlusion recovery in occluded tomatoes</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Deng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Miao</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Front. Plant Sci</title>
+		<imprint>
+			<biblScope unit="volume">15</biblScope>
+			<biblScope unit="page">1376138</biblScope>
+			<date type="published" when="2024-06">Jun. 2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">Amodal Intra-class Instance Segmentation: Synthetic Datasets and Benchmark</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Ke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">A</forename><surname>Ehinger</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2022 IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)</title>
+				<imprint>
+			<date type="published" when="2024-01">Jan. 2024</date>
+			<biblScope unit="page" from="280" to="289" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<monogr>
+		<title level="m" type="main">Global Attention Mechanism: Retain Information to Enhance Channel-Spatial Interactions</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Shao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Hoffmann</surname></persName>
+		</author>
+		<idno>arXiv.org</idno>
+		<ptr target="https://arxiv.org/abs/2112.05561" />
+		<imprint>
+			<date type="published" when="2021-12-10">Dec. 10, 2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">Detection and localization of citrus fruit based on improved You Only Look Once v5s and binocular vision in the orchard</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Hou</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Front. Plant Sci</title>
+		<imprint>
+			<biblScope unit="volume">13</biblScope>
+			<biblScope unit="page">972445</biblScope>
+			<date type="published" when="2022-07">Jul. 2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">Distance transformations in arbitrary dimensions</title>
+		<author>
+			<persName><forename type="first">G</forename><surname>Borgefors</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Comput. Gr. Image Process</title>
+		<imprint>
+			<biblScope unit="volume">27</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="321" to="345" />
+			<date type="published" when="1984-09">Sep. 1984</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<monogr>
+		<author>
+			<persName><forename type="first">M</forename><surname>Boneberger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Unwerth</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Mohammadi</surname></persName>
+		</author>
+		<ptr target="https://github.com/marcbone/liborl" />
+		<title level="m">liborl (GitHub repository)</title>
+				<imprint>
+			<date type="published" when="2020-04-17">2020. Apr. 17, 2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">NVW-YOLOv8s: An improved YOLOv8s network for real-time detection and segmentation of tomato fruits at different ripeness stages</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Comput. Electron. Agric</title>
+		<imprint>
+			<biblScope unit="volume">219</biblScope>
+			<biblScope unit="page" from="108833" to="108833" />
+			<date type="published" when="2024-04">Apr. 2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">SGW-YOLOv8n: An Improved YOLOv8n-Based Model for Apple Detection and Segmentation in Complex Orchard Environments</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Miao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Han</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Li</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">14</biblScope>
+			<biblScope unit="issue">11</biblScope>
+			<biblScope unit="page" from="1958" to="1958" />
+			<date type="published" when="2024-10">Oct. 2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<monogr>
+		<title level="m" type="main">YOLOv8 by Ultralytics</title>
+		<author>
+			<persName><forename type="first">G</forename><surname>Jocher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Chaurasia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Qiu</surname></persName>
+		</author>
+		<ptr target="https://github.com/ultralytics/ultralytics" />
+		<imprint>
+			<date type="published" when="2023-05-14">2023. May 14, 2025</date>
+		</imprint>
+	</monogr>
+	<note>GitHub</note>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<analytic>
+		<title level="a" type="main">Optimizing tomato detection and counting in smart greenhouses: A lightweight YOLOv8 model incorporating high-and low-frequency feature transformer structures</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Tian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Hao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Dai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Li</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Netw. Comput. Neural Syst</title>
+		<imprint>
+			<biblScope unit="page" from="1" to="37" />
+			<date type="published" when="2024-11">Nov. 2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<monogr>
+		<title level="m" type="main">Ultralytics YOLO11</title>
+		<author>
+			<persName><forename type="first">G</forename><surname>Jocher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Qiu</surname></persName>
+		</author>
+		<idno>ver. 11.0.0</idno>
+		<ptr target="https://github.com/ultralytics/ultralytics" />
+		<imprint>
+			<date type="published" when="2024-05-14">2024. May 14, 2025</date>
+		</imprint>
+	</monogr>
+	<note>GitHub, software</note>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<analytic>
+		<title level="a" type="main">Fruit Detectability Analysis for Different Camera Positions in Sweet-Pepper</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Hemming</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ruizendaal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Hofstee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Van Henten</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Sensors</title>
+		<imprint>
+			<biblScope unit="volume">14</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="6032" to="6044" />
+			<date type="published" when="2014-03">Mar. 2014</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

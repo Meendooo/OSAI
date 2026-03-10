@@ -1,0 +1,616 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Towards Data-driven Nitrogen Estimation in Wheat Fields using Multispectral Images</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+				<date type="published" when="2026-02-24">24 Feb 2026</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Andreas</forename><surname>Tritsarolis</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Tomaž</forename><surname>Bokan</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Matej</forename><surname>Brumen</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Domen</forename><surname>Mongus</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Yannis</forename><surname>Theodoridis</surname></persName>
+						</author>
+						<title level="a" type="main">Towards Data-driven Nitrogen Estimation in Wheat Fields using Multispectral Images</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2026-02-24">24 Feb 2026</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">B317522410B1E516151194E0C4EF1A20</idno>
+					<idno type="arXiv">arXiv:2603.00139v1[cs.CV]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.7.2" ident="GROBID" when="2026-03-10T12:10+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>
+					<term>Machine Learning</term>
+					<term>Remote Sensing</term>
+					<term>Smart Agriculture</term>
+					<term>Targeted Fertilization</term>
+				</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>The modernization of agriculture has motivated the development of advanced analytics and decision-support systems to improve resource utilization and reduce environmental impacts. Targeted Spraying and Fertilization (TSF) is a critical operation that enables farmers to apply inputs more precisely, optimizing resource use and promoting environmental sustainability. However, accurate TSF is a challenging problem, due to external factors such as crop type, fertilization phase, soil conditions, and weather dynamics. In this paper, we present TerrAI, a Neural Network-based solution for TSF, which considers the spatio-temporal variability across different parcels. Our experimental study over a real-world remote sensing dataset validates the soundness of TerrAI on data-driven agricultural practices.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>I. INTRODUCTION</head><p>Agriculture has witnessed rapid modernization in recent decades, propelled by technological innovations aimed at enhancing productivity, reducing costs, and promoting environmental sustainability. Targeted Spraying and Fertilization (TSF) has emerged as a critical operation that optimizes resource allocation and minimizes environmental impacts <ref type="bibr" target="#b0">[1]</ref>. In particular, TSF aims to estimate the Nitrogen (N) requirements, taking into account land characteristics (e.g., soil state, weather forecasts) of a given parcel to reduce fertilizer use and promote sustainability.</p><p>However, accurate TSF is a challenging task influenced by factors such as crop type, growth stage, as well as soil and weather conditions <ref type="bibr" target="#b1">[2]</ref>. Traditional TSF approaches often rely on manual observations or rudimentary sensor data, which are limited in both scale and accuracy <ref type="bibr" target="#b2">[3]</ref>. These limitations have prompted researchers to explore data-driven solutions that leverage advances in machine learning and computer vision. Machine Learning (ML) approaches, Convolutional Neural Networks (CNNs) in particular, have demonstrated considerable potential in extracting spatial and contextual information from agricultural data, enabling more efficient decision-making <ref type="bibr" target="#b3">[4]</ref>. In this context, we propose TerrAI, an efficient CNN-based solution for TSF. Our experimental study on a real-world remote sensing dataset, validates the effectiveness of our approach on improving resource utilization, and A. Tritsarolis (andrewt@unipi.gr) and Y. Theodoridis (ytheod@unipi.gr) are with the Department of Informatics, University of Piraeus, Piraeus, Greece T. Bokan (tomaz.bokan@itc-cluster.com) is with the Innovation Technology Cluster, Murska Sobota, Slovenia M. Brumen (matej.brumen@um.si) and D. Mongus (domen.mongus@u m.si) is with the Department of Electrical Enginnering &amp; Computer Science, University of Maribor, Maribor, Slovenia by extension, contributing to environmental sustainability. In summary, the main contributions of this paper are as follows:</p><p>• We model TSF as a spatially-aware ML task.</p><p>• We introduce TerrAI, an efficient CNN-based framework for TSF.</p><p>• We demonstrate the soundness of the proposed architecture, in terms of accuracy, using a real-world remote sensing dataset. The rest of this paper is organized as follows: Section II discusses related work. Section III formulates the problem at hand and describes the proposed TerrAI framework <ref type="foot" target="#foot_0">1</ref> . Section IV presents the results of our experimental study, where we demonstrate the efficacy of our solution. Finally, Section V concludes the paper, also giving hints for future work.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>II. RELATED WORK</head><p>Considering the agriculture domain, current state-of-the-art includes an adequate number of research works <ref type="bibr" target="#b4">[5]</ref>- <ref type="bibr" target="#b6">[7]</ref>. Regarding ML-based methods for fertilizer estimation, Yamashita et al. <ref type="bibr" target="#b7">[8]</ref> evaluate the performance of various regression models for predicting Nitrogen and Chlorophyll content in tea leaves using hyperspectral reflectance data. Cerasola et al. <ref type="bibr" target="#b8">[9]</ref> experiment with three regression algorithms to estimate the optimal nitrogen quantity to be supplied in fertigated processing tomatoes through hyperspectral imaging. Towards more recent works, Gao et al. <ref type="bibr" target="#b9">[10]</ref> focus on developing a Nitrogen content prediction model using hyperspectral data and similar regression algorithms for the accurate fertilization of citrus trees.</p><p>Moving to CNN-based encoder-decoder based architectures, recent works include, but are not limited to, Maurya et al. <ref type="bibr" target="#b10">[11]</ref> who propose a variant of the well-known U-Net model <ref type="bibr" target="#b11">[12]</ref>, as well as introduce a novel dataset for the task of semantic segmentation of satellite images into five agricultural land categories. Guo et al. <ref type="bibr" target="#b12">[13]</ref> propose CMTNet, a novel dualbranch network based on CNN and Transformers, in order to enhance crop classification precision and efficiency in complex agricultural environments.</p><p>Closer to our work, Sajindra et al. <ref type="bibr" target="#b13">[14]</ref> propose a deep learning model in order to estimate the Nitrogen, Phosphorus, and Potassium content of the soil by analyzing the growing characteristics of cabbage (Brassica oleracea) plants. In terms of CNN-based encoder-decoder architectures, Li et al. <ref type="bibr" target="#b14">[15]</ref> propose SCLNC-Net, a novel deep learning framework that combines Attention U-Net <ref type="bibr" target="#b15">[16]</ref> and MobileNetV3 <ref type="bibr" target="#b16">[17]</ref> to estimate Nitrogen concentration in rice leaves using mobile phone images.</p><p>Compared to the aforementioned works, our approach employs a U-Net-based architecture that processes hyperspectral images of Wheat fields to predict their corresponding Nitrogen application rate (kg • N/ha). By framing the problem as a spatially-aware regression task, the model can deliver accurate, parcel-level prescription maps while avoiding the computational overhead and complexity of multitask frameworks.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>III. PROBLEM FORMULATION AND PROPOSED METHODOLOGY</head><p>In this section, we formulate the TSF problem and describe the proposed TerrAI solution.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Problem Definition</head><p>Before we proceed to the actual formulation of the problem, we provide some preliminary definitions.</p><p>Definition 1 (Soil-health). The soil health of a parcel l at fertilization phase k is denoted as a tensor</p><formula xml:id="formula_0">S k l ∈ R C×H×W , where {S k l } ij ∈ R C , 1 ≤ i ≤ H, 1 ≤ j ≤ W , corresponds to a scaled region of the parcel.</formula><p>Definition 2 (Prescription map). The prescription map of a parcel l at fertilization phase k is denoted as a matrix</p><formula xml:id="formula_1">P k l ∈ R 1×H×W , where each entry {P k l } ij , 1 ≤ i ≤ H, 1 ≤ j ≤ W corresponds</formula><p>to the Nitrogen application rate applied to a scaled region of the parcel.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Definition 3 (Targeted Spraying and Fertilization -TSF).</head><p>Given a dataset D = {(S k l , P k l )} of historical soil-health and prescription map pairs, the goal of the TSF problem is to train a data-driven model over D, which will be able to estimate their corresponding prescription map P k l , given their current soil-health state tensor S k l .</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Methodology</head><p>Figure <ref type="figure" target="#fig_0">1</ref> illustrates the reference architecture of our TerrAI framework. To address the TSF problem, we use the well known U-Net <ref type="bibr" target="#b11">[12]</ref> architecture for estimating the quantity of fertilizer in a farming area, given its current soil-health status. In brief, a U-Net is a symmetric encoder-decoder convolutional network originally designed for biomedical image segmentation. The encoder progressively downsamples the input while increasing the number of feature channels, and the decoder upsamples the representations, using skip connections to concatenate high-resolution encoder features with corresponding upsampled feature maps. This symmetric design enables precise spatial localization while preserving contextual information, making it well suited for precision agriculture tasks such as the TSF problem.</p><p>The input consists of multi-spectral satellite images with 18 channels (i.e., spectral bands): near-infrared (NIR), red (R), green (G), blue (B), and weather condition indices (forecasts) at eight-hour intervals, while the output consists of an image with the same dimensions as the input and one output channel, which corresponds to the amount of fertilizer to be used at each region of the specified parcel.</p><p>In order to train TerrAI, we use the Adam <ref type="bibr" target="#b17">[18]</ref> optimization algorithm with learning rate η = 10 −3 and the Root Mean Squared Error (RMSE) loss function for 200 epochs. To prevent over-fitting, we use the well-known early stopping <ref type="bibr" target="#b18">[19]</ref> mechanism with a patience of 10 epochs. In order to avoid calculating loss for the padding of the input images, we restrict RMSE to the areas where we have known observations, or</p><formula xml:id="formula_2">{P k l } ij ̸ = no_data, 1 ≤ i ≤ H, 1 ≤ j ≤ W .</formula><p>The no_data flag in hyperspectral images defines areas that are irrelevant to our area-of-interest (e.g., out-of-bounds).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IV. EXPERIMENTAL STUDY</head><p>In this section, we evaluate the efficiency of TerrAI using a real-world remote sensing dataset, and present our experimental results.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Experimental Setup, Datasets and Preprocessing</head><p>In our experimental study, we use a real-world remote sensing dataset, referred to as "ITC"<ref type="foot" target="#foot_1">2</ref> dataset. Given the Our data (pre-)processing stage consists of two phases. The first phase (data cleaning) is a process consistently followed in the literature due to the noise, irregularity of image size, etc. that are typical in multi-spectral image datasets. The second phase (data preparation for model training), uses the output of the first phase as its input and is performed for ML-specific purposes, i.e., to feed its output into our TerrAI architecture, as it is presented in Section III-B.</p><p>The preprocessing stage involves two main steps: (i) removing outliers based on fertilizer usage using the inter-quartile range (IQR) method, and (ii) performing feature engineering by creating additional spectral bands. To manage varying image sizes, images are segmented into overlapping 8 × 8 patches with a 1×1 stride, representing approximately 80m 2 of farmland. The multi-spectral images are further enriched with vegetation indices (e.g., BNDVI <ref type="bibr" target="#b19">[20]</ref>) and weather forecast data from nearby sensors at 8-hour intervals on the fertilization day. To prevent noise from out-of-bounds values, we set the no_data flag value from −9999, as provided in the dataset, to 0, utilizing the zero property in multiplication.</p><p>To enrich the training dataset and reduce overfitting, data augmentation is applied by randomly flipping image patches horizontally and/or vertically with a 50% probability. To address differences in units across spectral bands, z-score standardization is used by subtracting the mean and dividing by the variance of each band. The label for each patch is taken from the corresponding section of the prescription map, representing the fertilizer amount per region. These labels go through the same transformations to ensure consistency. Since labels are used solely in the learning objective and not as model input, the value of the no_data flag remains as-is.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Experimental Results on TerrAI</head><p>Following the preprocessing outlined in Section IV-A over wheat crops during the second fertilization phase (which constitutes the majority of the data), we acquire 44,953 patches. These are split into training, validation, and test sets using a 60:20:20% stratified ratio based on the average fertilizer quantity per patch. To prevent data leakage, i.e., patches of images from the test set to be shuffled in the train set, the test set is isolated before any transformations are applied. After training our TerrAI instance, Figure <ref type="figure" target="#fig_1">2</ref> illustrates the final result on a randomly selected image from the test set of the ITC dataset, whereas the complete results, in terms of three estimation error metrics (namely, RMSE, MAPE, and SMAPE), are listed in the respective rows of Table I (row titled "Baseline").</p><p>It can be observed that our model has acquired a "very good representation" of the 2nd phase of the fertilization process, with an average MAPE of 5.31% per patch, and 9.72% per reconstructed prescription map. Looking at the value of RMSE, we have a score of 12.31. This means that within an 80m 2 area (i.e., our image patch), our estimations diverge, in average, by 12 kg•N•ha −1 from their corresponding ground truth. Compared to the actual prescription map (c.f., Figure <ref type="figure" target="#fig_1">2</ref>), we observe that our estimations have "smoother" transitions towards nearby regions, a behaviour that is partially attributed to the loss function. C. A Note on the Energy Consumption and CO 2 Emission Savings of TerrAI By using off-the-shelf energy profiling tools <ref type="foot" target="#foot_2">3</ref> , we are able to assess the energy efficiency of TerrAI and identify opportunities for improving energy consumption without compromising model performance. By analysing the profiling results, we discovered that a significant share of the power draw stemmed from the width of the model architecture. Consequently, we revised the model architecture by reducing the amount of trainable parameters. This was achieved by reducing the number of convolutional filters in the encoder decoder (down sampling/up sampling) stages. These changes lower the overall computational load, cut energy consumption, and preserve (or even slightly improve) model generalization.</p><p>For evaluating the overall impact of the aforementioned optimizations, we compare the energy consumption of the "baseline" TerrAI (c.f., Section III-B) against a "large" and a "small" variant. The difference between these three configurations lies within the number of convolutional channels, which are set to 4 / 8 / 16, 24 / 36 / 48, and 72 / 84 / 96 for the "small", "baseline", and "large" variant, respectively.</p><p>The "Energy consumption" column of Table <ref type="table" target="#tab_0">I</ref> illustrates the total energy consumption of TerrAI, across four different runs. It can clearly be observed that reducing the number of channels in the hidden downsampling layers improved its energy efficiency by 49.90% relative to the baseline. Regarding the trade-off between performance and energy consumption, it can be observed that reducing the number of channels in the hidden downsampling layers increased both RMSE and MAPE metrics by 18.11% and 15.25% per patch, respectively. This behaviour can be attributed to the learning capacity of the model, as decreasing the number of channels slightly impacts model performance on the historical data, while further increasing them impacts the generalization capability of the model over non-observed samples. Overall, the "small" configuration effectively balances the performance vs. energy consumption trade-off, achieving similar fidelity, albeit with a more energy-efficient model.</p><p>The energy savings of TerrAI can also be expressed in terms of annual CO 2 -equivalent savings that result from the reduced energy demand during model training <ref type="bibr" target="#b20">[21]</ref>. Assuming that the model is re-trained periodically (e.g., once per year), the average required energy (in kWh) per run for the three configurations is equals to E small run, kWh = 4.62 × 10 −3 kWh, E baseline run, kWh = 9.21 × 10 −3 kWh, and E large run, kWh = 14.66 × 10 −3 kWh, for the "small", "baseline", and "large" configuration of TerrAI, respectively (simply dividing by 3,600,000 to convert J to kWh). From these values, we obtain the per-run energy savings relative to the baseline model:</p><formula xml:id="formula_3">∆E baseline, algo run = |E baseline run, kWh − E algo run,J |,<label>(1)</label></formula><p>or ∆E baseline, small run = 4.60 × 10 −3 kWh, and ∆E baseline, large run = 5.44 × 10 −3 kWh, respectively. Since the dataset samples are located in Slovenia and assuming an annual re-training of the model, we use the "Greenhouse gas emission intensity of electricity generation in Europe" index <ref type="foot" target="#foot_3">4</ref> for the closest available year, or:</p><formula xml:id="formula_4">EF avg [grid,2023] = 0.166 kg CO 2 e/kW h<label>(2)</label></formula><p>Applying this factor over the aforementioned energy savings, the annual avoided greenhouse gas emissions are:</p><formula xml:id="formula_5">CO baseline, algo 2, 2023 = ∆E baseline, algo run × EF grid, 2023<label>(3)</label></formula><p>or, CO baseline, small 2, 2023 = 0.76 g CO 2 e, and CO baseline, large 2, 2023 = 0.90 g CO 2 e for the "small" and "baseline" configuration of TerrAI, respectively (see the "Annual energy savings" column of Table <ref type="table" target="#tab_0">I</ref>). It can be observed that the former cuts greenhousegas emissions by 15.54%, thereby reinforcing the role of TerrAI as an environmentally responsible AI solution for precision agriculture.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>V. CONCLUSION</head><p>In this paper, we proposed TerrAI, an efficient CNN-based solution for Targeted Spraying and Fertilization (TSF) over wheat fields. Through an experimental study on a real-world remote-sensing dataset, we demonstrated its efficacy on reallife decision-making processes by evaluating its error across several performance metrics. We also highlighted its "green" dimension by measuring energy consumption and the corresponding carbon-emission metrics over three model variants with respect to the number of learnable parameters.</p><p>In the near future, we aim to address the "blurriness" in the prescription maps by experimenting with alternative loss functions and further fine-tuning the model architecture and/or feature engineering process, in order to improve the accuracy of TerrAI. Moreover, to generalise across all three fertilisation phases, we aim to exploit on more advanced MLbased techniques, e.g., few-shot learning <ref type="bibr" target="#b21">[22]</ref>, that specialize in learning from few samples. In a parallel line of research, we aim to extend TerrAI to the Federated Learning paradigm <ref type="bibr" target="#b22">[23]</ref> and assess the trade-off between privacy, prediction quality, and communication costs.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Fig. 1 .</head><label>1</label><figDesc>Fig. 1. Architecture overview of the proposed TerrAI framework.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Fig. 2 .</head><label>2</label><figDesc>Fig. 2. Estimation of the prescription map for two randomly selected test parcels from the ITC dataset using TerrAI. Left: input soil-health tensor (one spectral image); middle and right: actual and estimated prescription maps.</figDesc><graphic coords="3,48.96,56.07,514.10,188.13" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head>TABLE I COMPARISON</head><label>I</label><figDesc>OF THREE DIFFERENT TERRAI VERSIONS WITH RESPECT TO MODEL SIZE, PREDICTION ERROR, AND ENERGY CONSUMPTION (LOWER IS BETTER).</figDesc><table><row><cell></cell><cell></cell><cell></cell><cell>Metrics / Patch</cell><cell></cell><cell cols="3">Metrics / Prescription map</cell><cell cols="2">Green dimension of TerrAI</cell><cell></cell></row><row><cell>Model size</cell><cell>#Parameters</cell><cell>RMSE (kg • N • ha −1 )</cell><cell cols="2">MAPE (%) SMAPE (%)</cell><cell>RMSE (kg • N • ha −1 )</cell><cell cols="2">MAPE (%) SMAPE (%)</cell><cell>Energy consumption per run (J)</cell><cell>Annual savings vs. larger variant (kWh)</cell><cell>CO2 equivalent (g CO2e)</cell></row><row><cell>small</cell><cell>16,773</cell><cell>14.54</cell><cell>6.12</cell><cell>6.33</cell><cell>30.60</cell><cell>16.42</cell><cell>13.60</cell><cell>16,619</cell><cell>4.60 × 10 -3</cell><cell>0.76</cell></row><row><cell>baseline</cell><cell>207,421</cell><cell>12.31</cell><cell>5.31</cell><cell>5.23</cell><cell>21.26</cell><cell>9.72</cell><cell>9.16</cell><cell>33,172</cell><cell>5.44 × 10 -3</cell><cell>0.90</cell></row><row><cell>large</cell><cell>1,063,981</cell><cell>12.73</cell><cell>5.35</cell><cell>5.36</cell><cell>22.25</cell><cell>10.84</cell><cell>9.94</cell><cell>52,769</cell><cell>-</cell><cell>-</cell></row></table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1" xml:id="foot_0">For reproducibility purposes, the entire experimental protocol (data preprocessing, model training, inference, and evaluation pipelines) is available at https://github.com/DataStories-UniPi/TerrAI.</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="2" xml:id="foot_1">The (proprietary) dataset has been kindly provided by ITC and University of Maribor for research purposes, in the context of the EU Horizon project Green.Dat.AI (https://greendatai.eu).</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="3" xml:id="foot_2">For the purposes of this study, we used the GREEN.DAT.AI Benchmark tool by INESC-TEC (patent pending), https://enerframe-greendatai.haslab-d ataspace.pt/#/auth/login.</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="4" xml:id="foot_3">Greenhouse gas emission intensity of electricity generation in Europe, https://www.eea.europa.eu/en/analysis/indicators/greenhouse-gas-emission-i ntensity-of-1. Last visited: 15 December 2025</note>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>ACKNOWLEDGMENT</head><p>This work was supported in part by the Horizon Europe Research and Innovation Programme of the European Union under grant agreement No. 101070416 (Green.Dat.AI; https: //greendatai.eu). The authors would also like to acknowledge INESC-TEC for providing access to their Energy benchmarking tool.</p></div>
+			</div>
+
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Twenty five years of remote sensing in precision agriculture: Key advances and remaining knowledge gaps</title>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">J</forename><surname>Mulla</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Biosystems Engineering</title>
+		<imprint>
+			<biblScope unit="volume">114</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="358" to="371" />
+			<date type="published" when="2013">2013</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Deep learning-based classification of hyperspectral data</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Zhao</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing</title>
+		<imprint>
+			<biblScope unit="volume">7</biblScope>
+			<biblScope unit="issue">6</biblScope>
+			<biblScope unit="page" from="2094" to="2107" />
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Machine learning in agriculture: A review</title>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">G</forename><surname>Liakos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Busato</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Moshou</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Sensors</title>
+		<imprint>
+			<biblScope unit="volume">18</biblScope>
+			<biblScope unit="issue">8</biblScope>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Deep learning in agriculture: A survey</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Kamilaris</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><forename type="middle">X</forename><surname>Prenafeta-Boldú</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computers and Electronics in Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">147</biblScope>
+			<biblScope unit="page" from="70" to="90" />
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Deep Learning Methods and Applications for Precision Agriculture</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Ganatra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Patel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 4th International Conference on Information and Communication Technology for Intelligent Systems (ICTIS)</title>
+				<meeting>the 4th International Conference on Information and Communication Technology for Intelligent Systems (ICTIS)</meeting>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="515" to="527" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Deep learning implementation of image segmentation in agricultural applications: a comprehensive review</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Lei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Yang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Artificial Intelligence Review</title>
+		<imprint>
+			<biblScope unit="volume">57</biblScope>
+			<biblScope unit="issue">6</biblScope>
+			<biblScope unit="page">149</biblScope>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Review on convolutional neural networks (cnn) in vegetation remote sensing</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Kattenborn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Leitloff</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Schiefer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">ISPRS Journal of Photogrammetry and Remote Sensing</title>
+		<imprint>
+			<biblScope unit="volume">173</biblScope>
+			<biblScope unit="page" from="24" to="49" />
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Dissection of hyperspectral reflectance to estimate nitrogen and chlorophyll contents in tea leaves based on machine learning algorithms</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Yamashita</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Sonobe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><forename type="middle">O</forename><surname>Hirono</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Scientific Reports</title>
+		<imprint>
+			<biblScope unit="volume">10</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page">17360</biblScope>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Hyperspectral imaging for precision nitrogen management: A comparative exploration of two methodological approaches to estimate optimal nitrogen rate in processing tomato</title>
+		<author>
+			<persName><forename type="first">V</forename><forename type="middle">A</forename><surname>Cerasola</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Orsini</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Pennisi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Smart Agricultural Technology</title>
+		<imprint>
+			<biblScope unit="volume">10</biblScope>
+			<biblScope unit="page">100802</biblScope>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Hyperspectral prediction model of nitrogen content in citrus leaves based on the ceemdan-sr algorithm</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Tang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Wu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Remote Sensing</title>
+		<imprint>
+			<biblScope unit="volume">15</biblScope>
+			<biblScope unit="issue">20</biblScope>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">A modified u-net-based architecture for segmentation of satellite images on a novel dataset</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Maurya</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Akashdeep</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Ecological Informatics</title>
+		<imprint>
+			<biblScope unit="volume">75</biblScope>
+			<biblScope unit="page">102078</biblScope>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">U-Net: Convolutional Networks for Biomedical Image Segmentation</title>
+		<author>
+			<persName><forename type="first">O</forename><surname>Ronneberger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Fischer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Brox</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 18th International Conference on Medical Image Computing and Computer-Assisted Intervention (MICCAI)</title>
+				<meeting>the 18th International Conference on Medical Image Computing and Computer-Assisted Intervention (MICCAI)</meeting>
+		<imprint>
+			<date type="published" when="2015">2015</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Cmtnet: a hybrid cnn-transformer network for uav-based hyperspectral crop classification in precision agriculture</title>
+		<author>
+			<persName><forename type="first">X</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Feng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Guo</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Scientific Reports</title>
+		<imprint>
+			<biblScope unit="volume">15</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page">12383</biblScope>
+			<date type="published" when="2025-04">Apr 2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">A novel deep learning model to predict the soil nutrient levels (n, p, and k) in cabbage cultivation</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Sajindra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Abekoon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Jayakody</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Smart Agricultural Technology</title>
+		<imprint>
+			<biblScope unit="volume">7</biblScope>
+			<biblScope unit="page">100395</biblScope>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Self-correcting deep learning for estimating rice leaf nitrogen concentration with mobile phone images</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Shi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Mo</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computers and Electronics in Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">227</biblScope>
+			<biblScope unit="page">109497</biblScope>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Attention gated networks: Learning to leverage salient regions in medical images</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Schlemper</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Oktay</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Schaap</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Medical Image Analysis</title>
+		<imprint>
+			<biblScope unit="volume">53</biblScope>
+			<biblScope unit="page" from="197" to="207" />
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Searching for mobilenetv3</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Howard</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Sandler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Chen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 17th International Conference on Computer Vision (ICCV)</title>
+				<meeting>the 17th International Conference on Computer Vision (ICCV)</meeting>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="1314" to="1324" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Adam: A method for stochastic optimization</title>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">P</forename><surname>Kingma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ba</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 3rd International Conference for Learning Representations (ICLR)</title>
+				<meeting>the 3rd International Conference for Learning Representations (ICLR)</meeting>
+		<imprint>
+			<date type="published" when="2015">2015</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Early stopping -but when?</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Prechelt</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Neural Networks: Tricks of the Trade</title>
+		<title level="s">Lecture Notes in Computer Science</title>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2012">2012</date>
+			<biblScope unit="volume">7700</biblScope>
+			<biblScope unit="page" from="53" to="67" />
+		</imprint>
+	</monogr>
+	<note>2nd ed.</note>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">New Vegetation Index and Its Application in Estimating Leaf Area Index of Rice</title>
+		<author>
+			<persName><forename type="first">F</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Tang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Rice Science</title>
+		<imprint>
+			<biblScope unit="volume">14</biblScope>
+			<biblScope unit="page" from="195" to="203" />
+			<date type="published" when="2007">2007</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Electricity savings and co2 emissions reduction in buildings sector: How important the network losses are in the calculation</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Psomopoulos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Skoula</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Karras</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Energy</title>
+		<imprint>
+			<biblScope unit="volume">35</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="485" to="490" />
+			<date type="published" when="2010">2010</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Usage of few-shot learning and meta-learning in agriculture: A literature review</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">V</forename><surname>De Andrade Porto</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">C</forename><surname>Dorsa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><forename type="middle">A</forename><surname>De</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Moraes</forename><surname>Weber</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Smart Agricultural Technology</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="page">100307</biblScope>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Agricultural data privacy and federated learning: A review of challenges and opportunities</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Dembani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Karvelas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">A</forename><surname>Akbar</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computers and Electronics in Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">232</biblScope>
+			<biblScope unit="page">110048</biblScope>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

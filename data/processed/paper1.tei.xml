@@ -1,0 +1,1182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">DINOV3 VISUAL REPRESENTATIONS FOR BLUEBERRY PERCEPTION TOWARD ROBOTIC HARVESTING</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+				<date type="published" when="2026-03-02">2 Mar 2026</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Rui-Feng</forename><surname>Wang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department" key="dep1">Bio-Sensing</orgName>
+								<orgName type="department" key="dep2">Department of Agricultural and Biological Engineering</orgName>
+								<orgName type="department" key="dep3">Institute of Food and Agricultural Sciences</orgName>
+								<orgName type="laboratory">Automation, and Intelligence Laboratory</orgName>
+								<orgName type="institution">University of Florida</orgName>
+								<address>
+									<postCode>32611</postCode>
+									<settlement>Gainesville</settlement>
+									<region>FL</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Daniel</forename><surname>Petti</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department" key="dep1">Bio-Sensing</orgName>
+								<orgName type="department" key="dep2">Department of Agricultural and Biological Engineering</orgName>
+								<orgName type="department" key="dep3">Institute of Food and Agricultural Sciences</orgName>
+								<orgName type="laboratory">Automation, and Intelligence Laboratory</orgName>
+								<orgName type="institution">University of Florida</orgName>
+								<address>
+									<postCode>32611</postCode>
+									<settlement>Gainesville</settlement>
+									<region>FL</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Yue</forename><surname>Chen</surname></persName>
+							<affiliation key="aff1">
+								<orgName type="department">Department of Biomedical Engineering</orgName>
+								<orgName type="institution">Georgia Institute of Technology</orgName>
+								<address>
+									<postCode>30332</postCode>
+									<settlement>Atlanta</settlement>
+									<region>GA</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Changying</forename><surname>Li</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department" key="dep1">Bio-Sensing</orgName>
+								<orgName type="department" key="dep2">Department of Agricultural and Biological Engineering</orgName>
+								<orgName type="department" key="dep3">Institute of Food and Agricultural Sciences</orgName>
+								<orgName type="laboratory">Automation, and Intelligence Laboratory</orgName>
+								<orgName type="institution">University of Florida</orgName>
+								<address>
+									<postCode>32611</postCode>
+									<settlement>Gainesville</settlement>
+									<region>FL</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">DINOV3 VISUAL REPRESENTATIONS FOR BLUEBERRY PERCEPTION TOWARD ROBOTIC HARVESTING</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2026-03-02">2 Mar 2026</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">E8FB9830DD46E73534AF6EADB227B89E</idno>
+					<idno type="arXiv">arXiv:2603.02419v1[cs.CV]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.7.2" ident="GROBID" when="2026-03-10T12:09+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>
+					<term>DINOv3</term>
+					<term>Vision Foundation Models</term>
+					<term>Self-Supervised Learning</term>
+					<term>Blueberry</term>
+					<term>Robotic Harvesting</term>
+				</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Vision Foundation Models trained via large-scale self-supervised learning have demonstrated strong generalization in visual perception; however, their practical role and performance limits in agricultural settings remain insufficiently understood. This work evaluates DINOv3 as a frozen backbone for blueberry robotic harvesting-related visual tasks, including fruit and bruise segmentation, as well as fruit and cluster detection. Under a unified protocol with lightweight decoders, segmentation benefits consistently from stable patch-level representations and scales with backbone size. In contrast, detection is constrained by target scale variation, patch discretization, and localization compatibility. The failure of cluster detection highlights limitations in modeling relational targets defined by spatial aggregation. Overall, DINOv3 is best viewed not as an end-to-end task model, but as a semantic backbone whose effectiveness depends on downstream spatial modeling aligned with fruit-scale and aggregation structures, providing guidance for blueberry robotic harvesting. Code and dataset will be available upon acceptance.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>Reliable visual perception is a prerequisite for blueberry robotic harvesting under field conditions <ref type="bibr" target="#b0">[1]</ref>. In practice, harvesting strategies may target either individual fruits ("granular" harvesting) or spatially aggregated structures ("cluster" harvesting) <ref type="bibr" target="#b1">[2]</ref>, imposing distinct visual requirements. Region-level tasks such as fruit and bruise segmentation support quality assessment and postharvest inspection, whereas instance-level fruit and cluster detection are critical for harvesting and yield estimation <ref type="bibr" target="#b2">[3,</ref><ref type="bibr" target="#b3">4]</ref>. Despite extensive model development, detection precision in field environments remains limited, particularly for dense clusters, and cross-condition robustness has yet to be achieved. Recent Vision Foundation Models have demonstrated strong semantic generalization across visual domains <ref type="bibr" target="#b4">[5,</ref><ref type="bibr" target="#b5">6]</ref>. However, their practical role in harvesting-related perception tasks remains unclear. In frozen-backbone settings, patch discretization, spatial resolution, and task compatibility may impose structural constraints on downstream segmentation and detection performance.</p><p>A systematic evaluation under harvesting-specific scenarios is therefore necessary. In this work, we evaluate DINOv3 (Self-Distillation with No Labels v3) <ref type="bibr" target="#b6">[7]</ref> as a frozen visual representation backbone for blueberry perception tasks related to robotic harvesting. Under a unified experimental protocol, we analyze fruit and bruise segmentation as well as fruit and cluster detection across heterogeneous acquisition conditions. Our objectives are threefold: <ref type="bibr" target="#b0">(1)</ref> to quantify task-specifc performance behavior under frozen representations; <ref type="bibr" target="#b1">(2)</ref> to identify structural factors that constrain instance-level detection, particularly for small-scale and aggregation-defined targets; and (3) to clarify the operational role of foundation representations within harvesting perception systems.</p><p>2 Related work</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.1">Robotic harvesting-related visual perception task</head><p>Visual perception for blueberry harvesting spans both region-level and instance-level formulations. For bruise segmentation, UNet3+ <ref type="bibr" target="#b7">[8]</ref> and YOLO-based approaches <ref type="bibr" target="#b8">[9]</ref> have been applied to extract damage regions. Fruit detection and segmentation have been addressed using supervised deep learning frameworks <ref type="bibr" target="#b9">[10,</ref><ref type="bibr" target="#b10">11,</ref><ref type="bibr" target="#b11">12]</ref>, demonstrating feasibility under controlled conditions. However, performance often deteriorates under dense occlusion, scale variation, and cross-device acquisition shifts <ref type="bibr" target="#b12">[13]</ref>. In particular, cluster detection poses additional challenges because clusters are defined by spatial aggregation rather than single closed boundaries. Reported precision for cluster localization in field conditions remains limited to 40-50% <ref type="bibr" target="#b9">[10,</ref><ref type="bibr" target="#b13">14]</ref>, reflecting the difficulty of modeling relational grouping structures. Existing studies primarily emphasize task-specific architectural refinement <ref type="bibr" target="#b14">[15,</ref><ref type="bibr" target="#b15">16,</ref><ref type="bibr" target="#b16">17]</ref>, while systematic analysis of representational constraints and scale alignment issues remains scarce.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.2">Vision foundation models</head><p>Vision Foundation Models trained via large-scale self-supervised learning provide transferable semantic representations with preserved spatial structure <ref type="bibr" target="#b17">[18]</ref>. DINOv3 produces dense patchlevel embeddings that can serve as generic visual features <ref type="bibr" target="#b6">[7]</ref>. Prior agricultural applications have explored foundation models through fine-tuning or adaptation strategies <ref type="bibr" target="#b18">[19,</ref><ref type="bibr" target="#b19">20]</ref>. Nevertheless, limited work has examined their behavior as frozen backbones in harvesting-specific scenarios. In particular, the interaction between patch-level discretization and fruit-scale distributions, as well as the compatibility between generic representations and aggregation-defined targets, remains insufficiently understood. This gap motivates the present study.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Methodology</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">Datasets</head><p>To investigate the technical behavior and applicability of frozen DINOv3 representations for visual perception in robotic blueberry harvesting, we systematically evaluated blueberry datasets collected and curated by the Bio-Sensing, Automation &amp; Intelligence Lab (BSAIL, https: //uflbsail.net) (Table <ref type="table" target="#tab_0">1</ref>). This study focuses on fruit-and cluster-level segmentation and detection tasks, aiming to characterize representation-level performance under field conditions and to provide technical insights for perception modules optimization in future harvesting systems. The experimental analysis involves four blueberry-related datasets (Figure <ref type="figure" target="#fig_0">1</ref>), covering fruit segmentation, fruit detection, cluster detection, and bruising segmentation. These datasets exhibit substantial variability in imaging conditions, object scale distributions, instance density, and occlusion patterns, reflecting the perceptual challenges encountered in practical harvesting scenarios. By evaluating frozen DINOv3 representations under a unified setting, we analyze their behavior across region-level semantic consistency and instance-level localization accuracy, with particular attention to task-dependent performance differences. To ensure rigor and reproducibility, all datasets are standardized before training and evaluation. Datasets without predefined splits are randomly partitioned (7:2:1 for train/val/test), while orig-  inal splits are retained when available. All annotations are converted to COCO-JSON format to maintain a consistent pipeline for feature extraction and downstream decoder training.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">Frozen DINOv3 evaluation framework</head><p>To ensure a fair and reproducible evaluation of frozen DINOv3 representations, we construct a standardized feature extraction pipeline that unifies annotation normalization and backbone freezing within a single experimental framework. Given the heterogeneity of agricultural datasets <ref type="bibr" target="#b20">[21,</ref><ref type="bibr" target="#b21">22,</ref><ref type="bibr" target="#b22">23,</ref><ref type="bibr" target="#b23">24]</ref>, all annotations are converted into a unified COCO-JSON format with consistent category definitions and geometric representations across detection and segmentation tasks.</p><p>For datasets providing only segmentation masks <ref type="bibr" target="#b8">[9,</ref><ref type="bibr" target="#b24">25]</ref>, bounding boxes (BBox) are automatically derived to maintain compatibility between region-level and instance-level supervision. This harmonized setup isolates representation quality as the primary source of performance variation, minimizing confounding factors from data formatting or training protocol inconsistencies while preserving the original semantic content of each dataset. Following annotation normalization, DINOv3 models are employed as frozen visual encoders. We focus on four distilled variants [ViT-S/16 (21M parameters), ViT-S+/16 (29M), ViT-B/16 (86M), and ViT-L/16 (300M) <ref type="bibr" target="#b6">[7]</ref>] selected to balance representational capacity and computational feasibil-  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3">Patch-level decoders</head><p>Since DINOv3 operates as a frozen visual encoder and produces dense patch-level embeddings rather than task-specific predictions, downstream detection and segmentation must be formulated directly on the patch grid. The feature representations are defined as F ∈ R B×C×Hp×Wp , where B denotes batch size, C is channel dimension, and (H p , W p ) is spatial grid of patch tokens derived from non-overlapping 16 × 16 image regions. To adapt these representations for perception tasks, we employ lightweight task-specific decoders operating within the same patch coordinate system (Patch-Level Decoders, Figure <ref type="figure" target="#fig_3">3</ref>). Shared Adaptation Stem: To align frozen features with downstream objectives while preserving spatial structure, a lightweight adaptation module ϕ(•) is first applied to yield a shared intermediate representation, S = ϕ(F), where S ∈ R B×C S ×Hp×Wp and C S denotes the adapted channel dimension. This shared representation provides a unified semantic space for both detection and segmentation branches, forming a typical hard parameter sharing framework <ref type="bibr" target="#b25">[26]</ref>. By restricting learning to this lightweight module and subsequent heads, we isolate the contribution of DINOv3 4 Experiments</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1">Experimental setup</head><p>All experiments are implemented in PyTorch and conducted on the HiperGator high-performance computing cluster. Each computing node was equipped with 8 AMD EPYC 9655P CPU cores, a single NVIDIA DGX B200 GPU with 180 GB of memory, and 32 GB of system RAM. DINOv3 backbones remain fully frozen, and only the adaptation layer and task-specific decoders are opti-mized. Models are trained for 50 epochs using the Adam optimizer with a learning rate of 1 × 10 −3 <ref type="bibr" target="#b27">[28]</ref>. Input images are resized while preserving aspect ratio, with dimensions adjusted to remain divisible by the patch size ( <ref type="formula">16</ref>), and normalized using ImageNet statistics <ref type="bibr" target="#b28">[29]</ref>. A lightweight data augmentation strategy consisting of horizontal flipping is applied during training. During inference, detection predictions are filtered using confidence thresholding and non-maximum suppression, and the maximum number of detections per image is capped to ensure stable and reproducible evaluation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2">Evaluation metrics</head><p>Performance is evaluated using standard metrics for both semantic segmentation and object detection. While both tasks rely on true positives (TP), false positives (FP), and false negatives (FN), segmentation metrics are computed at the pixel level, whereas detection metrics are defined at the instance level under IoU-based matching.</p><p>For semantic segmentation, we report mean Intersection over Union (mIoU), Dice coefficient, Precision (P), and Recall (R) (Eq. 1-3). For object detection, P, R, and F1-score (F1) are computed at the instance level based on confidence thresholding and IoU matching, and further summarized performance using mean Average Precision (mAP) (Eq. 3-4). We report both mAP50 (IoU = 0.5) and mAP (IoU 0.50-0.95, step 0.05).</p><formula xml:id="formula_0">mIoU = 1 K K k=1 T P k T P k + F P k + F N k<label>(1)</label></formula><formula xml:id="formula_1">Dice = 2TP 2TP + FP + FN<label>(2)</label></formula><formula xml:id="formula_2">P = TP TP + FP , R = TP TP + FN (3) F1 = 2P × R P + R , mAP = N n=1 AP(n) N<label>(4)</label></formula><p>Here, K is the number of semantic classes, AP(n) is the Average Precision of class n, and N is the number of object categories. All metrics are reported in percentage form.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.3">Quantitative results</head><p>Tables 2 &amp; 4, Tables <ref type="table">3 &amp; 5</ref> report the validation and test performance of different distilled DINOv3 variants on blueberry segmentation and detection tasks. Since all backbones remain frozen and only lightweight heads are trained, the results reflect the extent to which patch-level representations can be effectively read out under increasing model scale.</p><p>Segmentation: Consistent Scaling Behavior. For semantic segmentation, performance improves consistently as the backbone scale increases from ViT-S to ViT-L. Both mIoU and Dice exhibit monotonic gains on validation and test sets (Tables <ref type="table">2-3</ref>), indicating that stronger frozen representations translate into more stable region-level semantic coherence. Across fruit and bruising segmentation, larger backbones yield improved overlap quality and a more balanced P-R trade-off. These results suggest that when foreground regions are semantically coherent but exhibit local appearance variability, enhanced representational capacity can be effectively exploited by lightweight decoders to refine decision boundaries, even without backbone fine-tuning. Overall, segmentation shows stable and predictable scaling benefits under the frozen-representation paradigm. Detection: Dataset-Dependent and Structurally Constrained. In contrast, object detection exhibits substantially greater heterogeneity in scaling effects (Tabes 4-5). While larger backbones generally improve detection metrics for blueberry fruit detection, the gains are less uniform and</p><p>We next consider fruit segmentation across three acquisition subsets [OpenSet (Figure <ref type="figure" target="#fig_4">5</ref> (a)), HandSet (Figure <ref type="figure" target="#fig_4">5</ref> (b), and RoboSet (Figure <ref type="figure" target="#fig_4">5</ref> (c)] to assess cross-domain stability. In contrast to bruising, fruit-related patch embeddings form relatively compact clusters across subsets and remain separable from typical background components such as foliage and soil. These observations highlight a core property of DINOv3 as a frozen representation extractor: its dense patch-level features retain semantic consistency across acquisition domains, enabling a lightweight head to learn stable foreground decision boundaries from limited supervision. Importantly, the purpose of these visualizations is not to suggest that the backbone performs segmentation directly, but to demonstrate that, within a unified patch coordinate system, semantically consistent regions are mapped to nearby representations. This structural alignment reduces the effective learning burden of downstream decoders. Detection: Relational Targets and Spatial Bottlenecks. We begin with cluster detection, which represents the most structurally constrained regime. Across backbone variants, cluster detection collapses despite meaningful semantic structure observed in PCA projections (Figure <ref type="figure" target="#fig_5">6</ref>). It indicates that the limitation does not arise purely from weak feature separability. Instead, the bottleneck lies in the object definition itself. Unlike individual fruits, a "cluster" is not a single, closedboundary object with stable geometry. Its definition depends on relational aggregation among multiple fruits under varying spatial configurations, occlusions, and discontinuities. Patch-level representations are naturally suited to capturing local semantic similarity but do not explicitly encode higher-order assembly relationships. Under a standard bounding-box detection formulation on a fixed patch grid, such relational targets become difficult to localize, as spatial grouping must be inferred implicitly from box regression rather than modeled directly. Consequently, performance is dominated by structural mismatch rather than representation capacity. Overall, the qualitative analyses reinforce the quantitative findings. Frozen DINOv3 representations maintain stable semantic structure across blueberry perception tasks, enabling reliable segmentation through lightweight readout. Detection performance, however, is governed not only by representation quality but also by structural alignment between patch granularity, target scale, and object definition. These observations clarify when frozen patch-level representations can be effectively leveraged and when performance bottlenecks arise from spatial formulation rather than semantic abstraction.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Discussion</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.1">Technical insights</head><p>This study clarifies the role of DINOv3 in blueberry visual perception toward robotic harvesting. Rather than functioning as an end-to-end segmentation or detection system, DINOv3 serves as a frozen general-purpose visual encoder that provides dense patch-level representations. The objective of this work is therefore not to compare DINOv3 against fully fine-tuned task models (e.g. SAM3 <ref type="bibr" target="#b31">[32]</ref>, YOLO <ref type="bibr" target="#b32">[33]</ref>, UNet <ref type="bibr" target="#b33">[34]</ref>), but to examine how effectively its frozen representations can be read out by lightweight decoders under harvesting-relevant perception tasks. For bruising segmentation, scaling the backbone yields consistent improvements in region-level metrics despite the subtle appearance differences and ambiguous boundaries characteristic of bruise regions. Although low-dimensional PCA projections do not always visually isolate bruise patches, this does not contradict segmentation performance, as fine-grained texture variations may reside in lower-variance components not preserved in dominant projection axes. The results indicate that frozen DINOv3 features retain sufficient high-dimensional semantic structure to support stable foreground separation even when differences are not perceptually salient, suggesting that bruise quantitation in harvesting pipelines can benefit directly from stronger frozen representations with lightweight head-level adaption.</p><p>Fruit segmentation further demonstrates cross-domain stability across acquisition subsets, where patch embeddings corresponding to fruit regions remain semantically coherent despite variations in illumination, viewpoint, and sensor configuration. This consistency implies that region-level tasks relying on semantic compactness can be reliably supported under heterogeneous field conditions without full backbone fine-tuning, an important property for robotic harvesting systems in dynamic outdoor environments. In contrast, detection exposes structural bottlenecks that are not resolved by increasing representation capacity alone. Instance-level localization is strongly affected by the spatial discretization imposed by the fixed patch grid, and a pronounced scale effect emerges when fruit size misaligns with patch granularity. When fruit extent spans multiple patches or varies substantially across acquisition regimes, bounding-box regression under a discretized grid cannot fully capture continuous spatial variation, leading to unstable localization despite preserved semantic separability. The failure of cluster detection reveals a deeper limitation: clusters are relational targets defined by spatial aggregation rather than single closed boundaries <ref type="bibr" target="#b1">[2,</ref><ref type="bibr" target="#b9">10]</ref>, and fruit-level semantic separability does not automatically translate into cluster-level detectability without explicit grouping mechanisms. These observations indicate that detection performance ceilings in frozen-backbone settings might be aligned with spatial modeling strategies optimization (e.g. fruit-level aggregation priors <ref type="bibr" target="#b1">[2]</ref>, learnable grouping mechanisms within detection frameworks <ref type="bibr" target="#b34">[35]</ref>, or graph-based reasoning <ref type="bibr" target="#b35">[36]</ref>) rather than semantic abstraction strength. From a harvesting-system perspective, improving blueberry detection reliability therefore requires aligning localization mechanisms with patch-level representations and fruit-scale distributions. Enhancements are more likely to arise from multi-scale feature fusion <ref type="bibr" target="#b36">[37]</ref>, improved box regression under grid discretization <ref type="bibr" target="#b37">[38]</ref>, adaptive assignment strategies <ref type="bibr" target="#b38">[39]</ref>, or refined post-processing <ref type="bibr" target="#b39">[40]</ref>, rather than from merely increasing backbone scale. Frozen DINOv3 representations provide a strong semantic foundation for blueberry perception, but effective deployment in robotic harvesting pipelines depends critically on explicitly engineered spatial reasoning that bridges semantic separability and instance-level localization.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.2">Future perspectives</head><p>Building upon the empirical findings and technical insights presented in this study, future research on frozen DINOv3 representations for blueberry visual perception in robotic harvesting should focus on strengthening their integration into robotic harvesting pipelines rather than treating as standalone task models. The central implication of our results is that DINOv3 provides a stable semantic foundation, but effective harvesting-oriented perception requires architectural alignment between patch-level representations and task-specific spatial reasoning. A first practical direction lies in data infrastructure and reproducible evaluation. In this work, the datasets have been reorganized as a dedicated section within the AgriSight-MT dataset, accompanied by standardized splits and pre-extracted DINOv3 patch-level features (Figure <ref type="figure" target="#fig_7">8</ref>). By publicly releasing this structured blueberry subset together with feature files and preprocessing utilities, we aim to enable controlled comparison of frozen-representation strategies under consistent protocols.</p><p>For robotic harvesting research, such representation-centric infrastructure reduces overhead for experiments and reproducible evaluation, and facilitates systematic study of perception modules.</p><p>For region-level tasks, particularly fruit and bruise segmentation, future work may further explore lightweight readout mechanisms that fully exploit the semantic coherence preserved in frozen patch embeddings <ref type="bibr" target="#b40">[41]</ref>. Instead of increasing network complexity, a promising paradigm for harvesting scenarios is to combine general-purpose representations with minimal, deployment-friendly decoders. This direction is especially relevant for field robots under limited computation budgets, where stable region extraction is often more critical than architectural complexity. For instance-level detection, however, the primary bottleneck identified in this study is spatial rather than semantic. Future efforts should therefore emphasize better alignment between fruitscale distributions and patch-grid discretization. Multi-scale feature aggregation, improved box regression across patch boundaries, and adaptive assignment mechanisms may help mitigate scaleinduced localization instability. In harvesting contexts, where fruit size and density vary across viewpoints and growth stages, detection robustness will depend more on explicit spatial modeling than on further enlarging backbone capacity. The challenge becomes more pronounced for relational targets such as blueberry clusters. Because cluster identity is defined by aggregation structure rather than a single closed boundary, fruitlevel separability in feature space does not automatically yield cluster-level detectability. The conceptual pipeline proposed in this study suggests elevating fruit-level evidence into group-level representations through lightweight aggregation verification (Figure <ref type="figure" target="#fig_8">9</ref>). Future research may refine this paradigm by integrating learnable grouping mechanisms or structured reasoning modules that explicitly model spatial composition. Such strategies are likely essential for translating semantic cues into reliable cluster detection for harvesting and yield estimation. Finally, although frozen DINOv3 features demonstrate semantic stability across acquisition subsets, detection remains sensitive to cross-domain scale shifts. Rather than relying solely on endto-end adaptation, future work may explicitly incorporate scale-aware modeling strategies (such as multi-scale detection heads <ref type="bibr" target="#b41">[42]</ref> or feature fusion <ref type="bibr" target="#b42">[43]</ref>) to handle viewpoint and resolution vari-ability common in blueberry fields. Aligning semantic representation with scale-consistent spatial inference will be critical for deploying perception modules in real harvesting robots.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6">Conclusions</head><p>This study systematically evaluated DINOv3 as a frozen general-purpose visual encoder under a unified protocol for blueberry perception tasks related to robotic harvesting. By designing taskaligned lightweight decoders and standardized training settings, we established a controlled framework to analyze its representation behavior across segmentation and detection. Results reveal clear task-dependent characteristics. Region-level segmentation benefits from stable and scalable dense patch representations, with consistent gains as backbone capacity increases. In contrast, instancelevel detection is influenced not only by semantic separability but also by target scale distribution, patch discretization, and localization compatibility. Overall, these findings clarify the effective operating regime of frozen DINOv3 in harvesting perception. Rather than serving as an end-toend model, it functions more appropriately as a semantic backbone, whose reliability depends on structural adaptation (multi-scale modeling &amp; relational reasoning) to translate strong semantic representations into robust instance-level localization and aggregation-aware detection.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 1 :</head><label>1</label><figDesc>Figure 1: Samples of used datasets: (a) Bruising Segmentation; (b) Cluster Detection; (c) Fruit Segmentation; (d) Fruit Detection.</figDesc><graphic coords="3,142.20,199.28,327.53,260.68" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head></head><label></label><figDesc>ity for agricultural deployment scenarios. All backbones remain fully frozen throughout training to decouple representation learning from task-specific optimization. This protocol allows us to isolate and analyze the intrinsic transferability and structural properties of DINOv3 features on unseen blueberry perception tasks, rather than assessing end-to-end task performance. For each input image, DINOv3 produces dense patch-level embeddings determined by a fixed 16 × 16 patch granularity, preserving spatial structure required for detection and segmentation. Features are precomputed and cached per subsets with the frozen DINOv3 encoder [compressed NumPy (.npz) format]. Using fixed representations for all head training and evaluation ensures fair comparisons across backbone variants and avoids redundant computation. These cached patch embeddings are the sole visual input to lightweight decoders for head-only training, quantitative evaluation, and qualitative visualization (Figure2).</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Figure 2 :</head><label>2</label><figDesc>Figure 2: Workflow of DINOv3-based evaluation framework.</figDesc><graphic coords="4,142.20,214.55,327.58,278.67" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Figure 3 :</head><label>3</label><figDesc>Figure 3: Structural diagram of Patch-Level Decoders.</figDesc><graphic coords="5,142.20,72.00,327.60,267.93" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Figure 5 :</head><label>5</label><figDesc>Figure 5: Segmentation and detection results with PCA analysis for the Blueberry Fruit Segmentation Dataset.</figDesc><graphic coords="9,72.00,222.77,467.97,467.97" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Figure 6 :</head><label>6</label><figDesc>Figure 6: Visualization and PCA for cluster detection. In contrast, blueberry fruit detection exhibits partial scalability with backbone size, yet remains sensitive to spatial discretization. When fruit scale aligns more closely with patch granularity (OpenSet (Figure 7(a) left), HandSet (Figure 7(b)(i)), and RoboSet (Figure 7(c))), semantic clusters in feature space translate into more stable proposals. However, when fruit extent spans multiple patches or is poorly aligned with the grid (OpenSet (Figure 7(a) right) and HandSet (Figure 7(b)(ii))), box localization remains unstable even if semantic separability is visually plausible. This mismatch reveals that under frozen representations, detection performance ceilings are jointly governed by semantic abstraction and the inductive biases of patch-level localization, including grid resolution, assignment strategy, and non-maximum suppression dynamics. Therefore, detection results illustrate that while frozen DINOv3 representations provide strong semantic grouping at the patch level, successful instance-level localization requires compatibility between object definition, spatial granularity, and decoder formulation. Representation strength alone is insufficient when structural alignment is lacking. Overall, the qualitative analyses reinforce the quantitative findings. Frozen DINOv3 representations maintain stable semantic structure across blueberry perception tasks, enabling reliable segmentation through lightweight readout. Detection performance, however, is governed not only by representation quality but also by structural alignment between patch granularity, target scale, and object definition. These observations clarify when frozen patch-level representations can be effectively leveraged and when performance bottlenecks arise from spatial formulation rather than semantic abstraction.</figDesc><graphic coords="10,72.00,216.93,468.01,158.59" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head>Figure 7 :</head><label>7</label><figDesc>Figure 7: Visualization and PCA for the fruit detection.</figDesc><graphic coords="11,72.00,72.00,467.97,467.97" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_7"><head>Figure 8 :</head><label>8</label><figDesc>Figure 8: Structure of AgriSight-MT Dataset Blueberry section.</figDesc><graphic coords="12,165.60,517.42,280.81,121.80" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_8"><head>Figure 9 :</head><label>9</label><figDesc>Figure 9: A conceptual pipeline for blueberry cluster detection based on fruit-level evidence aggregation. Output A generates cluster proposals by fitting BBoxes to predicted foreground regions and refines them using an aggregation verification module. The verification stage evaluates fruit-level cues within each ROI (e.g., fruit spatial compactness, connectivity) to filter proposals inconsistent with the cluster definition. Output B serves as a geometric baseline, where cluster boxes are obtained solely through direct region-to-box fitting without aggregation verification.</figDesc><graphic coords="13,72.00,262.30,467.97,236.94" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0"><head></head><label></label><figDesc></figDesc><graphic coords="8,83.70,570.45,444.50,131.20" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head>Table 1 :</head><label>1</label><figDesc>Datasets used for evaluating DINOv3.</figDesc><table><row><cell>Dataset</cell><cell>Total</cell><cell cols="5">Inst. Train Val. Test Ref.</cell></row><row><cell cols="2">Bruising Seg. 1001</cell><cell>1642</cell><cell cols="2">799 101</cell><cell>101</cell><cell>[9]</cell></row><row><cell>Cluster Det.</cell><cell>991</cell><cell>9361</cell><cell>855</cell><cell>60</cell><cell cols="2">76 [10]</cell></row><row><cell>Fruit Det.</cell><cell>1284</cell><cell>177602</cell><cell cols="2">898 256</cell><cell cols="2">130 [10]</cell></row><row><cell>Fruit Seg.</cell><cell>2772</cell><cell>129080</cell><cell cols="2">1940 554</cell><cell cols="2">278 [10]</cell></row><row><cell>Total</cell><cell>6048</cell><cell>317685</cell><cell cols="2">4492 971</cell><cell>585</cell><cell>-</cell></row><row><cell cols="7">Note: "Total.", "Train", "Val," and "Test" indicate number of images. "Inst." is annotated objects.</cell></row></table></figure>
+		</body>
+		<back>
+			<div type="annex">
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>These observations highlight a fundamental distinction between segmentation and detection under frozen representations: segmentation benefits directly from improved semantic abstraction, whereas detection performance is jointly determined by representation quality and spatial discretization constraints imposed by the patch grid.</p><p>Task-Level Divergence Under Identical Representations. A direct comparison of segmentation and detection on the same blueberry datasets further reveals task-dependent response patterns. Overall, the quantitative results demonstrate that frozen DINOv3 representations provide consistent scalability for blueberry semantic segmentation, while detection performance is more strongly constrained by target density, object scale, and the inductive biases of patch-level localization.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.4">Qualitative analysis</head><p>To complement the quantitative results and interpret model behavior from a representation perspective, we provide qualitative visualizations and PCA projections of patch-level features on the test datasets (Figures <ref type="figure">4-6</ref>). The qualitative evidence is consistent with the trends observed in Section 4.3: segmentation benefits steadily from backbone scaling, whereas detection remains more sensitive to spatial and structural constraints imposed by the patch grid.</p><p>Segmentation: From Subtle Boundaries to Cross-Domain Stability. We first examine blueberry bruising segmentation (Figure <ref type="figure">4</ref>), a task characterized by subtle appearance variation and ambiguous boundaries. Although bruised regions are not clearly separable in low-dimensional PCA projections, larger DINOv3 variants still produce more coherent masks and improved overlap quality. This apparent discrepancy does not contradict the quantitative gains. PCA preserves only dominant variance directions, which typically capture global structural information rather than fine-grained texture variations. Prior studies have shown that perceptually subtle yet semantically meaningful differences may reside in phase-or frequency-related components that are not visually salient after dimensionality reduction <ref type="bibr" target="#b29">[30,</ref><ref type="bibr" target="#b30">31]</ref>. Therefore, the absence of clear separation in PCA space does not imply weak discriminative capacity in the full high-dimensional representation. </p></div>			</div>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Bmdnet-yolo: A lightweight and robust model for high-precision real-time recognition of blueberry maturity</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Sun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R.-F</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Horticulturae</title>
+		<imprint>
+			<biblScope unit="volume">11</biblScope>
+			<biblScope unit="issue">10</biblScope>
+			<biblScope unit="page">1202</biblScope>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Hppem: A high-precision blueberry cluster phenotype extraction model based on hybrid task cascade</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Gai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Xu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Agronomy</title>
+		<imprint>
+			<biblScope unit="volume">14</biblScope>
+			<biblScope unit="issue">6</biblScope>
+			<biblScope unit="page">1178</biblScope>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Utilization and development trend analysis of vaccinium of america in blueberry breeding</title>
+		<author>
+			<persName><forename type="first">G.-H</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Lei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>An</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>-Q. Luo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H.-X</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Fruit Science</title>
+		<imprint>
+			<biblScope unit="volume">38</biblScope>
+			<biblScope unit="issue">7</biblScope>
+			<biblScope unit="page">2021</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Integration of machine learning models with real-time global positioning data to automate the wild blueberry harvester</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Haydar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">J</forename><surname>Esau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">A</forename><surname>Farooque</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Abbas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Fraser</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Precision Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">26</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page">2025</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Vision foundation models in remote sensing: A survey</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Lu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Geoscience and Remote Sensing Magazine</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">A multimodal vision foundation model for clinical dermatology</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Yan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Nature Medicine</title>
+		<imprint>
+			<biblScope unit="volume">31</biblScope>
+			<biblScope unit="issue">8</biblScope>
+			<biblScope unit="page" from="2691" to="2702" />
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<title level="m" type="main">Dinov3</title>
+		<author>
+			<persName><forename type="first">O</forename><surname>Siméoni</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2508.10104</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Pebu-net: A lightweight segmentation network for blueberry bruising based on unet3+ using hyperspectral transmission imaging</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Dai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Liu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Measurement</title>
+		<imprint>
+			<biblScope unit="volume">253</biblScope>
+			<biblScope unit="page" from="117" to="700" />
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">High throughput assessment of blueberry fruit internal bruising using deep learning models</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Tan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Perkins-Veazie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Oh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Iorizzo</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Frontiers in Plant Science</title>
+		<imprint>
+			<biblScope unit="volume">16</biblScope>
+			<biblScope unit="page" from="1" to="575" />
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">In-field blueberry fruit phenotyping with a mars-phenobot and customized berrynet</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Munoz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Takeda</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Leme</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computers and Electronics in Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">232</biblScope>
+			<biblScope unit="page" from="110" to="057" />
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Development of a smartphone application for rapid blueberry detection and yield estimation</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Niknejad</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">D</forename><surname>Spiers</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Bao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Ru</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Smart Agricultural Technology</title>
+		<imprint>
+			<biblScope unit="page" from="101" to="361" />
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Smart uav-assisted blueberry maturity monitoring with mamba-based computer vision</title>
+		<author>
+			<persName><forename type="first">F</forename><surname>Zhao</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Precision Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">26</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page">56</biblScope>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">The application of optical nondestructive testing for fresh berry fruits</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Gu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Ren</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Food Engineering Reviews</title>
+		<imprint>
+			<biblScope unit="volume">16</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="85" to="115" />
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Object detection in high-resolution uav aerial remote sensing images of blueberry canopy fruits</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Xu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">14</biblScope>
+			<biblScope unit="issue">10</biblScope>
+			<biblScope unit="page">1842</biblScope>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Detection of blueberry based on hyperspectral imaging and deep learning</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Tian</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Food Research International</title>
+		<imprint>
+			<biblScope unit="page" from="117" to="141" />
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Identification of early bruising degrees in blueberries using visible and nearinfrared spectroscopy coupled with deep learning</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Huang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Spectrochimica Acta Part A: Molecular and Biomolecular Spectroscopy</title>
+		<imprint>
+			<biblScope unit="page" from="127" to="200" />
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Maturity classification of blueberry fruit using yolo and vision transformer for agricultural assistance</title>
+		<author>
+			<persName><forename type="first">I</forename><surname>Esaki</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Noma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Ban</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Sultana</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Shimizu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Horticulturae</title>
+		<imprint>
+			<biblScope unit="volume">11</biblScope>
+			<biblScope unit="issue">10</biblScope>
+			<biblScope unit="page">1272</biblScope>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Foundation models defining a new era in vision: A survey and outlook</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Awais</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Pattern Analysis and Machine Intelligence</title>
+		<imprint>
+			<biblScope unit="volume">47</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="2245" to="2264" />
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Automated detection and segmentation of baby kale crowns using grounding dino and sam for data-scarce agricultural applications</title>
+		<author>
+			<persName><forename type="first">G</forename><forename type="middle">G</forename><surname>Casas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><forename type="middle">H</forename><surname>Ismail</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">I</forename><surname>Shapiai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">K</forename><surname>Karuppiah</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Smart Agricultural Technology</title>
+		<imprint>
+			<biblScope unit="volume">11</biblScope>
+			<biblScope unit="page" from="100" to="903" />
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Optimized dino model for accurate object detection of sesame seedlings and weeds</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Ye</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Cheng</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Scientific Reports</title>
+		<imprint>
+			<biblScope unit="volume">15</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="11" to="854" />
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Efficient localization and spatial distribution modeling of canopy palms using uav imagery</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Cui</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Geoscience and Remote Sensing</title>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">From sensors to insights: Technological trends in image-based high-throughput plant phenotyping</title>
+		<author>
+			<persName><forename type="first">R.-F</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H.-R</forename><surname>Qu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W.-H</forename><surname>Su</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Smart Agricultural Technology</title>
+		<imprint>
+			<biblScope unit="page" from="101" to="257" />
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Orchard chestnut visual harvest maturity detection and segmentation using an improved yolo-based method</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Li</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">16</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page">456</biblScope>
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">The application of deep learning in the whole potato production chain: A comprehensive review</title>
+		<author>
+			<persName><forename type="first">R.-F</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W.-H</forename><surname>Su</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">14</biblScope>
+			<biblScope unit="issue">8</biblScope>
+			<biblScope unit="page">1225</biblScope>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<monogr>
+		<title level="m" type="main">Center-guided classifier for semantic segmentation of remote sensing images</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Zhang</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2503.16963</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Multitask learning: A knowledge-based source of inductive bias1</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Caruana</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Tenth International Conference on Machine Learning</title>
+				<meeting>the Tenth International Conference on Machine Learning</meeting>
+		<imprint>
+			<date type="published" when="1993">1993</date>
+			<biblScope unit="page" from="41" to="48" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">Adaptive hard parameter sharing method based on multi-task deep learning</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Jin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Du</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Hao</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Mathematics</title>
+		<imprint>
+			<biblScope unit="volume">11</biblScope>
+			<biblScope unit="issue">22</biblScope>
+			<biblScope unit="page">4639</biblScope>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<monogr>
+		<title level="m" type="main">Adam: A method for stochastic optimization</title>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">P</forename><surname>Kingma</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1412.6980</idno>
+		<imprint>
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">Imagenet: A large-scale hierarchical image database</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Deng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Socher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L.-J</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Fei-Fei</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2009 IEEE conference on computer vision and pattern recognition</title>
+				<imprint>
+			<publisher>Ieee</publisher>
+			<date type="published" when="2009">2009</date>
+			<biblScope unit="page" from="248" to="255" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">The importance of phase in signals</title>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">V</forename><surname>Oppenheim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">S</forename><surname>Lim</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE</title>
+				<meeting>the IEEE</meeting>
+		<imprint>
+			<date type="published" when="2005">2005</date>
+			<biblScope unit="volume">69</biblScope>
+			<biblScope unit="page" from="529" to="541" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">Imagenet-trained cnns are biased towards texture; increasing shape bias improves accuracy and robustness</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Geirhos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Rubisch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Michaelis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Bethge</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><forename type="middle">A</forename><surname>Wichmann</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Brendel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International conference on learning representations</title>
+				<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<monogr>
+		<title level="m" type="main">Sam 3: Segment anything with concepts</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Carion</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2511.16719</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<analytic>
+		<title level="a" type="main">Yolo advances to its genesis: A decadal and comprehensive review of the you only look once (yolo) series</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Sapkota</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Artificial Intelligence Review</title>
+		<imprint>
+			<biblScope unit="volume">58</biblScope>
+			<biblScope unit="issue">9</biblScope>
+			<biblScope unit="page">274</biblScope>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<analytic>
+		<title level="a" type="main">U-net: Convolutional networks for biomedical image segmentation</title>
+		<author>
+			<persName><forename type="first">O</forename><surname>Ronneberger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Fischer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Brox</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Medical image computing and computerassisted intervention</title>
+				<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2015">2015</date>
+			<biblScope unit="page" from="234" to="241" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<analytic>
+		<title level="a" type="main">Associative embedding: End-to-end learning for joint detection and grouping</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Newell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Deng</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Advances in neural information processing systems</title>
+				<imprint>
+			<date type="published" when="2017">2017</date>
+			<biblScope unit="volume">30</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main">Relation networks for object detection</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Gu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Dai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Wei</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE conference on computer vision and pattern recognition</title>
+				<meeting>the IEEE conference on computer vision and pattern recognition</meeting>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="page" from="3588" to="3597" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<analytic>
+		<title level="a" type="main">A lightweight model based on multi-scale feature fusion for ultrasonic welding surface defect detection</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Liu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Engineering Applications of Artificial Intelligence</title>
+		<imprint>
+			<biblScope unit="volume">161</biblScope>
+			<biblScope unit="page" from="112" to="208" />
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<analytic>
+		<title level="a" type="main">Psrr-maxpoolnms++: Fast non-maximum suppression with discretization and pooling</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Geng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">M S</forename><surname>Aly</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Pattern Analysis and Machine Intelligence</title>
+		<imprint>
+			<biblScope unit="volume">47</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="978" to="993" />
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<analytic>
+		<title level="a" type="main">Adaptive spatial and scale label assignment for anchor-free object detection</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Dang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Pattern Recognition</title>
+		<imprint>
+			<biblScope unit="volume">164</biblScope>
+			<biblScope unit="page" from="111" to="549" />
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<analytic>
+		<title level="a" type="main">Yolov5-based dense rice seed counting method integrating c3cbam and soft-nms</title>
+		<author>
+			<persName><forename type="first">X</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Sun</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Smart Agricultural Technology</title>
+		<imprint>
+			<biblScope unit="page" from="101" to="779" />
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<analytic>
+		<title level="a" type="main">Dinov3-unet: A pretrained vision transformer enhanced u-net for surface defect segmentation</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Xue</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Wei</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2025 5th International Symposium on Artificial Intelligence and Intelligent Manufacturing (AIIM)</title>
+				<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2025">2025</date>
+			<biblScope unit="page" from="39" to="42" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b41">
+	<analytic>
+		<title level="a" type="main">Optimizing seed anomaly detection in agricultural automation via lightweight asd-yolo and closed-loop control</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Peng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Liang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Fan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computers and Electronics in Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">243</biblScope>
+			<biblScope unit="page" from="111" to="342" />
+			<date type="published" when="2026">2026</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b42">
+	<monogr>
+		<title level="m" type="main">Real-time object detection meets dinov3</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Hou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Shen</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2509.20787</idno>
+		<imprint>
+			<date type="published" when="2025">2025</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>
