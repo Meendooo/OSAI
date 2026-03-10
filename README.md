@@ -53,10 +53,11 @@ python src/tei_analyzer.py
 ```
 
 ### Método 3: Desde cero (sin entorno virtual)
+```bash
 pip install beautifulsoup4 wordcloud matplotlib numpy pathlib requests
 python src/main.py
 python src/tei_analyzer.py
-
+```
 
 ## Estructura del proyecto
 
